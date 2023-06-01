@@ -6,7 +6,7 @@
                 <div class="txt_field">
                     <input type="text" required>
                     <span></span>
-                    <label >نام کاربری</label>
+                    <label>نام کاربری</label>
                 </div>
                 <div class="txt_field">
                     <input type="password" required>
@@ -15,7 +15,7 @@
                 </div>
                 <input type="submit" value="ورود">
                 <div class="signup_link">
-                   <a href="#">فراموشی رمز عبور</a>
+                    <a href="#">فراموشی رمز عبور</a>
                 </div>
             </form>
         </div>
@@ -23,23 +23,18 @@
 </template>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:wght@700&family=Poppins:wght@400;500;600&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Vazirmatn', sans-serif;
-}
-.container{
+.container {
+    height: 100vh;
+    width: 100vw;
     margin: 0;
     padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(120deg, #2980b9, #8e44ad);
+    background: linear-gradient(120deg, #1d2634, #9e9ea4);
     height: 100vh;
-    overflow: hidden;
+    overflow: hidden;   
+    padding: 25px;
 }
 
 .center {
@@ -151,4 +146,5 @@ input[type="submit"]:hover {
 
 .signup_link a:hover {
     text-decoration: underline;
-}</style>
+}
+</style>

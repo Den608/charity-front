@@ -1,5 +1,21 @@
 @import './base.css';
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
 
 body {
   text-align: right;
+  background: linear-gradient(120deg, #1d2634, #9e9ea4);
+  color: #9e9ea4;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Vazirmatn', sans-serif;
+}
+
+.material-icons-outline {
+  vertical-align: middle;
+  line-height: 1px;
+  font-size: 35px;
 }
