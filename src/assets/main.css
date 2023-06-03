@@ -2,20 +2,85 @@
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn&display=swap');
 
 body {
+  width: 100vw;
+  height: 100vh;
+  font-size: 14px;
   text-align: right;
-  background: linear-gradient(120deg, #1d2634, #9e9ea4);
-  color: #9e9ea4;
-}
-
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  background: var(--color-background);
   font-family: 'Vazirmatn', sans-serif;
+  user-select: none;
+  overflow-x: hidden;
 }
 
-.material-icons-outline {
-  vertical-align: middle;
-  line-height: 1px;
-  font-size: 35px;
+a{
+  color: var(--color-dark);
+}
+
+img{
+  display: block;
+  width: 100%;
+}
+
+h1{
+  font-weight: 800;
+  font-size: 1.8rem;
+}
+
+h2{
+  font-size: 1.4rem;
+}
+
+h3{
+  font-size: .9rem;
+}
+
+h4{
+  font-size: 0.8rem;
+}
+
+h5{
+  font-size: 0.77rem;
+}
+
+small{
+  font-size: 0.75rem;
+}
+
+.profile-photo{
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius:50%;
+  overflow: hidden;
+}
+
+.text-muted{
+  color:var(--color-info-dark)
+}
+
+p{
+  color: var(--color-dark-variant);
+}
+
+b{
+  color:var(--color--dark);
+}
+
+.primary{
+  color: var(--color-primary);
+}
+
+.danger{
+  color:var(--color-danger)
+}
+
+.success{
+  color: var(--color-success);
+}
+
+.primary{
+  color: var(--color-primary);
+}
+
+.warning{
+  color: var(--color-warning);
 }
