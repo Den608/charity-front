@@ -57,7 +57,7 @@
                 </div>
             </div>
 
-            <div class="tab-contaner last-child" >
+            <div class="tab-contaner last-child">
                 <div class="tab">
                     <span class="material-symbols-sharp">logout</span>
                     <h3>خروج از سیستم</h3>
@@ -76,8 +76,9 @@ aside .top {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 10px;
 }
+
+
 
 aside .top .logo {
     display: flex;
@@ -100,7 +101,7 @@ aside .sidebar {
     flex-direction: column;
     height: 86vh;
     position: relative;
-    top: 3rem;
+    top: 1rem;
 }
 
 aside h3 {
