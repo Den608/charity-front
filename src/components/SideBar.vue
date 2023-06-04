@@ -1,4 +1,15 @@
 <script setup>
+import { ref } from 'vue';
+
+const emit = defineEmits(['changeTab'])
+const activeElement = ref([true, false, false, false, false, false])
+
+const onTabClicked = (index) => {
+    activeElement.value.fill(false);
+    activeElement.value[index] = true
+
+    emit('changeTab', index)
+}
 
 </script>
 
@@ -15,49 +26,49 @@
         </div>
         <div class="sidebar">
 
-            <div class="tab-contaner active">
+            <div class="tab-container" :class="{ 'active': activeElement[0] }" @click="onTabClicked(0)">
                 <div class="tab">
                     <span class="material-symbols-sharp">dashboard</span>
                     <h3>داشبورد</h3>
                 </div>
             </div>
 
-            <div class="tab-contaner">
+            <div class="tab-container" :class="{ 'active': activeElement[1] }" @click="onTabClicked(1)">
                 <div class="tab">
                     <span class="material-symbols-sharp">group</span>
                     <h3>افراد خیر</h3>
                 </div>
             </div>
 
-            <div class="tab-contaner">
+            <div class="tab-container" :class="{ 'active': activeElement[2] }" @click="onTabClicked(2)">
                 <div class="tab">
                     <span class="material-symbols-sharp">settings_accessibility</span>
                     <h3>افراد نیازمند</h3>
                 </div>
             </div>
 
-            <div class="tab-contaner">
+            <div class="tab-container" :class="{ 'active': activeElement[3] }" @click="onTabClicked(3)">
                 <div class="tab">
                     <span class="material-symbols-sharp">inventory_2</span>
                     <h3>کمک های مردمی</h3>
                 </div>
             </div>
 
-            <div class="tab-contaner">
+            <div class="tab-container" :class="{ 'active': activeElement[4] }" @click="onTabClicked(4)">
                 <div class="tab">
                     <span class="material-symbols-sharp">deployed_code</span>
                     <h3>بسته های مناسبتی</h3>
                 </div>
             </div>
 
-            <div class="tab-contaner">
+            <div class="tab-container" :class="{ 'active': activeElement[5] }" @click="onTabClicked(5)">
                 <div class="tab">
                     <span class="material-symbols-sharp">school</span>
                     <h3>دانشجویان و دانش اموزان</h3>
                 </div>
             </div>
 
-            <div class="tab-contaner last-child">
+            <div class="tab-container last-child">
                 <div class="tab">
                     <span class="material-symbols-sharp">logout</span>
                     <h3>خروج از سیستم</h3>
@@ -108,7 +119,7 @@ aside h3 {
     font-weight: 500;
 }
 
-aside .sidebar .tab-contaner {
+aside .sidebar .tab-container {
     cursor: pointer;
     height: 3.7rem;
     display: flex;
@@ -118,7 +129,7 @@ aside .sidebar .tab-contaner {
     transition: all 300ms ease;
 }
 
-aside .sidebar .tab-contaner .tab {
+aside .sidebar .tab-container .tab {
     width: 100%;
     height: 100%;
     display: flex;
@@ -127,30 +138,31 @@ aside .sidebar .tab-contaner .tab {
     padding-right: 1rem;
 }
 
-aside .sidebar .tab-contaner .tab {
+aside .sidebar .tab-container .tab {
     font-size: 1.6rem;
     transition: all 300ms ease;
 }
 
-aside .sidebar .tab-contaner:last-child {
+aside .sidebar .tab-container:last-child {
     position: absolute;
     bottom: 2rem;
     width: 100%;
 }
 
-aside .sidebar .tab-contaner.active {
+aside .sidebar .tab-container.active {
     background-color: var(--color-light);
     color: var(--color-primary);
+    transition: all 1s ease;
 }
 
-aside .sidebar .tab-contaner.active::before {
+aside .sidebar .tab-container.active::before {
     content: '';
     width: 6px;
     height: 100%;
     background: var(--color-primary);
 }
 
-aside .sidebar .tab-contaner .tab:hover {
+aside .sidebar .tab-container .tab:hover {
     color: var(--color-primary);
     margin-right: 1rem;
 }

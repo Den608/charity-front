@@ -245,7 +245,6 @@ main .left .top .recent-update {
     flex-direction: column;
     box-shadow: var(--box-shadow);
     padding: 1.2rem;
-    height: 100%;
     transition: all 300ms ease;
 }
 
