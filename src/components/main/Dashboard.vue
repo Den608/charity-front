@@ -1,17 +1,21 @@
 <script setup>
+import {ref} from 'vue'
 
 </script>
 
 <template>
     <main>
-        <div class="right">
+        <div class="dash-header">
             <h1>داشبورد</h1>
             <div class="date">
                 <input class="date" type="date">
             </div>
+        </div>
+
+        <div class="right">
 
             <div class="insight">
-                <div class="cash-donation">
+                <div class="cash-donation" >
                     <span class="material-symbols-sharp">account_balance</span>
                     <div class="middle">
                         <div class="left">
@@ -59,7 +63,7 @@
             </div>
 
             <!-- -----------------Table Bottom------------------- -->
-            <div class="recent-action">
+            <div class="recent-help">
                 <h2>کمک های اخیر </h2>
                 <table>
                     <thead>
@@ -73,7 +77,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>کفش سایز45</td>
+                            <td>کفش سایز56</td>
                             <td>محمد رستمی</td>
                             <td>عرفان قربانی</td>
                             <td>4</td>
@@ -115,7 +119,18 @@ main {
     margin-top: 1.4rem;
     display: grid;
     grid-template-columns: 2.5fr 1fr;
+    grid-template-rows: 5rem auto;
+    grid-template-areas: "haeder header"
+    "right left";
     margin: 0 1rem;
+}
+
+main .dashboard-header{
+    grid-area: header;
+}
+
+main .right{
+    grid-area: right;
 }
 
 main .right .date {
@@ -142,6 +157,7 @@ main .right .insight>div {
     margin-top: 1rem;
     box-shadow: var(--box-shadow);
     transition: all 300ms ease;
+    cursor: pointer;
 }
 
 main .right .insight>div:hover {
@@ -185,16 +201,16 @@ main .right .insight h3 {
 
 /* -------------- Table Bottom Insight--------------- */
 
-main .right .recent-action {
+main .right .recent-help {
     margin-top: 2rem;
 }
 
-main .right .recent-action h2 {
+main .right .recent-help h2 {
     margin-bottom: 0.8rem;
     font-weight: 600;
 }
 
-main .right .recent-action table {
+main .right .recent-help table {
     background: var(--color-white);
     text-align: center;
     width: 100%;
@@ -204,22 +220,22 @@ main .right .recent-action table {
     transition: all 300ms ease;
 }
 
-main .right .recent-action table:hover {
+main .right .recent-help table:hover {
     box-shadow: none;
 }
 
-main .right .recent-action table tbody td {
+main .right .recent-help table tbody td {
     height: 2.8rem;
     border-bottom: 1px solid var(--color-light);
     color: var(--color-dark-variant);
 }
 
-main .right .recent-action table tbody tr:last-child td {
+main .right .recent-help table tbody tr:last-child td {
     border: none;
 }
 
 /* -------------Show All Link------------------ */
-main .right .recent-action .show-all {
+main .right .recent-help .show-all {
     margin: .8rem 0;
     text-align: center;
     display: block;
@@ -227,14 +243,14 @@ main .right .recent-action .show-all {
 
 /* -----------------left Container -------------- */
 main .left {
-    margin: 0 .8rem;
+    margin: 0 1rem;
     display: grid;
     grid-template-rows: .8fr;
+    grid-area: left;
 }
 
 main .left h2 {
-    margin-top: 4rem;
-    margin-bottom: 1rem;
+    margin: 1rem 0;
 }
 
 

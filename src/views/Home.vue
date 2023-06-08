@@ -24,7 +24,7 @@ const renderPage = (index) => {
         <SideBar class="sidebar" @changeTab="renderPage" />
 
         <Transition name="tab" appear>
-            <Dashboard class="dashboard" v-if="pageShow[0]" />
+            <Dashboard class="dashboard" v-if="pageShow[0]" @changeTab="renderPage"/>
         </Transition>
 
         <Transition name="tab">

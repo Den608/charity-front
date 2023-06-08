@@ -6,7 +6,7 @@ body {
   height: 100vh;
   font-size: 14px;
   text-align: right;
-  background: var(--color-background);
+  background: var(--color-background) !important;
   font-family: 'Vazirmatn', sans-serif;
   user-select: none;
   overflow-x: hidden;
