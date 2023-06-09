@@ -1,4 +1,9 @@
 <script setup>
+import {ref} from 'vue'
+import { storeToRefs } from 'pinia';
+import useUSerStore from '../store/users';
+
+const userStore=useUSerStore()
 
 </script>
 
@@ -8,7 +13,7 @@
             <div class="profile-photo">
                 <img src="./images/profile-1.jpg" alt="">
             </div>
-            <p style="font-weight: 600;">محمدرضا روحانی</p>
+            <p style="font-weight: 600;">{{userStore.user.first_name}} {{ userStore.user.last_name }}</p>
         </div>
         <div class="theme-mode">
             <span class="material-symbols-sharp active">light_mode</span>

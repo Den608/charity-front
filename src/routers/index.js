@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Login from '../views/Login.vue'
 import Home from '../views/Home.vue'
-import useAuthStore  from "../store/authStore";
 
 
 const router = createRouter({
@@ -11,7 +10,6 @@ const router = createRouter({
             path: '/',
             name: 'home',
             component: Home,
-            meta: { requiresAuth: true },
         },
         {
             path: '/login',
@@ -21,6 +19,7 @@ const router = createRouter({
 
     ]
 })
+
 
 
 export default router

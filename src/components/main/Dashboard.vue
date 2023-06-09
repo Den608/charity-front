@@ -1,5 +1,10 @@
 <script setup>
 import {ref} from 'vue'
+import useUSerStore from '../../store/users';
+import { storeToRefs } from 'pinia';
+
+const userStore=useUSerStore()
+
 
 </script>
 

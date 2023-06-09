@@ -1,15 +1,32 @@
+<script setup>
+import { ref, reactive } from 'vue'
+import useUserStore from '../store/users'
+
+const userStore=useUserStore()
+
+const credentials = reactive({
+    'national_code': null,
+    'password': null
+})
+
+const onSubmitForm=()=>{
+    userStore.handleLogin(credentials)
+}
+
+</script>
+
 <template>
     <div class="container">
         <div class="center">
             <h1>ورود به سیستم</h1>
-            <form method="post">
+            <form @submit.prevent="onSubmitForm">
                 <div class="txt_field">
-                    <input type="text" required>
+                    <input v-model="credentials.national_code" type="text" required>
                     <span></span>
-                    <label>نام کاربری</label>
+                    <label>کد ملی </label>
                 </div>
                 <div class="txt_field">
-                    <input type="password" required>
+                    <input v-model="credentials.password" type="password" required>
                     <span></span>
                     <label>رمز عبور</label>
                 </div>
@@ -33,7 +50,7 @@
     align-items: center;
     background: linear-gradient(120deg, #1d2634, #9e9ea4);
     height: 100vh;
-    overflow: hidden;   
+    overflow: hidden;
     padding: 25px;
 }
 

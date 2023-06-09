@@ -1,14 +1,19 @@
 import axios from 'axios';
-import authStore from '../store/authStore';
 
-const {accessToken}=authStore()
+const accessToken = window.localStorage.getItem('token');
 
 const axiosInstance = axios.create({
   baseURL: 'https://charity-back.iran.liara.run',
   headers: {
     'Content-Type': 'application/json',
-    'Token':'Bearer ${accessToken}'
   },
 });
+
+if (Boolean(accessToken)) {
+  axiosInstance.interceptors.request.use((config) => {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+    return config;
+  });
+}
 
 export default axiosInstance;
