@@ -1,14 +1,16 @@
 <script setup>
 import { ref } from 'vue';
+import useUSerStore from '../store/users';
 
+const userStore = useUSerStore()
 const emit = defineEmits(['changeTab'])
 const activeElement = ref([true, false, false, false, false, false])
+const tab = ref(['Dashboard', 'Help', 'Helper', 'HelpSeeker', 'Package', 'Student'])
 
 const onTabClicked = (index) => {
     activeElement.value.fill(false);
     activeElement.value[index] = true
-
-    emit('changeTab', index)
+    emit('changeTab', tab.value[index])
 }
 
 </script>
@@ -69,7 +71,7 @@ const onTabClicked = (index) => {
             </div>
 
             <div class="tab-container last-child">
-                <div class="tab">
+                <div @click="userStore.handleLogout" class="tab">
                     <span class="material-symbols-sharp">logout</span>
                     <h3>خروج از سیستم</h3>
                 </div>
@@ -165,5 +167,25 @@ aside .sidebar .tab-container.active::before {
 aside .sidebar .tab-container .tab:hover {
     color: var(--color-primary);
     margin-right: 1rem;
+}
+
+
+
+@media screen and (max-width:1200px) {
+    aside .top .logo {
+        display: none;
+    }
+
+    aside h3 {
+        display: none;
+    }
+
+    aside .sidebar .tab-container.active {
+        background-color: var(--color-light);
+        color: var(--color-primary);
+        transition: all 1s ease;
+        width: 4rem;
+    }
+
 }
 </style>

@@ -1,9 +1,9 @@
 <script setup>
-import {ref} from 'vue'
+import { ref } from 'vue'
 import useUSerStore from '../../store/users';
 import { storeToRefs } from 'pinia';
 
-const userStore=useUSerStore()
+const userStore = useUSerStore()
 
 
 </script>
@@ -12,15 +12,12 @@ const userStore=useUSerStore()
     <main>
         <div class="dash-header">
             <h1>داشبورد</h1>
-            <div class="date">
-                <input class="date" type="date">
-            </div>
         </div>
 
         <div class="right">
 
             <div class="insight">
-                <div class="cash-donation" >
+                <div class="cash-donation">
                     <span class="material-symbols-sharp">account_balance</span>
                     <div class="middle">
                         <div class="left">
@@ -67,35 +64,34 @@ const userStore=useUSerStore()
                 <!-- -----------END OF SALES------------- -->
             </div>
 
-            <!-- -----------------Table Bottom------------------- -->
-            <div class="recent-help">
-                <h2>کمک های اخیر </h2>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>نام کالا</th>
-                            <th>نام مددیار</th>
-                            <th>نام مددجو</th>
-                            <th>تعدا کالا</th>
-                            <th>وضعیت</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>کفش سایز56</td>
-                            <td>محمد رستمی</td>
-                            <td>عرفان قربانی</td>
-                            <td>4</td>
-                            <td class="warning">در حال تحویل </td>
-                            <td><a class="primary" href="#">جزئیات</a></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <a href="#" class="primary show-all">نمایش همه</a>
-            </div>
+
             <!-- -------------- END OF Table ------------------ -->
         </div>
-
+        <div class="recent-help">
+            <h2>کمک های اخیر </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>نام کالا</th>
+                        <th>نام مددیار</th>
+                        <th>نام مددجو</th>
+                        <th>تعدا کالا</th>
+                        <th>وضعیت</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>کفش سایز56</td>
+                        <td>محمد رستمی</td>
+                        <td>عرفان قربانی</td>
+                        <td>4</td>
+                        <td class="warning">در حال تحویل </td>
+                        <td><a class="primary" href="#">جزئیات</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <a href="#" class="primary show-all">نمایش همه</a>
+        </div>
         <div class="left">
             <div class="top">
                 <h2> بروز رسانی های اخیر</h2>
@@ -121,32 +117,21 @@ const userStore=useUSerStore()
 
 <style scoped>
 main {
-    margin-top: 1.4rem;
     display: grid;
     grid-template-columns: 2.5fr 1fr;
-    grid-template-rows: 5rem auto;
+    grid-template-rows: 5rem 1fr 2fr;
     grid-template-areas: "haeder header"
-    "right left";
+        "right left"
+        "table left";
     margin: 0 1rem;
 }
 
-main .dashboard-header{
+main .dashboard-header {
     grid-area: header;
 }
 
-main .right{
+main .right {
     grid-area: right;
-}
-
-main .right .date {
-    display: inline-block;
-    border-radius: var(--border-radius-1);
-    margin: .6rem 0;
-}
-
-main .right .date .input[type="date"] {
-    background: transparent;
-    color: var(--color-dark);
 }
 
 main .right .insight {
@@ -206,16 +191,19 @@ main .right .insight h3 {
 
 /* -------------- Table Bottom Insight--------------- */
 
-main .right .recent-help {
-    margin-top: 2rem;
+
+main .recent-help{
+    grid-area: table;
+    margin-top: 1rem;
 }
 
-main .right .recent-help h2 {
+
+main  .recent-help h2 {
     margin-bottom: 0.8rem;
     font-weight: 600;
 }
 
-main .right .recent-help table {
+main  .recent-help table {
     background: var(--color-white);
     text-align: center;
     width: 100%;
@@ -225,22 +213,22 @@ main .right .recent-help table {
     transition: all 300ms ease;
 }
 
-main .right .recent-help table:hover {
+main  .recent-help table:hover {
     box-shadow: none;
 }
 
-main .right .recent-help table tbody td {
+main  .recent-help table tbody td {
     height: 2.8rem;
     border-bottom: 1px solid var(--color-light);
     color: var(--color-dark-variant);
 }
 
-main .right .recent-help table tbody tr:last-child td {
+main  .recent-help table tbody tr:last-child td {
     border: none;
 }
 
 /* -------------Show All Link------------------ */
-main .right .recent-help .show-all {
+main  .recent-help .show-all {
     margin: .8rem 0;
     text-align: center;
     display: block;
@@ -294,5 +282,26 @@ main .left .top .recent-update .update span {
     background-color: var(--color-primary);
     border-radius: 50%;
     height: 50%;
+}
+
+
+
+/* -------------- Media Query ----------------- */
+@media screen and (max-width:1200px) {
+    main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 5rem 1fr;
+        grid-template-areas: "haeder header"
+        "right left"
+        "table table";
+        border: 1px solid red;
+    }
+
+    main .right .insight {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
 }
 </style>

@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onBeforeMount } from 'vue'
+import { useRouter } from 'vue-router'
 import SideBar from '../components/SideBar.vue';
 import Navbar from '../components/Navbar.vue';
 import Dashboard from '../components/main/Dashboard.vue';
@@ -9,11 +10,11 @@ import Help from '../components/main/Help.vue';
 import Package from '../components/main/Package.vue';
 import Student from '../components/main/Student.vue';
 
-const pageShow = ref([true, false, false, false, false, false])
 
-const renderPage = (index) => {
-    pageShow.value.fill(false)
-    pageShow.value[index] = true
+const currentTab = ref('Dashboard')
+
+const renderPage = (tab) => {
+    currentTab.value = tab
 }
 
 const tabs = {
@@ -32,29 +33,10 @@ const tabs = {
         <Navbar class="navbar" />
         <SideBar class="sidebar" @changeTab="renderPage" />
 
-        <Transition name="tab" appear>
-            <Dashboard class="dashboard" v-if="pageShow[0]" @changeTab="renderPage" />
+        <Transition appear name="tab">
+            <component :is="tabs[currentTab]" class="components"></component>
         </Transition>
 
-        <Transition name="tab">
-            <Helper v-if="pageShow[1]" />
-        </Transition>
-
-        <Transition name="tab">
-            <HelpSeeker v-if="pageShow[2]" />
-        </Transition>
-
-        <Transition name="tab">
-            <Help v-if="pageShow[3]" />
-        </Transition>
-
-        <Transition name="tab">
-            <Package v-if="pageShow[4]" />
-        </Transition>
-
-        <Transition name="tab">
-            <Student v-if="pageShow[5]" />
-        </Transition>
     </div>
 </template>px
 
@@ -68,7 +50,7 @@ const tabs = {
     gap: 2rem;
     grid-template-areas:
         "navbar navbar"
-        "sidebar dashboard";
+        "sidebar tab";
 }
 
 .navbar {
@@ -79,8 +61,8 @@ const tabs = {
     grid-area: sidebar;
 }
 
-.dashboard {
-    grid-area: dashboard;
+.components {
+    grid-area: tab;
 }
 
 
@@ -96,5 +78,13 @@ const tabs = {
 
 .tab-enter-active {
     transition: all 1s ease;
+}
+
+@media screen and (max-width:1200px) {
+    .grid-container {
+        display: grid;
+        grid-template-columns: 3rem auto;
+        grid-template-rows: 3rem auto;
+    }
 }
 </style>
