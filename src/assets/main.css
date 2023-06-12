@@ -12,76 +12,77 @@ body {
   overflow-x: hidden;
 }
 
-a{
+
+a {
   color: var(--color-dark);
 }
 
-img{
+img {
   display: block;
   width: 100%;
 }
 
-h1{
+h1 {
   font-weight: 800;
   font-size: 1.8rem;
 }
 
-h2{
+h2 {
   font-size: 1.4rem;
   font-weight: 600;
 }
 
-h3{
+h3 {
   font-size: .9rem;
 }
 
-h4{
+h4 {
   font-size: 0.8rem;
 }
 
-h5{
+h5 {
   font-size: 0.77rem;
 }
 
-small{
+small {
   font-size: 0.75rem;
 }
 
-.profile-photo{
+.profile-photo {
   width: 2.8rem;
   height: 2.8rem;
-  border-radius:50%;
+  border-radius: 50%;
   overflow: hidden;
 }
 
-.text-muted{
-  color:var(--color-info-dark)
+.text-muted {
+  color: var(--color-info-dark)
 }
 
-p{
+p {
   color: var(--color-dark-variant);
 }
 
-b{
-  color:var(--color--dark);
+b {
+  color: var(--color--dark);
 }
 
-.primary{
+.primary {
   color: var(--color-primary);
 }
 
-.danger{
-  color:var(--color-danger)
+.danger {
+  color: var(--color-danger)
 }
 
-.success{
+.success {
   color: var(--color-success);
 }
 
-.primary{
+.primary {
   color: var(--color-primary);
 }
 
-.warning{
+.warning {
   color: var(--color-warning);
 }

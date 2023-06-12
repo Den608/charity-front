@@ -15,7 +15,7 @@ const userStore = useUSerStore()
         </div>
 
         <div class="right">
-
+            <h2>درخواست های 24 ساعت گذشته</h2>
             <div class="insight">
                 <div class="cash-donation">
                     <span class="material-symbols-sharp">account_balance</span>
@@ -65,7 +65,6 @@ const userStore = useUSerStore()
             </div>
 
 
-            <!-- -------------- END OF Table ------------------ -->
         </div>
         <div class="recent-help">
             <h2>کمک های اخیر </h2>
@@ -73,30 +72,80 @@ const userStore = useUSerStore()
                 <thead>
                     <tr>
                         <th>نام کالا</th>
-                        <th>نام مددیار</th>
+                        <th class="responsive-hidden">نام مددیار</th>
                         <th>نام مددجو</th>
-                        <th>تعدا کالا</th>
+                        <th class="responsive-hidden">تعدا کالا</th>
                         <th>وضعیت</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>کفش سایز56</td>
-                        <td>محمد رستمی</td>
+                        <td class="responsive-hidden">محمد رستمی</td>
                         <td>عرفان قربانی</td>
-                        <td>4</td>
+                        <td class="responsive-hidden">4</td>
+                        <td class="warning">در حال تحویل </td>
+                        <td><a class="primary" href="#">جزئیات</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>کفش سایز56</td>
+                        <td class="responsive-hidden">محمد رستمی</td>
+                        <td>عرفان قربانی</td>
+                        <td class="responsive-hidden">4</td>
+                        <td class="warning">در حال تحویل </td>
+                        <td><a class="primary" href="#">جزئیات</a></td>
+                    </tr>
+
+                    <tr>
+                        <td >کفش سایز56</td>
+                        <td class="responsive-hidden">محمد رستمی</td>
+                        <td>عرفان قربانی</td>
+                        <td class="responsive-hidden">4</td>
+                        <td class="warning">در حال تحویل </td>
+                        <td><a class="primary" href="#">جزئیات</a></td>
+                    </tr>
+
+                    <tr>
+                        <td>کفش سایز56</td>
+                        <td class="responsive-hidden">محمد رستمی</td>
+                        <td>عرفان قربانی</td>
+                        <td class="responsive-hidden">4</td>
+                        <td class="warning">در حال تحویل </td>
+                        <td><a class="primary" href="#">جزئیات</a></td>
+                    </tr>
+                    <tr>
+                        <td>کفش سایز56</td>
+                        <td class="responsive-hidden">محمد رستمی</td>
+                        <td>عرفان قربانی</td>
+                        <td class="responsive-hidden">4</td>
                         <td class="warning">در حال تحویل </td>
                         <td><a class="primary" href="#">جزئیات</a></td>
                     </tr>
                 </tbody>
             </table>
             <a href="#" class="primary show-all">نمایش همه</a>
+            <!-- -------------- END OF Table ------------------ -->
         </div>
         <div class="left">
             <div class="top">
                 <h2> بروز رسانی های اخیر</h2>
                 <div class="recent-update">
                     <div class="updates">
+                        <div class="update">
+                            <div class="update-content">
+                                <span class="material-symbols-sharp">info</span>
+                                <p>کمک های اهدایی از طرف مرکز خیریه به عرفان قربانی {{ }}تحویل داده شد</p>
+                            </div>
+                            <small class="text-muted"> 3دقیقه ی پیش</small>
+                        </div>
+                        <div class="update">
+                            <div class="update-content">
+                                <span class="material-symbols-sharp">info</span>
+                                <p>کمک های اهدایی از طرف مرکز خیریه به عرفان قربانی {{ }}تحویل داده شد</p>
+                            </div>
+                            <small class="text-muted"> 3دقیقه ی پیش</small>
+                        </div>
                         <div class="update">
                             <div class="update-content">
                                 <span class="material-symbols-sharp">info</span>
@@ -124,6 +173,10 @@ main {
         "right left"
         "table left";
     margin: 0 1rem;
+}
+
+main h1,h2,h3,p,table{
+    color: var(--color-dark);
 }
 
 main .dashboard-header {
@@ -192,18 +245,18 @@ main .right .insight h3 {
 /* -------------- Table Bottom Insight--------------- */
 
 
-main .recent-help{
+main .recent-help {
     grid-area: table;
     margin-top: 1rem;
 }
 
 
-main  .recent-help h2 {
+main .recent-help h2 {
     margin-bottom: 0.8rem;
     font-weight: 600;
 }
 
-main  .recent-help table {
+main .recent-help table {
     background: var(--color-white);
     text-align: center;
     width: 100%;
@@ -213,22 +266,23 @@ main  .recent-help table {
     transition: all 300ms ease;
 }
 
-main  .recent-help table:hover {
+main .recent-help table:hover {
     box-shadow: none;
 }
 
-main  .recent-help table tbody td {
+main .recent-help table tbody td {
     height: 2.8rem;
     border-bottom: 1px solid var(--color-light);
     color: var(--color-dark-variant);
+    color: var(--color-dark);
 }
 
-main  .recent-help table tbody tr:last-child td {
+main .recent-help table tbody tr:last-child td {
     border: none;
 }
 
 /* -------------Show All Link------------------ */
-main  .recent-help .show-all {
+main .recent-help .show-all {
     margin: .8rem 0;
     text-align: center;
     display: block;
@@ -243,12 +297,12 @@ main .left {
 }
 
 main .left h2 {
-    margin: 1rem 0;
+    margin-bottom: 1rem;
 }
 
 
 main .left .top .recent-update {
-    background-color: white;
+    background-color: var(--color-white);
     border-radius: var(--card-border-radius);
     display: flex;
     flex-direction: column;
@@ -263,9 +317,10 @@ main .left .top .recent-update:hover {
 
 main .left .top .recent-update .update {
     display: flex;
+    height: 10rem;
     flex-direction: column;
     gap: .2rem;
-    margin: .8rem 0;
+    margin: 1.2rem 0;
     background-color: var(--color-light);
     padding: .8rem;
     border-radius: var(--card-border-radius);
@@ -280,28 +335,67 @@ main .left .top .recent-update .update .update-content {
 main .left .top .recent-update .update span {
     color: white;
     background-color: var(--color-primary);
-    border-radius: 50%;
-    height: 50%;
+    border-radius: 100%;
+    height: 1.8rem;
+    margin: 0px auto;
 }
 
 
 
-/* -------------- Media Query ----------------- */
+/* -------------- Media Query 1----------------- */
 @media screen and (max-width:1200px) {
     main {
         display: grid;
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 5rem 1fr;
         grid-template-areas: "haeder header"
-        "right left"
-        "table table";
-        border: 1px solid red;
+            "right left"
+            "table table";
     }
 
     main .right .insight {
         display: grid;
         grid-template-columns: 1fr;
         gap: 1rem;
+    }
+
+}
+
+
+/* -------------- Media Query 2----------------- */
+
+@media screen and (max-width:768px) {
+    main {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 5rem 1fr .7fr auto;
+        grid-template-areas: "header"
+            "right"
+            "left"
+            "table";
+        margin: 0px auto;
+        gap: 1rem;
+    }
+
+    main .dash-header{
+        margin-top: 2rem;
+        padding:0rem 1rem;
+    }
+
+    main  h2{
+        padding:0rem 1rem;
+    }
+    main .insight{
+        padding:1rem ;
+    }
+
+    main .recent-help{
+        padding: 1rem;
+    }
+
+    main .responsive-hidden{
+        display: none;
     }
 }
 </style>

@@ -13,7 +13,7 @@ const useUSerStore = defineStore('auth', () => {
     try {
       const response = await axiosInstance.post('/api/login', credentials)
       user.value = response.data.user
-      accessToken.value = response.data.authorisation.token
+      accessToken.value = response.data.authorization.token
       isAuthenticated.value = true
       window.localStorage.setItem('token', accessToken.value)
       window.localStorage.setItem('isAuthenticated', true)
@@ -49,7 +49,7 @@ const useUSerStore = defineStore('auth', () => {
     try {
       const oldToken = window.localStorage.getItem('token')
       const response = await axiosInstance.post('/api/login/refresh', { 'token': oldToken })
-      accessToken.value = response.data.authorisation.token
+      accessToken.value = response.data.authorization.token
       isAuthenticated.value = true
       window.localStorage.setItem('token', accessToken.value)
       window.localStorage.setItem('isAuthenticated', true)

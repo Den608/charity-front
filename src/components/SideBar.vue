@@ -1,69 +1,73 @@
 <script setup>
-import { ref } from 'vue';
+import { ref,watch,inject} from 'vue';
 import useUSerStore from '../store/users';
 
 const userStore = useUSerStore()
-const emit = defineEmits(['changeTab'])
-const activeElement = ref([true, false, false, false, false, false])
-const tab = ref(['Dashboard', 'Help', 'Helper', 'HelpSeeker', 'Package', 'Student'])
+const emit = defineEmits(['changeTab','sideClose'])
+const activeTab = ref([true, false, false, false, false, false])
+
 
 const onTabClicked = (index) => {
-    activeElement.value.fill(false);
-    activeElement.value[index] = true
-    emit('changeTab', tab.value[index])
+    activeTab.value.fill(false);
+    activeTab.value[index] = true
+    emit('changeTab', index)
+}
+
+const onCLose=()=>{
+    emit("sideClose")
 }
 
 </script>
 
 <template>
-    <aside>
+    <aside >
         <div class="top">
             <div class="logo">
                 <img src="./images/logo.png">
                 <h2>سامانه <span class="danger">اسایش</span></h2>
             </div>
-            <div class="close">
+            <div @click="onCLose" class="close" >
                 <span class="material-symbols-sharp">close</span>
             </div>
         </div>
         <div class="sidebar">
 
-            <div class="tab-container" :class="{ 'active': activeElement[0] }" @click="onTabClicked(0)">
+            <div class="tab-container" :class="{ 'active': activeTab[0] }" @click="onTabClicked(0)">
                 <div class="tab">
                     <span class="material-symbols-sharp">dashboard</span>
                     <h3>داشبورد</h3>
                 </div>
             </div>
 
-            <div class="tab-container" :class="{ 'active': activeElement[1] }" @click="onTabClicked(1)">
+            <div class="tab-container" :class="{ 'active': activeTab[1] }" @click="onTabClicked(1)">
                 <div class="tab">
                     <span class="material-symbols-sharp">group</span>
                     <h3>افراد خیر</h3>
                 </div>
             </div>
 
-            <div class="tab-container" :class="{ 'active': activeElement[2] }" @click="onTabClicked(2)">
+            <div class="tab-container" :class="{ 'active': activeTab[2] }" @click="onTabClicked(2)">
                 <div class="tab">
                     <span class="material-symbols-sharp">settings_accessibility</span>
                     <h3>افراد نیازمند</h3>
                 </div>
             </div>
 
-            <div class="tab-container" :class="{ 'active': activeElement[3] }" @click="onTabClicked(3)">
+            <div class="tab-container" :class="{ 'active': activeTab[3] }" @click="onTabClicked(3)">
                 <div class="tab">
                     <span class="material-symbols-sharp">inventory_2</span>
                     <h3>کمک های مردمی</h3>
                 </div>
             </div>
 
-            <div class="tab-container" :class="{ 'active': activeElement[4] }" @click="onTabClicked(4)">
+            <div class="tab-container" :class="{ 'active': activeTab[4] }" @click="onTabClicked(4)">
                 <div class="tab">
                     <span class="material-symbols-sharp">deployed_code</span>
                     <h3>بسته های مناسبتی</h3>
                 </div>
             </div>
 
-            <div class="tab-container" :class="{ 'active': activeElement[5] }" @click="onTabClicked(5)">
+            <div class="tab-container" :class="{ 'active': activeTab[5] }" @click="onTabClicked(5)">
                 <div class="tab">
                     <span class="material-symbols-sharp">school</span>
                     <h3>دانشجویان و دانش اموزان</h3>
@@ -96,6 +100,7 @@ aside .top {
 aside .top .logo {
     display: flex;
     gap: 0.8rem;
+    color: var(--color-dark);
 }
 
 aside .top .logo img {
@@ -106,7 +111,6 @@ aside .top .logo img {
 aside .close {
     display: none;
 }
-
 
 /* -------Side Bar--------- */
 aside .sidebar {
@@ -170,7 +174,7 @@ aside .sidebar .tab-container .tab:hover {
 }
 
 
-
+/* --------------- MEDIA  QUERY 1---------------- */
 @media screen and (max-width:1200px) {
     aside .top .logo {
         display: none;
@@ -188,4 +192,50 @@ aside .sidebar .tab-container .tab:hover {
     }
 
 }
+
+/* --------------- MEDIA  QUERY 2---------------- */
+@media screen and (max-width:768px) {
+    aside {
+        padding-top: 1rem;
+        position: fixed;
+        right: 0;
+        height: 100vh;
+        width: 18rem;
+        z-index: 3;
+        background-color: var(--color-white);
+        box-shadow: 1rem 3rem 4rem var(--color-light);
+        /* display: none; */
+    }
+
+    .active {
+        display: block;
+    }
+
+    .disable{
+        display: none;
+    }
+
+    aside h3 {
+        display: block;
+    }
+
+    aside .sidebar .tab-container.active {
+        background-color: var(--color-light);
+        color: var(--color-primary);
+        transition: all 1s ease;
+        width: 100%
+    }
+
+    aside .top .logo {
+        display: flex;
+        gap: 0.8rem;
+    }
+
+    aside .close {
+        display: block;
+        margin-left: .5rem;
+        font-weight: bold;
+    }
+}
+
 </style>
