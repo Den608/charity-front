@@ -1,8 +1,10 @@
 <script setup>
 import { ref, reactive } from 'vue'
-import useUserStore from '../store/users'
+import useAuthStore from '../store/authStore'
+import useUserStore from '../store/userStore';
 
-const userStore=useUserStore()
+const authStore=useAuthStore()
+// const userStore=useUserStore()
 
 const credentials = reactive({
     'national_code': null,
@@ -10,7 +12,7 @@ const credentials = reactive({
 })
 
 const onSubmitForm=()=>{
-    userStore.handleLogin(credentials)
+    authStore.handleLogin(credentials)
 }
 
 </script>

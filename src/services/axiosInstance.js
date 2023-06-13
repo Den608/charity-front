@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const accessToken = window.localStorage.getItem('token');
+console.log('axiosInstance')
 
 const axiosInstance = axios.create({
   baseURL: 'https://charity-back.iran.liara.run',
@@ -11,9 +12,10 @@ const axiosInstance = axios.create({
 
 if (Boolean(accessToken)) {
   axiosInstance.interceptors.request.use((config) => {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+    config.headers.Authorization = `Bearer ${accessToken}`
     return config;
-  });
+  })
 }
 
 export default axiosInstance;
+  

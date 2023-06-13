@@ -1,13 +1,6 @@
 <script setup>
-import { RouterView, useRouter } from 'vue-router';
-const isAuthenticated = window.localStorage.getItem('isAuthenticated')
-const router = useRouter()
+import { RouterView} from 'vue-router';
 
-if (!isAuthenticated) {
-    router.push('/login')
-
-    // i should handle user state here 
-}
 
 </script>
 

@@ -1,18 +1,9 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
+
 
 const emit = defineEmits(['sideShow', 'chnageTheme'])
-const { user } = defineProps({
-    user: {
-        type: Object,
-        default: () => (
-            {
-                'first_name': '',
-                'last_name': ''
-            }
-        )
-    }
-})
+const {user}=defineProps(['user'])
 
 function onMenuButton() {
     emit('sideShow')
@@ -35,7 +26,7 @@ const onThemeChange = () => {
                 <div class="profile-photo">
                     <img src="./images/profile-1.jpg" alt="">
                 </div>
-                <p style="font-weight: 600;">{{ user.first_name }} {{ user.last_name }}</p>
+                <p style="font-weight: 600;">{{user.first_name }} {{user.last_name }}</p>
             </div>
             <div class="theme-mode" @click="onThemeChange">
                 <span class="material-symbols-sharp" :class="!themeActive ? 'active' : 'disable'">light_mode</span>

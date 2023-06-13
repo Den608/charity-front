@@ -1,11 +1,11 @@
 <script setup>
 import { ref,watch,inject} from 'vue';
-import useUSerStore from '../store/users';
+import useAuthStore from '../store/authStore';
 
-const userStore = useUSerStore()
+const authStore=useAuthStore()
+
 const emit = defineEmits(['changeTab','sideClose'])
 const activeTab = ref([true, false, false, false, false, false])
-
 
 const onTabClicked = (index) => {
     activeTab.value.fill(false);
@@ -75,7 +75,7 @@ const onCLose=()=>{
             </div>
 
             <div class="tab-container last-child">
-                <div @click="userStore.handleLogout" class="tab">
+                <div @click="authStore.handleLogout" class="tab">
                     <span class="material-symbols-sharp">logout</span>
                     <h3>خروج از سیستم</h3>
                 </div>

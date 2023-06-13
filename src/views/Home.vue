@@ -1,5 +1,6 @@
 <script setup>
-import { ref,  watchEffect,watch } from 'vue'
+import { storeToRefs } from 'pinia';
+import { ref, watchEffect, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
 import SideBar from '../components/SideBar.vue';
 import Navbar from '../components/Navbar.vue';
@@ -9,6 +10,16 @@ import HelpSeeker from '../components/main/HelpSeeker.vue';
 import Help from '../components/main/Help.vue';
 import Package from '../components/main/Package.vue';
 import Student from '../components/main/Student.vue';
+import useUserStore from '../store/userStore';
+import { onMounted } from 'vue';
+
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+onMounted(()=>{
+    userStore.setUser();
+})
+
 
 
 const currentTab = ref(0)
@@ -33,14 +44,14 @@ watchEffect(() => {
     const handleResize = () => {
         windowWidth.value = window.innerWidth
         if (window.innerWidth < 768) {
-            sidebarShow.value=false
+            sidebarShow.value = false
         } else {
-            sidebarShow.value=true
+            sidebarShow.value = true
         }
     }
 
     handleResize()
-    
+
     window.addEventListener('resize', handleResize)
 
     return () => {
@@ -49,10 +60,10 @@ watchEffect(() => {
 })
 
 
-const darkMode=ref(false)
+const darkMode = ref(false)
 
-const chnageTheme=()=>{
-    darkMode.value=!darkMode.value
+const chnageTheme = () => {
+    darkMode.value = !darkMode.value
     document.body.classList.toggle('dark-theme-variables')
 }
 
@@ -60,7 +71,7 @@ const chnageTheme=()=>{
 
 <template>
     <div class="grid-container">
-        <Navbar class="navbar" @sideShow="sidebarShow = true" @chnageTheme="chnageTheme"/>
+        <Navbar class="navbar" @sideShow="sidebarShow = true" @chnageTheme="chnageTheme" :user="user" />
 
         <Transition name="side" appear>
             <SideBar v-if="sidebarShow" class="sidebar" @changeTab="renderPage" @sideClose="sidebarShow = false" />
