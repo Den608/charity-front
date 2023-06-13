@@ -39,13 +39,10 @@ watchEffect(() => {
         }
     }
 
-    // Initial check on component mount
     handleResize()
-
-    // Watch for window resize events
+    
     window.addEventListener('resize', handleResize)
 
-    // Clean up the event listener when the component is unmounted
     return () => {
         window.removeEventListener('resize', handleResize)
     }
@@ -53,6 +50,7 @@ watchEffect(() => {
 
 
 const darkMode=ref(false)
+
 const chnageTheme=()=>{
     darkMode.value=!darkMode.value
     document.body.classList.toggle('dark-theme-variables')
@@ -73,7 +71,7 @@ const chnageTheme=()=>{
         </Transition>
 
     </div>
-</template>px
+</template>
 
 <style>
 .grid-container {

@@ -1,21 +1,28 @@
 <script setup>
-import { ref } from 'vue'
-import { storeToRefs } from 'pinia';
-import useUSerStore from '../store/users';
+import { ref, reactive } from 'vue'
 
-const userStore = useUSerStore()
-const emit = defineEmits(['sideShow','chnageTheme'])
-
-const themeActive = ref(false)
+const emit = defineEmits(['sideShow', 'chnageTheme'])
+const { user } = defineProps({
+    user: {
+        type: Object,
+        default: () => (
+            {
+                'first_name': '',
+                'last_name': ''
+            }
+        )
+    }
+})
 
 function onMenuButton() {
     emit('sideShow')
 }
 
-const onThemeChange=()=>{
+const themeActive = ref(false)
+
+const onThemeChange = () => {
     emit('chnageTheme')
-    themeActive.value=!themeActive.value
-    console.log(themeActive.value)
+    themeActive.value = !themeActive.value
 }
 
 </script>
@@ -23,16 +30,16 @@ const onThemeChange=()=>{
 <template>
     <nav>
         <div class="container">
-            <span @click="onMenuButton" class="material-symbols-sharp" :class="themeActive?'dark':'light'">menu</span>
+            <span @click="onMenuButton" class="material-symbols-sharp" :class="themeActive ? 'dark' : 'light'">menu</span>
             <div class="profile">
                 <div class="profile-photo">
                     <img src="./images/profile-1.jpg" alt="">
                 </div>
-                <p style="font-weight: 600;">{{ userStore.user.first_name }} {{ userStore.user.last_name }}</p>
+                <p style="font-weight: 600;">{{ user.first_name }} {{ user.last_name }}</p>
             </div>
             <div class="theme-mode" @click="onThemeChange">
-                <span class="material-symbols-sharp" :class="!themeActive? 'active':'disable'">light_mode</span>
-                <span class="material-symbols-sharp" :class="themeActive? 'active':'disable'">dark_mode</span>
+                <span class="material-symbols-sharp" :class="!themeActive ? 'active' : 'disable'">light_mode</span>
+                <span class="material-symbols-sharp" :class="themeActive ? 'active' : 'disable'">dark_mode</span>
             </div>
         </div>
     </nav>
@@ -134,11 +141,11 @@ nav .theme-mode span.disable {
         font-size: 2.5rem;
     }
 
-    .light{
-        color:black;
+    .light {
+        color: black;
     }
 
-    .dark{
+    .dark {
         color: white;
     }
 }

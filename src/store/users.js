@@ -10,18 +10,24 @@ const useUSerStore = defineStore('auth', () => {
   const router = useRouter()
 
   async function handleLogin(credentials) {
-    try {
-      const response = await axiosInstance.post('/api/login', credentials)
+    const response = await axiosInstance.post('/api/login', credentials).then(response => {
+
       user.value = response.data.user
       accessToken.value = response.data.authorization.token
       isAuthenticated.value = true
+
       window.localStorage.setItem('token', accessToken.value)
       window.localStorage.setItem('isAuthenticated', true)
+
       router.push('/')
-    }
-    catch (err) {
-      console.log(err.response)
-    }
+
+    }).catch(error => {
+      if (error.response.status==401){
+        console.log("کد ملی یا رمز عبور اشتباه است ")
+      }else{
+        console.log("مشکلی پیش امده لطفا دقایقی دیگر تلاش کنید در صورت ادامه با پشتیبانی تماس بگیرید")
+      }
+    })
   }
 
   function handleLogout() {
@@ -41,7 +47,7 @@ const useUSerStore = defineStore('auth', () => {
       isAuthenticated.value = window.localStorage.getItem('isAuthenticated')
     }
     catch (err) {
-      console.log(err.response)
+      console.log(err.response.status)
     }
   }
 
