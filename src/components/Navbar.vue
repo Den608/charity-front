@@ -1,21 +1,38 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
+const themeActive = ref(false)
+
+function setTheme(){
+    themeActive.value=!themeActive.value
+    document.body.classList.toggle('dark-theme-variables')
+    window.localStorage.setItem('themeActive',themeActive.value)
+}
+
+function setInitialTheme() {
+    const theme=window.localStorage.getItem('themeActive')
+
+    if(theme==='true' && !document.body.classList.contains('dark-theme-variables')){
+        themeActive.value=true
+        document.body.classList.toggle('dark-theme-variables')
+    }else if(theme=="dark"){
+        themeActive.value=true
+    }else{
+        themeActive.value=false
+        window.localStorage.setItem('themeActive',themeActive.value)
+    }
+}
 
 const emit = defineEmits(['sideShow', 'chnageTheme'])
-const {user}=defineProps(['user'])
+const { user } = defineProps(['user'])
 
 function onMenuButton() {
     emit('sideShow')
 }
 
-const themeActive = ref(false)
-
-const onThemeChange = () => {
-    emit('chnageTheme')
-    themeActive.value = !themeActive.value
-}
-
+onMounted(() => {
+    setInitialTheme()
+})
 </script>
 
 <template>
@@ -26,9 +43,9 @@ const onThemeChange = () => {
                 <div class="profile-photo">
                     <img src="./images/profile-1.jpg" alt="">
                 </div>
-                <p style="font-weight: 600;">{{user.first_name }} {{user.last_name }}</p>
+                <p style="font-weight: 600;">{{ user.first_name }} {{ user.last_name }}</p>
             </div>
-            <div class="theme-mode" @click="onThemeChange">
+            <div class="theme-mode" @click="setTheme">
                 <span class="material-symbols-sharp" :class="!themeActive ? 'active' : 'disable'">light_mode</span>
                 <span class="material-symbols-sharp" :class="themeActive ? 'active' : 'disable'">dark_mode</span>
             </div>

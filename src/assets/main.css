@@ -12,6 +12,9 @@ body {
   overflow-x: hidden;
 }
 
+main h1,h2,h3,p,table{
+  color: var(--color-dark);
+}
 
 a {
   color: var(--color-dark);

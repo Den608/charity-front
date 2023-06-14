@@ -1,6 +1,6 @@
 <script setup>
 import { storeToRefs } from 'pinia';
-import { ref, watchEffect, onBeforeMount } from 'vue'
+import { ref, watchEffect, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import SideBar from '../components/SideBar.vue';
 import Navbar from '../components/Navbar.vue';
@@ -11,16 +11,14 @@ import Help from '../components/main/Help.vue';
 import Package from '../components/main/Package.vue';
 import Student from '../components/main/Student.vue';
 import useUserStore from '../store/userStore';
-import { onMounted } from 'vue';
 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
 
-onMounted(()=>{
-    userStore.setUser();
+
+onMounted(() => {
+    userStore.setUser()
 })
-
-
 
 const currentTab = ref(0)
 const sidebarShow = ref(true)
@@ -58,20 +56,11 @@ watchEffect(() => {
         window.removeEventListener('resize', handleResize)
     }
 })
-
-
-const darkMode = ref(false)
-
-const chnageTheme = () => {
-    darkMode.value = !darkMode.value
-    document.body.classList.toggle('dark-theme-variables')
-}
-
 </script>
 
 <template>
     <div class="grid-container">
-        <Navbar class="navbar" @sideShow="sidebarShow = true" @chnageTheme="chnageTheme" :user="user" />
+        <Navbar class="navbar" @sideShow="sidebarShow = true" :user="user" />
 
         <Transition name="side" appear>
             <SideBar v-if="sidebarShow" class="sidebar" @changeTab="renderPage" @sideClose="sidebarShow = false" />

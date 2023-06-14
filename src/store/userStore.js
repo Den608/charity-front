@@ -7,20 +7,18 @@ const useUserStore = defineStore('user', () => {
     const router = useRouter()
     const user = ref({})
 
-    const token = window.localStorage.getItem('token')
-
-    axiosInstance.interceptors.request.use((config) => {
-        config.headers.Authorization = `Bearer ${token}`
-        return config;
-    })
-
     async function setUser() {
-        await axiosInstance.post('api/users/me').then(response => {
+        // console.log(`Bearer ${window.localStorage.getItem('token')}`)
+        await axiosInstance.post('api/users/me',null, {
+            headers: {
+              Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+            },
+          }).then(response => {
             user.value = response.data.user
-            console.log(response.headers)
         }).catch(error => {
             if (error.response.status == 401) {
                 console.log('از  دوباره وارد شوید ')
+                router.push('/login')
             }
         })
     }

@@ -19,7 +19,6 @@ const useAuthStore = defineStore('auth', () => {
       router.push('/')
 
     }).catch(error => {
-      console.log(error)
       if (error.response.status==401){
         console.log("کد ملی یا رمز عبور اشتباه است ")
       }else{

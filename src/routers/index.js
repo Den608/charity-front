@@ -22,7 +22,6 @@ router.beforeEach((to, from, next) => {
     const isAuthenticated=window.localStorage.getItem('isAuthenticated')
 
     if(!isAuthenticated && to.path!='/signup' && to.path!='/login'){
-        console.log('test')
         next('/login')
     }else if(isAuthenticated && to.path!='/'){
         next ('/')
