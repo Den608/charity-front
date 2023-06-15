@@ -24,6 +24,7 @@
                         <td class="responsive-hidden">4</td>
                         <td class="warning">در حال تحویل </td>
                         <td><a class="primary" href="#">جزئیات</a></td>
+
                     </tr>
 
                     <tr>
@@ -92,10 +93,10 @@ main .recent-help table:hover {
     box-shadow: none;
 }
 
+
 main .recent-help table tbody td {
     height: 2.8rem;
     border-bottom: 1px solid var(--color-light);
-    color: var(--color-dark-variant);
     color: var(--color-dark);
 }
 
