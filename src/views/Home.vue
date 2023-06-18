@@ -12,14 +12,16 @@ import Package from '../components/main/Package.vue';
 import Student from '../components/main/Student.vue';
 import useUserStore from '../store/userStore';
 
+// Getting userStore and setting user info in user state
+// Component can get this user info and using it 
 const userStore = useUserStore()
 const { user } = storeToRefs(userStore)
-
 
 onMounted(() => {
     userStore.setUser()
 })
 
+//  Tab change Event Managment
 const currentTab = ref(0)
 const sidebarShow = ref(true)
 
@@ -36,6 +38,7 @@ const tabs = [
     Student
 ]
 
+// manging visibility of sideBar when screen size chnages
 const windowWidth = ref(window.innerWidth)
 
 watchEffect(() => {
@@ -98,7 +101,8 @@ watchEffect(() => {
     grid-area: tab;
 }
 
-
+/* Animation Event setting */
+/* tabs  animations*/
 .tab-enter-from {
     transform: translateY(-100vh);
     opacity: 0;
@@ -114,6 +118,7 @@ watchEffect(() => {
 }
 
 
+/* Sidebar Animations */
 .side-enter-from {
     transform: translateX(100vw);
     opacity: 0;
@@ -142,7 +147,7 @@ watchEffect(() => {
     transition: all 500ms ease;
 }
 
-/* --------- MEDIA QUERY 1----------- */
+/* --------- MEDIA QUERY 1 for tablets----------- */
 @media screen and (max-width:1200px) {
     .grid-container {
         display: grid;
@@ -151,7 +156,7 @@ watchEffect(() => {
     }
 }
 
-/* --------- MEDIA QUERY 2----------- */
+/* --------- MEDIA QUERY 2 for phone and smaller tablet----------- */
 @media screen and (max-width:768px) {
     .grid-container {
         display: grid;

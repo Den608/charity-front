@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
-const themeActive = ref(false)
+const themeActive = ref(window.localStorage.getItem('themeActive'))
 
 function setTheme(){
     themeActive.value=!themeActive.value
@@ -13,14 +13,14 @@ function setInitialTheme() {
     const theme=window.localStorage.getItem('themeActive')
 
     if(theme==='true' && !document.body.classList.contains('dark-theme-variables')){
-        themeActive.value=true
         document.body.classList.toggle('dark-theme-variables')
-    }else if(theme=="dark"){
+    }else if(theme==="true" && document.body.classList.contains('dark-theme-variables')){
         themeActive.value=true
     }else{
         themeActive.value=false
-        window.localStorage.setItem('themeActive',themeActive.value)
     }
+
+    window.localStorage.setItem('themeActive',themeActive.value)
 }
 
 const emit = defineEmits(['sideShow', 'chnageTheme'])
