@@ -16,18 +16,16 @@
         <table>
             <thead>
                 <tr>
-                    <th>&nbsp;</th>
                     <th>نام مددیار</th>
                     <th>شماره ملی</th>
                     <th>شماره تلفن</th>
                     <th>کمک های نقدی</th>
                     <th>کالاهای اهدایی</th>
-                    <th>&nbsp;</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><img src="../images/profile-3.jpg" alt=""></td>
                     <td>عرفان باقری</td>
                     <td class="responsive-hidden">222586942</td>
                     <td> +9057622925</td>
@@ -36,7 +34,6 @@
                     <td><a class="primary" href="#">جزئیات</a></td>
                 </tr>
                 <tr>
-                    <td><img src="../images/profile-3.jpg" alt=""></td>
                     <td>عرفان باقری</td>
                     <td class="responsive-hidden">222586942</td>
                     <td> +9057622925</td>
@@ -45,7 +42,6 @@
                     <td><a class="primary" href="#">جزئیات</a></td>
                 </tr>
                 <tr>
-                    <td><img src="../images/profile-3.jpg" alt=""></td>
                     <td>عرفان باقری</td>
                     <td class="responsive-hidden">222586942</td>
                     <td> +9057622925</td>
@@ -54,7 +50,6 @@
                     <td><a class="primary" href="#">جزئیات</a></td>
                 </tr>
                 <tr>
-                    <td><img src="../images/profile-3.jpg" alt=""></td>
                     <td>عرفان باقری</td>
                     <td class="responsive-hidden">222586942</td>
                     <td> +9057622925</td>
@@ -63,7 +58,6 @@
                     <td><a class="primary" href="#">جزئیات</a></td>
                 </tr>
                 <tr>
-                    <td><img src="../images/profile-3.jpg" alt=""></td>
                     <td>عرفان باقری</td>
                     <td class="responsive-hidden">222586942</td>
                     <td> +9057622925</td>
@@ -133,15 +127,9 @@ main table {
     text-align: center;
     width: 100%;
     border-radius: var(--card-border-radius);
-    box-shadow: var(--box-shadow);
     padding: var(--card-padding);
     transition: all 300ms ease;
 }
-
-main table:hover {
-    box-shadow: none;
-}
-
 
 main table thead tr {
     display: flex;
@@ -151,17 +139,6 @@ main table thead tr {
     margin-bottom: 1rem;
 }
 
-main table tbody tr {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    height: 10rem;
-    background-color: var(--color-white);
-    border-radius: var(--card-border-radius);
-    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
-}
 
 main table tbody tr {
     display: flex;
@@ -169,7 +146,7 @@ main table tbody tr {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
-    height: 10rem;
+    height: 6rem;
     background-color: var(--color-white);
     border-radius: var(--card-border-radius);
     box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);

@@ -12,14 +12,7 @@ import Package from '../components/main/Package.vue';
 import Student from '../components/main/Student.vue';
 import useUserStore from '../store/userStore';
 
-// Getting userStore and setting user info in user state
-// Component can get this user info and using it 
-const userStore = useUserStore()
-const { user } = storeToRefs(userStore)
 
-onMounted(() => {
-    userStore.setUser()
-})
 
 //  Tab change Event Managment
 const currentTab = ref(0)
@@ -63,13 +56,13 @@ watchEffect(() => {
 
 <template>
     <div class="grid-container">
-        <Navbar class="navbar" @sideShow="sidebarShow = true" :user="user" />
+        <Navbar class="navbar" @sideShow="sidebarShow = true"/>
 
-        <Transition name="side" appear>
-            <SideBar v-if="sidebarShow" class="sidebar" @changeTab="renderPage" @sideClose="sidebarShow = false" />
+        <Transition name="side">
+            <SideBar v-show="sidebarShow" class="sidebar" @changeTab="renderPage" @sideClose="sidebarShow = false" />
         </Transition>
 
-        <Transition appear name="tab">
+        <Transition  name="tab" appear>
             <component :is="tabs[currentTab]" class="components"></component>
         </Transition>
 

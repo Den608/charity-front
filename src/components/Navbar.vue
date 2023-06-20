@@ -1,6 +1,19 @@
 <script setup>
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia';
+import useUserStore from '../store/userStore';
 
+const userStore = useUserStore()
+const { user } = storeToRefs(userStore)
+
+// ---------- sidebar Button Responsive handing ---------
+const emit = defineEmits(['sideShow'])
+
+function onMenuButton() {
+    emit('sideShow')
+}
+
+// ------- Theme Change Events -----------
 const themeActive = ref(window.localStorage.getItem('themeActive'))
 
 function setTheme(){
@@ -19,20 +32,14 @@ function setInitialTheme() {
     }else{
         themeActive.value=false
     }
-
     window.localStorage.setItem('themeActive',themeActive.value)
-}
-
-const emit = defineEmits(['sideShow', 'chnageTheme'])
-const { user } = defineProps(['user'])
-
-function onMenuButton() {
-    emit('sideShow')
 }
 
 onMounted(() => {
     setInitialTheme()
+    userStore.setUser()
 })
+
 </script>
 
 <template>

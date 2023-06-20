@@ -1,13 +1,14 @@
-import axiosInstance from "../services/axiosInstance";
-import { defineStore } from "pinia";
 import { ref } from 'vue'
+import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
+import {useAxiosInstance} from "../services/axiosInstance";
 
 const useAuthStore = defineStore('auth', () => {
   const accessToken = ref('')
   const isAuthenticated = ref(false)
   const router = useRouter()
-
+  const {axiosInstance}=useAxiosInstance()
+  
   async function handleLogin(credentials) {
    await axiosInstance.post('/api/login', credentials).then(response => {
 
@@ -34,6 +35,7 @@ const useAuthStore = defineStore('auth', () => {
       isAuthenticated.value = true
       window.localStorage.setItem('token', accessToken.value)
       window.localStorage.setItem('isAuthenticated', true)
+      console.log(response)
     }).catch((error) => {
       router.push('/login')
       isAuthenticated.value = false
@@ -56,6 +58,7 @@ const useAuthStore = defineStore('auth', () => {
   return {
     accessToken,
     handleLogin,
+    handleRefreshToken,
     handleLogout
   }
 });

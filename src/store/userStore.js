@@ -1,14 +1,14 @@
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import axiosInstance from "../services/axiosInstance";
+import {useAxiosInstance} from "../services/axiosInstance";
 
 const useUserStore = defineStore('user', () => {
     const router = useRouter()
     const user = ref({})
+    const {axiosInstance}=useAxiosInstance()
 
     async function setUser() {
-        // console.log(`Bearer ${window.localStorage.getItem('token')}`)
         await axiosInstance.post('api/users/me',null, {
             headers: {
               Authorization: `Bearer ${window.localStorage.getItem('token')}`,

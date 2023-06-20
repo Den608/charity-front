@@ -1,5 +1,10 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted } from 'vue';
+import { usePeoplesAid } from '../../composables/usePeoplesAid'
+import {useHelpSeeker} from '../../composables/useHelpSeeker'
+
+const { productDonations, cashDonations } = usePeoplesAid()
+const {helpSeekerCount}=useHelpSeeker()
 
 
 
@@ -19,7 +24,7 @@ import { ref } from 'vue'
                     <div class="middle">
                         <div class="left">
                             <h3>مجموع کمک های نقدی</h3>
-                            <h1>2400000IR</h1>
+                            <h1>{{ cashDonations }}IR</h1>
                         </div>
 
                     </div>
@@ -35,7 +40,7 @@ import { ref } from 'vue'
                     <div class="middle">
                         <div class="left">
                             <h3>کالاهای اهدایی</h3>
-                            <h1>56</h1>
+                            <h1>{{ productDonations }}</h1>
                         </div>
                     </div>
                     <small>
@@ -50,7 +55,7 @@ import { ref } from 'vue'
                     <div class="middle">
                         <div class="left">
                             <h3>تعداد کل افراد تحت پوشش</h3>
-                            <h1>225</h1>
+                            <h1>{{ helpSeekerCount }}</h1>
                         </div>
                     </div>
                     <small>
@@ -84,41 +89,6 @@ import { ref } from 'vue'
                         <td class="warning">در حال تحویل </td>
                         <td><a class="primary" href="#">جزئیات</a></td>
                     </tr>
-
-                    <tr>
-                        <td>کفش سایز56</td>
-                        <td class="responsive-hidden">محمد رستمی</td>
-                        <td>عرفان قربانی</td>
-                        <td class="responsive-hidden">4</td>
-                        <td class="warning">در حال تحویل </td>
-                        <td><a class="primary" href="#">جزئیات</a></td>
-                    </tr>
-
-                    <tr>
-                        <td >کفش سایز56</td>
-                        <td class="responsive-hidden">محمد رستمی</td>
-                        <td>عرفان قربانی</td>
-                        <td class="responsive-hidden">4</td>
-                        <td class="warning">در حال تحویل </td>
-                        <td><a class="primary" href="#">جزئیات</a></td>
-                    </tr>
-
-                    <tr>
-                        <td>کفش سایز56</td>
-                        <td class="responsive-hidden">محمد رستمی</td>
-                        <td>عرفان قربانی</td>
-                        <td class="responsive-hidden">4</td>
-                        <td class="warning">در حال تحویل </td>
-                        <td><a class="primary" href="#">جزئیات</a></td>
-                    </tr>
-                    <tr>
-                        <td>کفش سایز56</td>
-                        <td class="responsive-hidden">محمد رستمی</td>
-                        <td>عرفان قربانی</td>
-                        <td class="responsive-hidden">4</td>
-                        <td class="warning">در حال تحویل </td>
-                        <td><a class="primary" href="#">جزئیات</a></td>
-                    </tr>
                 </tbody>
             </table>
             <a href="#" class="primary show-all">نمایش همه</a>
@@ -129,20 +99,6 @@ import { ref } from 'vue'
                 <h2> بروز رسانی های اخیر</h2>
                 <div class="recent-update">
                     <div class="updates">
-                        <div class="update">
-                            <div class="update-content">
-                                <span class="material-symbols-sharp">info</span>
-                                <p>کمک های اهدایی از طرف مرکز خیریه به عرفان قربانی {{ }}تحویل داده شد</p>
-                            </div>
-                            <small class="text-muted"> 3دقیقه ی پیش</small>
-                        </div>
-                        <div class="update">
-                            <div class="update-content">
-                                <span class="material-symbols-sharp">info</span>
-                                <p>کمک های اهدایی از طرف مرکز خیریه به عرفان قربانی {{ }}تحویل داده شد</p>
-                            </div>
-                            <small class="text-muted"> 3دقیقه ی پیش</small>
-                        </div>
                         <div class="update">
                             <div class="update-content">
                                 <span class="material-symbols-sharp">info</span>
@@ -172,7 +128,11 @@ main {
     margin: 0 1rem;
 }
 
-main h1,h2,h3,p,table{
+main h1,
+h2,
+h3,
+p,
+table {
     color: var(--color-dark);
 }
 
@@ -270,7 +230,6 @@ main .recent-help table:hover {
 main .recent-help table tbody td {
     height: 2.8rem;
     border-bottom: 1px solid var(--color-light);
-    color: var(--color-dark-variant);
     color: var(--color-dark);
 }
 
@@ -375,23 +334,24 @@ main .left .top .recent-update .update span {
         gap: 1rem;
     }
 
-    main .dash-header{
+    main .dash-header {
         margin-top: 2rem;
-        padding:0rem 1rem;
+        padding: 0rem 1rem;
     }
 
-    main  h2{
-        padding:0rem 1rem;
-    }
-    main .insight{
-        padding:1rem ;
+    main h2 {
+        padding: 0rem 1rem;
     }
 
-    main .recent-help{
+    main .insight {
         padding: 1rem;
     }
 
-    main .responsive-hidden{
+    main .recent-help {
+        padding: 1rem;
+    }
+
+    main .responsive-hidden {
         display: none;
     }
 }

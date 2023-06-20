@@ -1,44 +1,63 @@
 import axios from 'axios';
+import { onBeforeMount } from 'vue';
+import { useRouter } from 'vue-router';
 
-const axiosInstance = axios.create({
-  baseURL: 'https://charity-back.iran.liara.run',
-  headers: {
-    'Content-Type': 'application/json',
-  },
-});
+const hostName = 'https://charity-back.iran.liara.run'
 
-export default axiosInstance;
+// export const axiosInstance = axios.create({
+//   baseURL: hostName,
+//   headers: {
+//     'Content-Type': 'application/json',
+//   },
+// });
 
 
-export function useAxios() {
+function useAxiosInstance(useAuthHeaders = false) {
+  const axiosInstance = ref(null)
 
-  function getAxiosInstanceTokenLess() {
-
-    return axios.create({
-      baseURL: 'https://charity-back.iran.liara.run',
+  function setAxiosInstance() {
+    axiosInstance.value = axios.create({
+      baseURL: hostName,
       headers: {
         'Content-Type': 'application/json',
       },
-    });
-
+    })
   }
 
-  function getAxiosInstanceByToken() {
+  async function setAuthHeaders() {
+    await axiosInstance.value.post('api/users/me').then((response) => {
 
-    token=window.localStorage.getItem('token')
+      axiosInstance.value.interceptors.request.use((config) => {
+        config.headers.Authorization = `Bearer ${window.localStorage.getItem('token')}`;
+        return config;
+      });
 
-    return axios.create({
-      baseURL: 'https://charity-back.iran.liara.run',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization':`Bearer ${token}`
-      },
-    });
-
+      console.log(response)
+    }).catch((error) => {
+      if (error.response.status == 401) {
+        refreshToken()
+      }
+    })
   }
+
+  function refreshToken() {
+    console.log('refreshToken()')
+    useRouter().push('/login')
+  }
+
+  onBeforeMount(() => {
+    setAxiosInstance()
+
+    if (useAuthHeaders) {
+      setAuthHeaders()
+    }
+
+  })
 
   return {
-    getAxiosInstanceTokenLess,
-    getAxiosInstanceByToken
+    axiosInstance
   }
 }
+
+
+export default useAxiosInstance
