@@ -85,6 +85,7 @@ nav .profile {
     position: absolute;
     right: 1px;
     display: flex;
+    gap: 1rem;
     align-items: center;
 }
 

@@ -9,7 +9,7 @@ body {
   background: var(--color-background) !important;
   font-family: 'Vazirmatn', sans-serif;
   user-select: none;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
 main h1,h2,h3,p,table{

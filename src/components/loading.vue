@@ -18,6 +18,7 @@
     position: absolute;
     z-index: 999;
     cursor:progress;
+    background-color: rgba(0, 0, 0, .3);
 }
 .lds-facebook {
     display: inline-block;
@@ -31,7 +32,7 @@
     position: absolute;
     left: 8px;
     width: 16px;
-    background: rgb(0, 168, 252);
+    background: var(--color-danger);
     animation: lds-facebook 1.2s cubic-bezier(0, 0.5, 0.5, 1) infinite;
 }
 

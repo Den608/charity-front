@@ -77,6 +77,7 @@ watchEffect(() => {
     grid-template-areas:
         "navbar navbar"
         "sidebar tab";
+        overflow: hidden;
 }
 
 .navbar {
