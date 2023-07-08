@@ -1,12 +1,26 @@
 <script setup>
 import { onMounted } from 'vue';
 import { usePeoplesAid } from '../../composables/usePeoplesAid'
-import {useHelpSeeker} from '../../composables/useHelpSeeker'
+import { useHelpSeeker } from '../../composables/useHelpSeeker'
+import useComponentStore from '../../store/componentStore'
 
-const { productDonations, cashDonations } = usePeoplesAid()
-const {helpSeekerCount}=useHelpSeeker()
+const componentStore=useComponentStore()
 
+const peoplesAid = usePeoplesAid()
+const {cashDonations,productDonations,productDonationsCount}=peoplesAid
 
+const helpSeeker = useHelpSeeker()
+const {helpSeekerCount}=helpSeeker
+
+onMounted(async() => {
+    componentStore.showLoading()
+    
+    await peoplesAid.setCashDonation()
+    await peoplesAid.setProductDonation()
+    await helpSeeker.setHelpSeekerCount()
+
+    componentStore.dismissLoading()
+})
 
 </script>
 
@@ -33,29 +47,25 @@ const {helpSeekerCount}=useHelpSeeker()
                     </small>
                 </div>
 
-                <!-- -----------END OF SALES------------- -->
-
                 <div class="product-donation">
                     <span class="material-symbols-sharp">inventory</span>
                     <div class="middle">
                         <div class="left">
                             <h3>کالاهای اهدایی</h3>
-                            <h1>{{ productDonations }}</h1>
+                            <h1>{{ productDonationsCount }}</h1>
                         </div>
                     </div>
                     <small>
                         <p class="text-muted">24 ساعت گذشته</p>
                     </small>
                 </div>
-
-                <!-- -----------END OF SALES------------- -->
 
                 <div class="help-seeker">
                     <span class="material-symbols-sharp">groups</span>
                     <div class="middle">
                         <div class="left">
                             <h3>تعداد کل افراد تحت پوشش</h3>
-                            <h1>{{ helpSeekerCount }}</h1>
+                            <h1>{{helpSeekerCount }}</h1>
                         </div>
                     </div>
                     <small>
@@ -63,11 +73,10 @@ const {helpSeekerCount}=useHelpSeeker()
                     </small>
                 </div>
 
-                <!-- -----------END OF SALES------------- -->
             </div>
-
-
         </div>
+        <!-- ----------- End Of Insight ------------- -->
+
         <div class="recent-help">
             <h2>کمک های اخیر </h2>
             <table>
@@ -81,11 +90,11 @@ const {helpSeekerCount}=useHelpSeeker()
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>کفش سایز56</td>
+                    <tr v-for="aid in productDonations.peopleAids">
+                        <td>{{ aid.title }}</td>
                         <td class="responsive-hidden">محمد رستمی</td>
                         <td>عرفان قربانی</td>
-                        <td class="responsive-hidden">4</td>
+                        <td class="responsive-hidden">{{ aid.quantity }}</td>
                         <td class="warning">در حال تحویل </td>
                         <td><a class="primary" href="#">جزئیات</a></td>
                     </tr>
@@ -94,6 +103,8 @@ const {helpSeekerCount}=useHelpSeeker()
             <a href="#" class="primary show-all">نمایش همه</a>
             <!-- -------------- END OF Table ------------------ -->
         </div>
+        <!-- ----------- End Of Recent Help ---------------->
+
         <div class="left">
             <div class="top">
                 <h2> بروز رسانی های اخیر</h2>
@@ -107,13 +118,12 @@ const {helpSeekerCount}=useHelpSeeker()
                             <small class="text-muted"> 3دقیقه ی پیش</small>
                         </div>
                     </div>
-                    <!-- End of Update -->
                 </div>
             </div>
-            <!-- End of Top -->
-
+            <!----------- End of Recent Update ----------------->
         </div>
-        <!-- ---------------End Of Left Container------------------- -->
+
+        <!-- ---------------End Of Left Container--------------------->
     </main>
 </template>
 

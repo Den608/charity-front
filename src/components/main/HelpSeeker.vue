@@ -5,7 +5,7 @@
 <template>
     <main>
         <div class="header">
-            <h1>افراد خیر</h1>
+            <h1>افراد نیازمند</h1>
             <div class="search-bar">
                 <span class="material-symbols-sharp">travel_explore</span>
                 <input type="text" placeholder="جستجو ">
@@ -16,53 +16,19 @@
         <table>
             <thead>
                 <tr>
-                    <th>نام مددیار</th>
+                    <th>نام</th>
+                    <th>نام خانوادگی</th>
                     <th>شماره ملی</th>
                     <th>شماره تلفن</th>
-                    <th>کمک های نقدی</th>
-                    <th>کالاهای اهدایی</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td>عرفان باقری</td>
+                    <td>عرفان </td>
+                    <td>باقری </td>
                     <td class="responsive-hidden">222586942</td>
                     <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
-                    <td><a class="primary" href="#">جزئیات</a></td>
-                </tr>
-                <tr>
-                    <td>عرفان باقری</td>
-                    <td class="responsive-hidden">222586942</td>
-                    <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
-                    <td><a class="primary" href="#">جزئیات</a></td>
-                </tr>
-                <tr>
-                    <td>عرفان باقری</td>
-                    <td class="responsive-hidden">222586942</td>
-                    <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
-                    <td><a class="primary" href="#">جزئیات</a></td>
-                </tr>
-                <tr>
-                    <td>عرفان باقری</td>
-                    <td class="responsive-hidden">222586942</td>
-                    <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
-                    <td><a class="primary" href="#">جزئیات</a></td>
-                </tr>
-                <tr>
-                    <td>عرفان باقری</td>
-                    <td class="responsive-hidden">222586942</td>
-                    <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
                     <td><a class="primary" href="#">جزئیات</a></td>
                 </tr>
             </tbody>

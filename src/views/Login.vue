@@ -1,18 +1,20 @@
 <script setup>
 import { ref, reactive } from 'vue'
 import useAuthStore from '../store/authStore'
-import useUserStore from '../store/userStore';
+import useComponentStore from '../store/componentStore'
 
+const compoenentStore=useComponentStore()
 const authStore=useAuthStore()
-// const userStore=useUserStore()
 
 const credentials = reactive({
     'national_code': null,
     'password': null
 })
 
-const onSubmitForm=()=>{
-    authStore.handleLogin(credentials)
+async function onSubmitForm(){
+    compoenentStore.showLoading()
+    await authStore.handleLogin(credentials)
+    compoenentStore.dismissLoading()
 }
 
 </script>

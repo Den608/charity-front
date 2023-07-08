@@ -1,12 +1,11 @@
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import {useAxiosInstance} from "../services/axiosInstance";
+import axiosInstance from "../services/axios";
 
 const useUserStore = defineStore('user', () => {
     const router = useRouter()
     const user = ref({})
-    const {axiosInstance}=useAxiosInstance()
 
     async function setUser() {
         await axiosInstance.post('api/users/me',null, {
@@ -16,10 +15,7 @@ const useUserStore = defineStore('user', () => {
           }).then(response => {
             user.value = response.data.user
         }).catch(error => {
-            if (error.response.status == 401) {
-                console.log('از  دوباره وارد شوید ')
-                router.push('/login')
-            }
+            console.log(error)
         })
     }
     return {

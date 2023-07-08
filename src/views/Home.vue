@@ -1,7 +1,5 @@
 <script setup>
-import { storeToRefs } from 'pinia';
-import { ref, watchEffect, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, watchEffect } from 'vue'
 import SideBar from '../components/SideBar.vue';
 import Navbar from '../components/Navbar.vue';
 import Dashboard from '../components/main/Dashboard.vue';
@@ -10,7 +8,6 @@ import HelpSeeker from '../components/main/HelpSeeker.vue';
 import Help from '../components/main/Help.vue';
 import Package from '../components/main/Package.vue';
 import Student from '../components/main/Student.vue';
-import useUserStore from '../store/userStore';
 
 
 
@@ -56,14 +53,14 @@ watchEffect(() => {
 
 <template>
     <div class="grid-container">
-        <Navbar class="navbar" @sideShow="sidebarShow = true"/>
+        <Navbar class="navbar" @sideShow="sidebarShow = true" />
 
         <Transition name="side">
             <SideBar v-show="sidebarShow" class="sidebar" @changeTab="renderPage" @sideClose="sidebarShow = false" />
         </Transition>
 
-        <Transition  name="tab" appear>
-            <component :is="tabs[currentTab]" class="components"></component>
+        <Transition name="tab" appear>
+                    <component :is="tabs[currentTab]" class="components"></component>
         </Transition>
 
     </div>

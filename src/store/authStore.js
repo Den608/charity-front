@@ -1,64 +1,54 @@
 import { ref } from 'vue'
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
-import {useAxiosInstance} from "../services/axiosInstance";
+import axios from 'axios';
+
+import axiosInstance from "../services/axios";
+import baseUrl from '../services/baseUrl';
 
 const useAuthStore = defineStore('auth', () => {
-  const accessToken = ref('')
-  const isAuthenticated = ref(false)
+  const token = ref('')
   const router = useRouter()
-  const {axiosInstance}=useAxiosInstance()
-  
+
   async function handleLogin(credentials) {
-   await axiosInstance.post('/api/login', credentials).then(response => {
-
-      accessToken.value = response.data.authorization.token
-      isAuthenticated.value = true
-
-      window.localStorage.setItem('token', accessToken.value)
+    await axios.post(`${baseUrl}/api/login`, credentials).then(response => {
+      token.value = response.data.authorization.token
+      window.localStorage.setItem('token', token.value)
       window.localStorage.setItem('isAuthenticated', true)
       router.push('/')
-
-    }).catch(error => {
-      if (error.response.status == 401) {
-        console.log("کد ملی یا رمز عبور اشتباه است ")
-      } else {
-        console.log("مشکلی پیش امده لطفا دقایقی دیگر تلاش کنید در صورت ادامه با پشتیبانی تماس بگیرید")
-      }
+    }).catch(err => {
+      console.log(err)
     })
   }
 
-  async function handleRefreshToken() {
-    const oldToken = window.localStorage.getItem('token')
-    await axiosInstance.post('/api/login/refresh', { 'token': oldToken }).then((response) => {
-      accessToken.value = response.data.authorization.token
-      isAuthenticated.value = true
-      window.localStorage.setItem('token', accessToken.value)
-      window.localStorage.setItem('isAuthenticated', true)
-      console.log(response)
-    }).catch((error) => {
-      router.push('/login')
-      isAuthenticated.value = false
-      user.value = null
-      window.localStorage.removeItem('token')
-      window.localStorage.removeItem('isAuthenticated')
+
+  async function setUser() {
+    await axios.post('api/users/me', null, {
+      headers: {
+        Authorization: `Bearer ${window.localStorage.getItem('token')}`,
+      },
+    }).then(response => {
+      user.value = response.data.user
+    }).catch(error => {
+      if (error.response.status == 401) {
+        console.log('از  دوباره وارد شوید ')
+        router.push('/login')
+      }
     })
   }
 
 
   function handleLogout() {
-    router.push('/login')
+    token.value = null
     window.localStorage.removeItem('token')
     window.localStorage.removeItem('isAuthenticated')
-    accessToken.value = null
-    isAuthenticated.value = false
+    router.push('/login')
   }
 
 
   return {
-    accessToken,
+    accessToken: token,
     handleLogin,
-    handleRefreshToken,
     handleLogout
   }
 });

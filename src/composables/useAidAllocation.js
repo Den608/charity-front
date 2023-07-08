@@ -1,24 +1,30 @@
-import { ref,onBeforeMount } from "vue";
+import { ref, onBeforeMount } from "vue";
+import axiosInstance from '../services/axios'
 
+export function useAidAllocation() {
+    const assignedAids = ref({})
+    const aidAllocations = ref({})
 
-export function useAidAllocation(){
-    const assignedAids=ref({})
-    const aidAllocations=ref({})
-
-    function setAssignedAids(){
-
+    async function setAssignedAids() {
+        await axiosInstance.get('/api/aid-allocations/?status=assigned')
+            .then((response) => {
+                assignedAids.value = response.data.allocations
+            }).catch((error) => {
+                console.log(error)
+            })
     }
 
-    function setAidAllocation(){
-
+    async function setAidAllocation() {
+        await axiosInstance.get('/api/aid-allocations/')
+            .then((response) => {
+                aidAllocations.value = response.data.allocations
+            }).catch((error) => {
+                console.log(error)
+            })
     }
-
-    onBeforeMount(()=>{
-        setAidAllocation()
-        setAssignedAids()
-    })
 
     return {
+        error,
         assignedAids,
         aidAllocations,
         setAssignedAids,

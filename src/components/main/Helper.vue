@@ -124,8 +124,8 @@ main .header .add span:hover{
 }
 
 main table {
-    text-align: center;
     width: 100%;
+    margin-top: 2rem;
     border-radius: var(--card-border-radius);
     padding: var(--card-padding);
     transition: all 300ms ease;
@@ -170,6 +170,5 @@ main table tbody tr td>img {
 
 main table thead tr th {
     flex-basis: 20%;
-
 }
 </style>

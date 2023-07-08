@@ -95,8 +95,6 @@ aside .top {
     justify-content: space-between;
 }
 
-
-
 aside .top .logo {
     display: flex;
     gap: 0.8rem;

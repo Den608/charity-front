@@ -1,27 +1,14 @@
 <script setup>
 import { Transition, ref, onMounted } from 'vue';
-
 const { message, status } = defineProps(['message', 'status'])
-const emit=defineEmits(['dismiss'])
-const show=ref(true)
 
-const dismissPopup = () => {
-    show.value=false
-    emit("dismiss")
-}
-
-onMounted(() => {
-    if (show.value) {
-        setTimeout(dismissPopup, 3000)
-    }
-})
 
 </script>
 
 <template>
     <div class="popup">
         <Transition name="popupShow" appear>
-            <p v-if="show" class="message" :class="status=='success' ? 'success' : 'error'">{{ message }}</p>
+            <p class="message" :class="status=='success' ? 'success' : 'error'">{{ message }}</p>
         </Transition>
     </div>
 </template>

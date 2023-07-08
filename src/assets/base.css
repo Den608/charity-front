@@ -13,6 +13,7 @@
   --color-dark-variant: #677483;
   --color-background: #f6f6f9;
   --color-green-dark: #03573b;
+  --color-aqua:#008489;
 
   --card-border-radius: 2rem;
   --border-radius-1: 0.4rem;
@@ -20,7 +21,10 @@
   --border-radius-3: 1.2rem;
   --card-padding: 1.8rem;
   --padding-1: 1.2rem;
+  --padding-2: 1rem;  
+  --padding-3: .8rem;
   --box-shadow: 0 2rem 3rem var(--color-light);
+
 }
 
 .dark-theme-variables {
@@ -28,8 +32,8 @@
   --color-white: #202528;
   --color-dark: #edeffd;
   --color-dark-varient: #a3bdcc;
-  --color-light: rgba(0, 0, 0, .4);
-  --box-shadow: 0 2rem 3rem var(--color-light)
+  --color-light: rgba(41, 31, 31, 0.4);
+  --box-shadow: 0 2rem 3rem var(--color-light);
 }
 
 *,

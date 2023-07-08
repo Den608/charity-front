@@ -1,28 +1,19 @@
-import { ref, onBeforeMount } from "vue";
-import axiosInstance from "../services/axiosInstance";
+import { ref } from "vue";
+import axiosInstance from "../services/axios";
 
 export function useHelpSeeker() {
     const helpSeekerCount = ref(0)
 
-
     async function setHelpSeekerCount() {
-        await axiosInstance.get('/api/users?role=help_seeker',{
-            headers:{
-                Authorization:`Bearer ${window.localStorage.getItem('token')}`
-            }
-        })
+        await axiosInstance.get('/api/users?role=help_seeker')
             .then((response) => {
                 helpSeekerCount.value = response.data.count
             }).catch((error) => {
                 console.log(error)
             })
-    }
+    } 
 
-    onBeforeMount(() => {
-        setHelpSeekerCount()
-    })
-
-    return{
+    return {
         helpSeekerCount,
         setHelpSeekerCount
     }

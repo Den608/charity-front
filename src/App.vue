@@ -1,11 +1,19 @@
 <script setup>
 import { RouterView} from 'vue-router';
+import loading from './components/loading.vue';
+import useComponentStore from './store/componentStore'
 
-
+const compoenentStore=useComponentStore()
 </script>
 
 <template>
+    <loading v-if="compoenentStore.loading" class="loading"/>
     <RouterView />
 </template>
 
-<style scoped></style>
+<style scoped>
+.loading {
+    width: 100vw;
+    height: 100vh;
+}
+</style>
