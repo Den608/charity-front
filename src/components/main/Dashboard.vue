@@ -2,25 +2,59 @@
 import { onMounted } from 'vue';
 import { usePeoplesAid } from '../../composables/usePeoplesAid'
 import { useHelpSeeker } from '../../composables/useHelpSeeker'
+import { useAidAllocation } from '../../composables/useAidAllocation';
 import useComponentStore from '../../store/componentStore'
 
-const componentStore=useComponentStore()
+const componentStore = useComponentStore()
 
 const peoplesAid = usePeoplesAid()
-const {cashDonations,productDonations,productDonationsCount}=peoplesAid
+const { cashDonations, productDonations, productDonationsCount } = peoplesAid
 
 const helpSeeker = useHelpSeeker()
-const {helpSeekerCount}=helpSeeker
+const { helpSeekerCount } = helpSeeker
 
-onMounted(async() => {
+const aidAllocation = useAidAllocation()
+const { assignedAids, aidAllocations } = aidAllocation
+
+onMounted(async () => {
     componentStore.showLoading()
-    
     await peoplesAid.setCashDonation()
     await peoplesAid.setProductDonation()
     await helpSeeker.setHelpSeekerCount()
-
+    await aidAllocation.setAidAllocation()
+    await aidAllocation.setAssignedAids()
     componentStore.dismissLoading()
 })
+
+
+function getTimeDetail(time) {
+    let timeInfo = ""
+    const currentTime = new Date();
+    const createdAtTime = new Date(time);
+    const timeDifference = currentTime - createdAtTime;
+
+    const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeDifference % (1000 * 60)) / 1000);
+
+    if (days != 0) {
+        timeInfo += ` ${days} روز`
+    }
+    if (hours != 0) {
+        timeInfo += ` ${hours} ساعت`
+    }
+    if (minutes != 0) {
+        timeInfo += ` ${minutes} دقیقه`
+    }
+    if (seconds != 0) {
+        timeInfo += ` ${seconds} ثانیه`
+    }
+
+    timeInfo += ' پیش'
+
+    return timeInfo
+}
 
 </script>
 
@@ -65,7 +99,7 @@ onMounted(async() => {
                     <div class="middle">
                         <div class="left">
                             <h3>تعداد کل افراد تحت پوشش</h3>
-                            <h1>{{helpSeekerCount }}</h1>
+                            <h1>{{ helpSeekerCount }}</h1>
                         </div>
                     </div>
                     <small>
@@ -89,13 +123,17 @@ onMounted(async() => {
                         <th>وضعیت</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr v-for="aid in productDonations.peopleAids">
-                        <td>{{ aid.title }}</td>
-                        <td class="responsive-hidden">محمد رستمی</td>
-                        <td>عرفان قربانی</td>
+                <tbody v-for="aid in aidAllocations.slice(0, 5)" :key="aid.id">
+                    <tr>
+                        <td>{{ aid.people_aid.title }}</td>
+                        <td class="responsive-hidden">
+                            {{ aid.helper_name.first_name + ' ' + aid.helper_name.last_name }}
+                        </td>
+                        <td>{{ aid.help_seeker_name.first_name + ' ' + aid.help_seeker_name.last_name }} </td>
                         <td class="responsive-hidden">{{ aid.quantity }}</td>
-                        <td class="warning">در حال تحویل </td>
+                        <td :id="aid.status == 'assigned' ? 'deliver' : 'not-deliver'">
+                            {{ aid.status == "assigned" ? "تحویل داده شده" : "در حال تحویل..." }}
+                        </td>
                         <td><a class="primary" href="#">جزئیات</a></td>
                     </tr>
                 </tbody>
@@ -110,12 +148,13 @@ onMounted(async() => {
                 <h2> بروز رسانی های اخیر</h2>
                 <div class="recent-update">
                     <div class="updates">
-                        <div class="update">
+                        <div class="update" v-for="aid in assignedAids" :key="aid.id">
                             <div class="update-content">
                                 <span class="material-symbols-sharp">info</span>
-                                <p>کمک های اهدایی از طرف مرکز خیریه به عرفان قربانی {{ }}تحویل داده شد</p>
+                                <p>کمک های اهدایی از طرف مرکز خیریه به {{ aid.help_seeker_name.first_name }} {{
+                                    aid.help_seeker_name.last_name }} تحویل داده شد</p>
                             </div>
-                            <small class="text-muted"> 3دقیقه ی پیش</small>
+                            <small class="text-muted">{{ getTimeDetail(aid.created_at) }} </small>
                         </div>
                     </div>
                 </div>
@@ -136,6 +175,14 @@ main {
         "right left"
         "table left";
     margin: 0 1rem;
+}
+
+#deliver {
+    color: var(--color-info-dark);
+}
+
+#not-deliver {
+    color: var(--color-warning);
 }
 
 main h1,

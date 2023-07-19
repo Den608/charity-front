@@ -1,69 +1,56 @@
 <script setup>
+import { onMounted } from 'vue'
+import { useHelper } from '../../composables/useHelper';
+import useComponentStore from '../../store/componentStore';
 
+const helper = useHelper()
+const { helpers } = helper
+
+const componentStore = useComponentStore()
+
+onMounted(async () => {
+    componentStore.showLoading()
+
+    await helper.setAllhelpers()
+
+    componentStore.dismissLoading()
+})
 </script>
 
 <template>
     <main>
         <div class="header">
             <h1>افراد خیر</h1>
-            <div class="search-bar">
-                <span class="material-symbols-sharp">travel_explore</span>
-                <input type="text" placeholder="جستجو ">
+
+            <div class="input-fields">
+                <div class="search-bar">
+                    <span class="material-symbols-sharp">travel_explore</span>
+                    <input type="text" placeholder="جستجو ">
+                </div>
+                <div class="buttons">
+                    <span class="material-symbols-sharp">group_add</span>
+                </div>
             </div>
-            <div class="add">
-                <span class="material-symbols-sharp">group_add</span></div>
-            </div>
+        </div>
         <table>
             <thead>
                 <tr>
                     <th>نام مددیار</th>
-                    <th>شماره ملی</th>
-                    <th>شماره تلفن</th>
+                    <th class="responsive-hidden">شماره ملی</th>
+                    <th class="responsive-hidden">شماره تلفن</th>
                     <th>کمک های نقدی</th>
                     <th>کالاهای اهدایی</th>
-                    <th></th>
+                    <th class="responsive-hidden"></th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody v-for="helper in helpers" :key="helper.id">
                 <tr>
-                    <td>عرفان باقری</td>
-                    <td class="responsive-hidden">222586942</td>
-                    <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
-                    <td><a class="primary" href="#">جزئیات</a></td>
-                </tr>
-                <tr>
-                    <td>عرفان باقری</td>
-                    <td class="responsive-hidden">222586942</td>
-                    <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
-                    <td><a class="primary" href="#">جزئیات</a></td>
-                </tr>
-                <tr>
-                    <td>عرفان باقری</td>
-                    <td class="responsive-hidden">222586942</td>
-                    <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
-                    <td><a class="primary" href="#">جزئیات</a></td>
-                </tr>
-                <tr>
-                    <td>عرفان باقری</td>
-                    <td class="responsive-hidden">222586942</td>
-                    <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
-                    <td><a class="primary" href="#">جزئیات</a></td>
-                </tr>
-                <tr>
-                    <td>عرفان باقری</td>
-                    <td class="responsive-hidden">222586942</td>
-                    <td> +9057622925</td>
-                    <td class="responsive-hidden">1800000IR</td>
-                    <td >56</td>
-                    <td><a class="primary" href="#">جزئیات</a></td>
+                    <td>{{ helper.first_name + ' ' + helper.last_name }}</td>
+                    <td class="responsive-hidden">{{ helper.national_code }}</td>
+                    <td class="responsive-hidden">{{ helper.phone_number }}</td>
+                    <td style="color: red;">1800000IR</td>
+                    <td style="color: red;">56</td>
+                    <td class="responsive-hidden"><a class="primary" href="#">جزئیات</a></td>
                 </tr>
             </tbody>
         </table>
@@ -71,14 +58,18 @@
 </template>
 
 <style scoped>
+main .header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
 
-main .header{
+main .header .input-fields{
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
-
-main .header .search-bar{
+main .header .search-bar {
     display: flex;
     align-items: center;
     height: 3rem;
@@ -88,24 +79,24 @@ main .header .search-bar{
     color: var(--color-dark);
 }
 
-main .header .search-bar input{
+main .header .search-bar input {
     display: flex;
     align-items: center;
     height: 100%;
     width: 100%;
-    border-radius:inherit;
+    border-radius: inherit;
     background-color: inherit;
     color: inherit;
     font-size: 1.4rem;
 }
 
-main .header .search-bar span{
+main .header .search-bar span {
     color: green;
 }
 
-main .header .add span{
-    height: 3.5rem;
-    width: 3.5rem;
+main .header .buttons span {
+    height: 3rem;
+    width: 3rem;
     color: rgb(0, 155, 0);
     margin-left: 4rem;
     display: flex;
@@ -114,28 +105,28 @@ main .header .add span{
     border-radius: 50%;
     background-color: var(--color-white);
     cursor: pointer;
-    box-shadow: 0rem 0rem 1rem var(--color-dark);
+    box-shadow: var(--box-shadow);
     transition: all 300ms ease;
 }
 
-main .header .add span:hover{
+main .header .buttons span:hover {
     box-shadow: none;
     transition: all 300ms ease;
 }
 
 main table {
-    width: 100%;
-    margin-top: 2rem;
     border-radius: var(--card-border-radius);
-    padding: var(--card-padding);
+    text-align: center;
     transition: all 300ms ease;
+    width: 100%;
+    padding: var(--card-padding);
 }
 
 main table thead tr {
+    align-items: center;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: 1rem;
 }
 
@@ -149,7 +140,14 @@ main table tbody tr {
     height: 6rem;
     background-color: var(--color-white);
     border-radius: var(--card-border-radius);
-    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.1);
+    box-shadow: var(--box-shadow);
+    cursor: pointer;
+    transition: all 300ms ease;
+}
+
+main table tbody tr:hover {
+    box-shadow: none;
+    transition: all 300ms ease;
 }
 
 main table tbody tr td {
@@ -162,13 +160,37 @@ main table tbody tr td:first-child {
     justify-content: center;
 }
 
-main table tbody tr td>img {
-    width: 5rem;
-    height: 5rem;
-    border-radius: 50%;
-}
-
 main table thead tr th {
     flex-basis: 20%;
+}
+
+@media screen and (max-width:768px) {
+
+    main{
+        width: 100vw;
+    }
+    main .header {
+        margin-top: 2rem;
+    }
+
+    main .header * {
+        margin: 0 1rem 0 0;
+    }
+
+    main table thead tr th {
+        flex-basis: 33%;
+    }
+
+    main table tbody tr td {
+        flex-basis: 33%;
+    }
+
+    table .responsive-hidden {
+        display: none;
+    }
+
+    main table tbody tr {
+        box-shadow: none;
+    }
 }
 </style>

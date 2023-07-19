@@ -18,22 +18,27 @@ axiosInstance.interceptors.request.use(async req => {
   token = window.localStorage.getItem('token')
   req.headers.Authorization = `Bearer ${token}`;
 
-  const expTime=jwt_decode(token).exp
+  const expTime = jwt_decode(token).exp
   const isExpired = dayjs.unix(expTime).diff(dayjs()) < 1
   if (!isExpired) return req
 
-  await axios.post(`${baseUrl}/api/refresh`, {}, {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }).then(response => {
-    token = response.data.access
-    req.headers.Authorization = `Bearer ${response.data.access}`
-    window.localStorage.setItem('token', token)
-  }).catch(error => {
-    console.log(error)
-  })
-  return req
+  // await axios.post(`${baseUrl}/api/refresh`, {}, {
+  //   headers: {
+  //     Authorization: `Bearer ${token}`
+  //   }
+  // }).then(response => {
+  //   token = response.data.authorization.token
+  //   req.headers.Authorization = `Bearer ${response.data.authorization.token}`
+  //   window.localStorage.setItem('token', token)
+  // }).catch(error => {
+  //   window.localStorage.removeItem('token')
+  //   window.localStorage.removeItem('isAuthenticated')
+  //   router.push('/login')
+  // })
+
+  window.localStorage.setItem('isAuthenticated',false)
+
+  // return req
 })
 
 export default axiosInstance

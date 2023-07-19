@@ -1,14 +1,15 @@
 <script setup>
 import { Transition, ref, onMounted } from 'vue';
-const { message, status } = defineProps(['message', 'status'])
+import useComponentStore from '../store/componentStore'
 
-
+const componentStore = useComponentStore()
 </script>
 
 <template>
     <div class="popup">
         <Transition name="popupShow" appear>
-            <p class="message" :class="status=='success' ? 'success' : 'error'">{{ message }}</p>
+            <p class="message" :class="componentStore.popupStatus == 'success' ? 'success' : 'error'">{{
+                componentStore.popupMessage }}</p>
         </Transition>
     </div>
 </template>
@@ -22,6 +23,7 @@ const { message, status } = defineProps(['message', 'status'])
     height: 5rem;
     background-color: inherit;
     margin: 1rem 0;
+    position: absolute;
 }
 
 .popup .message {

@@ -60,7 +60,7 @@ watchEffect(() => {
         </Transition>
 
         <Transition name="tab" appear>
-                    <component :is="tabs[currentTab]" class="components"></component>
+            <component :is="tabs[currentTab]" class="components"></component>
         </Transition>
 
     </div>
@@ -76,8 +76,8 @@ watchEffect(() => {
     gap: 2rem;
     grid-template-areas:
         "navbar navbar"
-        "sidebar tab";
-        overflow: hidden;
+        "sidebar components";
+    overflow: hidden;
 }
 
 .navbar {
@@ -89,7 +89,8 @@ watchEffect(() => {
 }
 
 .components {
-    grid-area: tab;
+    grid-area: components;
+    width: 80vw;
 }
 
 /* Animation Event setting */
@@ -156,7 +157,6 @@ watchEffect(() => {
         gap: 0;
         width: 100%;
     }
-
 
 }
 </style>

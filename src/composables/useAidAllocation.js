@@ -2,8 +2,8 @@ import { ref, onBeforeMount } from "vue";
 import axiosInstance from '../services/axios'
 
 export function useAidAllocation() {
-    const assignedAids = ref({})
-    const aidAllocations = ref({})
+    const assignedAids = ref([])
+    const aidAllocations = ref([])
 
     async function setAssignedAids() {
         await axiosInstance.get('/api/aid-allocations/?status=assigned')
@@ -15,7 +15,7 @@ export function useAidAllocation() {
     }
 
     async function setAidAllocation() {
-        await axiosInstance.get('/api/aid-allocations/')
+        await axiosInstance.get('/api/aid-allocations/?page=1')
             .then((response) => {
                 aidAllocations.value = response.data.allocations
             }).catch((error) => {
@@ -24,7 +24,6 @@ export function useAidAllocation() {
     }
 
     return {
-        error,
         assignedAids,
         aidAllocations,
         setAssignedAids,
