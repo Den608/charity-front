@@ -1,0 +1,80 @@
+import { ref } from 'vue'
+import axiosInstance from '../services/axios'
+import useComponentStore from '../store/componentStore'
+
+export function useUsersApi() {
+    const users = ref([])
+    const lastPage = ref(1)
+    const currentPage = ref(1)
+    const usersCount = ref(0)
+    const componentStore = useComponentStore()
+
+    async function setAllUsers(role) {
+        await axiosInstance.get(`/api/users?role=${role}`)
+            .then(response => {
+                users.value = response.data.users
+                usersCount.value = response.data.count
+                lastPage.value = Math.ceil(usersCount.value / 10)
+            })
+            .catch(error => {
+                if (error.response.status != 401) {
+                    componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
+                }
+            })
+    }
+
+    async function nextPage() {
+        if (currentPage.value < lastPage.value) {
+            currentPage.value++
+            await axiosInstance.get(`/api/users?role=${role}&&page=${currentPage.value}`)
+                .then(response => {
+                    users.value = response.data.users
+                })
+                .catch(error => {
+                    if (error.response.status != 401) {
+                        componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
+                    }
+                })
+        }
+    }
+
+    async function prevPage() {
+        if (currentPage.value > 1) {
+            currentPage.value--
+
+            await axiosInstance.get(`/api/users?role=${role}&&page=${currentPage.value}`)
+                .then(response => {
+                    users.value = response.data.users
+                })
+                .catch(error => {
+                    if (error.response.status != 401) {
+                        componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
+                    }
+                })
+        }
+    }
+
+    async function gotoPage(number) {
+        if (number < lastPage.value && number > 1) {
+            await axiosInstance.get(`/api/users?role=${role}&&page=${number}`)
+                .then(response => {
+                    users.value = response.data.users
+                })
+                .catch(error => {
+                    if (error.response.status != 401) {
+                        componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
+                    }
+                })
+        }
+    }
+
+    return {
+        users,
+        lastPage,
+        currentPage,
+        setAllUsers,
+        nextPage,
+        prevPage,
+        gotoPage
+    }
+}

@@ -1,18 +1,27 @@
 <script setup>
 import { onMounted } from 'vue'
-import { useHelpSeeker } from '../../composables/useHelpSeeker';
 import useComponentStore from '../../store/componentStore';
+import Pagination from '../Pagination.vue';
+import { useUsersApi } from '../../composables/useUsersApi'
 
-const helpSeeker = useHelpSeeker()
-const { helpSeekers, helpSeekerCount } = helpSeeker
+const userApi = useUsersApi()
+const { users } = userApi
 
 const componentStore = useComponentStore()
 
 onMounted(async () => {
     componentStore.showLoading()
-    await helpSeeker.setAllHelpSeekers()
+
+    await userApi.setAllUsers('help_seeker')
+
     componentStore.dismissLoading()
+
+    if (currentPage.value != lastPage.value) {
+        const pagination = document.getElementById('pagination')
+        pagination.style.display = 'flex'
+    }
 })
+
 </script>
 
 <template>
@@ -33,25 +42,26 @@ onMounted(async () => {
         <table>
             <thead>
                 <tr>
-                    <th>نام مددجو</th>
+                    <th>نام مددیار</th>
                     <th class="responsive-hidden">شماره ملی</th>
                     <th class="responsive-hidden">شماره تلفن</th>
-                    <th>کمک نقدی</th>
-                    <th>کالا ها</th>
+                    <th>کمک های نقدی</th>
+                    <th>کالاهای اهدایی</th>
                     <th class="responsive-hidden"></th>
                 </tr>
             </thead>
-            <tbody v-for="helpSeeker in helpSeekers" :key="helpSeeker.id">
+            <tbody v-for="user in users" :key="user.id">
                 <tr>
-                    <td>{{ helpSeeker.first_name + " " + helpSeeker.last_name }} </td>
-                    <td class="responsive-hidden">{{ helpSeeker.national_code }}</td>
-                    <td class="responsive-hidden"> {{ helpSeeker.phone_number }}</td>
-                    <td style="color: red;">50000IR</td>
-                    <td style="color: red;"> 20</td>
+                    <td>{{ user.first_name + ' ' + user.last_name }}</td>
+                    <td class="responsive-hidden">{{ user.national_number }}</td>
+                    <td class="responsive-hidden">{{ user.phone_number }}</td>
+                    <td>{{ user.total_cash_allocated }}</td>
+                    <td>{{ user.total_product_allocated }}</td>
                     <td class="responsive-hidden"><a class="primary" href="#">جزئیات</a></td>
                 </tr>
             </tbody>
         </table>
+        <Pagination id="pagination" :current-page="1" :last-page="10" :user="1" @next="" @prev="" @goTo="" />
     </main>
 </template>
 
@@ -62,11 +72,12 @@ main .header {
     gap: 1rem;
 }
 
-main .header .input-fields{
+main .header .input-fields {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
+
 main .header .search-bar {
     display: flex;
     align-items: center;
@@ -163,9 +174,11 @@ main table thead tr th {
 }
 
 @media screen and (max-width:768px) {
-    main{
+
+    main {
         width: 100vw;
     }
+
     main .header {
         margin-top: 2rem;
     }
@@ -174,6 +187,13 @@ main table thead tr th {
         margin: 0 1rem 0 0;
     }
 
+    main table thead tr th {
+        flex-basis: 33%;
+    }
+
+    main table tbody tr td {
+        flex-basis: 33%;
+    }
 
     table .responsive-hidden {
         display: none;

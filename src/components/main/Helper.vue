@@ -1,20 +1,27 @@
 <script setup>
-import { onMounted } from 'vue'
-import { useHelper } from '../../composables/useHelper';
+import { onMounted, ref } from 'vue'
 import useComponentStore from '../../store/componentStore';
+import Pagination from '../Pagination.vue';
+import { useUsersApi } from '../../composables/useUsersApi'
 
-const helper = useHelper()
-const { helpers } = helper
+const userApi = useUsersApi()
+const { users, currentPage, lastPage } = userApi
 
 const componentStore = useComponentStore()
 
 onMounted(async () => {
     componentStore.showLoading()
 
-    await helper.setAllhelpers()
+    await userApi.setAllUsers('helper')
 
     componentStore.dismissLoading()
+
+    if (currentPage.value != lastPage.value) {
+        const pagination = document.getElementById('pagination')
+        pagination.style.display = 'flex'
+    }
 })
+
 </script>
 
 <template>
@@ -43,17 +50,19 @@ onMounted(async () => {
                     <th class="responsive-hidden"></th>
                 </tr>
             </thead>
-            <tbody v-for="helper in helpers" :key="helper.id">
+            <tbody v-for="user in users" :key="user.id">
                 <tr>
-                    <td>{{ helper.first_name + ' ' + helper.last_name }}</td>
-                    <td class="responsive-hidden">{{ helper.national_code }}</td>
-                    <td class="responsive-hidden">{{ helper.phone_number }}</td>
-                    <td style="color: red;">1800000IR</td>
-                    <td style="color: red;">56</td>
+                    <td>{{ user.first_name + ' ' + user.last_name }}</td>
+                    <td class="responsive-hidden">{{ user.national_code }}</td>
+                    <td class="responsive-hidden">{{ user.phone_number }}</td>
+                    <td>{{ user.total_cash }}</td>
+                    <td>{{ user.total_product }}</td>
                     <td class="responsive-hidden"><a class="primary" href="#">جزئیات</a></td>
                 </tr>
             </tbody>
         </table>
+        <Pagination id="pagination" :current-page="currentPage"
+            :last-page="lastPage" @next="userApi.nextPage" @prev="userApi.prevPage" @goTo="userApi.gotoPage" />
     </main>
 </template>
 
@@ -64,11 +73,12 @@ main .header {
     gap: 1rem;
 }
 
-main .header .input-fields{
+main .header .input-fields {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
+
 main .header .search-bar {
     display: flex;
     align-items: center;
@@ -166,9 +176,10 @@ main table thead tr th {
 
 @media screen and (max-width:768px) {
 
-    main{
+    main {
         width: 100vw;
     }
+
     main .header {
         margin-top: 2rem;
     }

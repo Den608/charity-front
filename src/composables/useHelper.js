@@ -4,6 +4,8 @@ import useComponentStore from '../store/componentStore'
 
 export function useHelper() {
     const helpers = ref([])
+    const lastPage=ref(0)
+    const currentPage=ref(0)
     const componentStore = useComponentStore()
 
     async function setAllhelpers(role = 'helper') {
@@ -16,6 +18,19 @@ export function useHelper() {
                     componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
                 }
             })
+    }
+
+
+    async function nextPage(){
+
+    }
+
+    async function prevPage(){
+
+    }
+
+    async function gotoPage(){
+
     }
 
     return {
