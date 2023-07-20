@@ -25,6 +25,11 @@ img {
   width: 100%;
 }
 
+input[type='text']{
+  font-family: 'Vazirmatn', sans-serif;
+  font-size: 1.1rem !important;
+}
+
 h1 {
   font-weight: 800;
   font-size: 1.8rem;

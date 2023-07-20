@@ -1,8 +1,8 @@
 <script setup>
 import { onMounted } from 'vue';
-import { usePeoplesAid } from '../../composables/usePeoplesAid'
-import { useHelpSeeker } from '../../composables/useHelpSeeker'
-import { useAidAllocation } from '../../composables/useAidAllocation';
+import { usePeoplesAid } from '../../composables/usePeoplesAidApi'
+import { useHelpSeeker } from '../../composables/useHelpSeekerApi'
+import { useAidAllocation } from '../../composables/useAidAllocationApi';
 import useComponentStore from '../../store/componentStore'
 
 const componentStore = useComponentStore()
@@ -284,13 +284,13 @@ main .recent-help table:hover {
     box-shadow: none;
 }
 
-main .recent-help table tbody td {
+main .recent-help table tbody tr td {
     height: 2.8rem;
     border-bottom: 1px solid var(--color-light);
     color: var(--color-dark);
 }
 
-main .recent-help table tbody tr:last-child td {
+main .recent-help table tbody:last-child td {
     border: none;
 }
 

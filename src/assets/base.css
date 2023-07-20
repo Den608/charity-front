@@ -24,6 +24,7 @@
   --padding-2: 1rem;  
   --padding-3: .8rem;
   --box-shadow: 0 2rem 3rem var(--color-light);
+  --box-shadow1: 0rem 0rem .5rem var(--color-light);
 
 }
 
@@ -39,11 +40,10 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+  box-sizing: border-box !important; 
   margin: 0;
   padding: 0;
   outline: 0;
-  appearance: none;
   border: 0;
   text-decoration: none;
   list-style: none;

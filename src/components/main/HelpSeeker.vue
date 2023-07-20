@@ -79,13 +79,14 @@ main .header .input-fields {
 }
 
 main .header .search-bar {
-    display: flex;
     align-items: center;
-    height: 3rem;
-    width: 15rem;
-    border-radius: .8rem;
     background-color: var(--color-white);
+    border-radius: .8rem;
     color: var(--color-dark);
+    display: flex;
+    gap: .3rem;
+    height: 3rem;
+    width: 20rem;
 }
 
 main .header .search-bar input {
