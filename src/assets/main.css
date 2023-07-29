@@ -10,6 +10,7 @@ body {
   font-family: 'Vazirmatn', sans-serif;
   user-select: none;
   overflow-x: hidden;
+  overflow-y: hidden;
 }
 
 main h1,h2,h3,p,table{
@@ -89,6 +90,7 @@ b {
 
 .primary {
   color: var(--color-primary);
+  cursor: pointer;
 }
 
 .warning {

@@ -1,26 +1,24 @@
 <script setup>
 import { onMounted } from 'vue';
+import { useUsersApi } from '../../composables/useUsersApi';
 import { usePeoplesAid } from '../../composables/usePeoplesAidApi'
-import { useHelpSeeker } from '../../composables/useHelpSeekerApi'
 import { useAidAllocation } from '../../composables/useAidAllocationApi';
 import useComponentStore from '../../store/componentStore'
 
 const componentStore = useComponentStore()
-
 const peoplesAid = usePeoplesAid()
 const { cashDonations, productDonations, productDonationsCount } = peoplesAid
-
-const helpSeeker = useHelpSeeker()
-const { helpSeekerCount } = helpSeeker
-
+const userApi = useUsersApi()
+const { usersCount } = userApi
 const aidAllocation = useAidAllocation()
 const { assignedAids, aidAllocations } = aidAllocation
+
 
 onMounted(async () => {
     componentStore.showLoading()
     await peoplesAid.setCashDonation()
     await peoplesAid.setProductDonation()
-    await helpSeeker.setHelpSeekerCount()
+    await userApi.setAllUsers('help_seeker')
     await aidAllocation.setAidAllocation()
     await aidAllocation.setAssignedAids()
     componentStore.dismissLoading()
@@ -99,7 +97,7 @@ function getTimeDetail(time) {
                     <div class="middle">
                         <div class="left">
                             <h3>تعداد کل افراد تحت پوشش</h3>
-                            <h1>{{ helpSeekerCount }}</h1>
+                            <h1>{{ usersCount }}</h1>
                         </div>
                     </div>
                     <small>

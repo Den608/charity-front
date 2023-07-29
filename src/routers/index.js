@@ -1,4 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
+import dayjs from 'dayjs';
+import jwt_decode from 'jwt-decode';
 import Login from '../views/Login.vue'
 import Home from '../views/Home.vue'
 
@@ -20,13 +22,19 @@ const router = createRouter({
 
 
 router.beforeEach((to, from, next) => {
-    const isAuthenticated=window.localStorage.getItem('isAuthenticated')
+    const token = window.localStorage.getItem('token')
+    let isExpired =true
 
-    if(!isAuthenticated && to.path!='/signup' && to.path!='/login'){
+    if (token) {
+        const expTime = jwt_decode(token).exp
+        isExpired = dayjs.unix(expTime).diff(dayjs()) < 1
+    }
+
+    if (isExpired && to.path != '/signup' && to.path != '/login') {
         next('/login')
-    }else if(isAuthenticated && to.path!='/'){
-        next ('/')
-    }else{
+    } else if (!isExpired && to.path != '/') {
+        next('/')
+    } else {
         next()
     }
 })

@@ -22,23 +22,7 @@ axiosInstance.interceptors.request.use(async req => {
   const isExpired = dayjs.unix(expTime).diff(dayjs()) < 1
   if (!isExpired) return req
 
-  // await axios.post(`${baseUrl}/api/refresh`, {}, {
-  //   headers: {
-  //     Authorization: `Bearer ${token}`
-  //   }
-  // }).then(response => {
-  //   token = response.data.authorization.token
-  //   req.headers.Authorization = `Bearer ${response.data.authorization.token}`
-  //   window.localStorage.setItem('token', token)
-  // }).catch(error => {
-  //   window.localStorage.removeItem('token')
-  //   window.localStorage.removeItem('isAuthenticated')
-  //   router.push('/login')
-  // })
-
-  window.localStorage.setItem('isAuthenticated',false)
-
-  // return req
+  window.location.assign('/login')
 })
 
 export default axiosInstance

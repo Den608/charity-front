@@ -1,11 +1,11 @@
 <script setup>
-import { ref,watch,inject} from 'vue';
+import { ref, onMounted} from 'vue';
 import useAuthStore from '../store/authStore';
 
-const authStore=useAuthStore()
+const authStore = useAuthStore()
 
-const emit = defineEmits(['changeTab','sideClose'])
-const activeTab = ref([true, false, false, false, false, false])
+const emit = defineEmits(['changeTab', 'sideClose'])
+const activeTab = ref([true, false, false, false, false, false, false])
 
 const onTabClicked = (index) => {
     activeTab.value.fill(false);
@@ -13,20 +13,27 @@ const onTabClicked = (index) => {
     emit('changeTab', index)
 }
 
-const onCLose=()=>{
+const onCLose = () => {
     emit("sideClose")
 }
+
+onMounted(()=>{
+    if(window.localStorage.getItem('currentTab')){
+        let currentTab=window.localStorage.getItem('currentTab')
+        onTabClicked(currentTab)
+    }
+})
 
 </script>
 
 <template>
-    <aside >
+    <aside>
         <div class="top">
             <div class="logo">
                 <img src="./images/logo.png">
                 <h2>سامانه <span class="danger">اسایش</span></h2>
             </div>
-            <div @click="onCLose" class="close" >
+            <div @click="onCLose" class="close">
                 <span class="material-symbols-sharp">close</span>
             </div>
         </div>
@@ -53,24 +60,46 @@ const onCLose=()=>{
                 </div>
             </div>
 
+
             <div class="tab-container" :class="{ 'active': activeTab[3] }" @click="onTabClicked(3)">
+                <div class="tab">
+                    <span class="material-symbols-sharp">
+                        category
+                    </span>
+                    <h3>محصولات</h3>
+                </div>
+            </div>
+
+            <div class="tab-container" :class="{ 'active': activeTab[4] }" @click="onTabClicked(4)">
                 <div class="tab">
                     <span class="material-symbols-sharp">inventory_2</span>
                     <h3>کمک های مردمی</h3>
                 </div>
             </div>
 
-            <div class="tab-container" :class="{ 'active': activeTab[4] }" @click="onTabClicked(4)">
+            <div class="tab-container" :class="{ 'active': activeTab[5] }" @click="onTabClicked(5)">
                 <div class="tab">
                     <span class="material-symbols-sharp">deployed_code</span>
                     <h3>بسته های مناسبتی</h3>
                 </div>
             </div>
 
-            <div class="tab-container" :class="{ 'active': activeTab[5] }" @click="onTabClicked(5)">
+
+            <div class="tab-container" :class="{ 'active': activeTab[6] }" @click="onTabClicked(6)">
                 <div class="tab">
                     <span class="material-symbols-sharp">school</span>
                     <h3>دانشجویان و دانش اموزان</h3>
+                </div>
+            </div>
+
+
+
+            <div class="tab-container pre-last-child" :class="{ 'active': activeTab[7] }" @click="onTabClicked(7)">
+                <div class="tab">
+                    <span class="material-symbols-sharp">
+                        person
+                    </span>
+                    <h3>پروفایل</h3>
                 </div>
             </div>
 
@@ -147,6 +176,11 @@ aside .sidebar .tab-container .tab {
     transition: all 300ms ease;
 }
 
+aside .sidebar .tab-container:nth-child(8){
+    position: absolute;
+    bottom: 6rem;
+    width: 100%;
+}
 aside .sidebar .tab-container:last-child {
     position: absolute;
     bottom: 2rem;
@@ -209,7 +243,7 @@ aside .sidebar .tab-container .tab:hover {
         display: block;
     }
 
-    .disable{
+    .disable {
         display: none;
     }
 
@@ -235,5 +269,4 @@ aside .sidebar .tab-container .tab:hover {
         font-weight: bold;
     }
 }
-
 </style>

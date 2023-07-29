@@ -56,6 +56,7 @@ onMounted(() => {
                 <span class="material-symbols-sharp" :class="!themeActive ? 'active' : 'disable'">light_mode</span>
                 <span class="material-symbols-sharp" :class="themeActive ? 'active' : 'disable'">dark_mode</span>
             </div>
+
         </div>
     </nav>
 </template>

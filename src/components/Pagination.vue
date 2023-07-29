@@ -1,12 +1,10 @@
 <script setup>
-import {onMounted,ref} from 'vue'
-
 const emit = defineEmits(['next', 'prev', 'goTo'])
-const { lastPage, currentPage, user } = defineProps(['currentPage', 'lastPage', 'user'])
+const { currentPage, lastPage, user } = defineProps(['currentPage', 'lastPage', 'user'])
 
 function pages() {
     let arr = []
-    for (let i = currentPage.value; i < currentPage.value+4; i++) {
+    for (let i = currentPage.value; i < currentPage.value + 4; i++) {
         if (i < lastPage.value) {
             arr.push(i)
         }
@@ -22,15 +20,15 @@ function pages() {
             <span class="material-symbols-sharp">first_page</span>
         </a>
 
-        <a class="current" href="#top" @click="emit('goTo', currentPage.value, user)">
+        <a class="current" href="#top" @click="emit('goTo', currentPage)">
             {{ currentPage }}
         </a>
 
-        <a v-for="page in pages()" class="page" href="#top" @click="emit('goTo', page, user)">
+        <a v-for="page in pages()" class="page" href="#top" @click="emit('goTo', page)">
             {{ page }}
         </a> ...
 
-        <a class="page" href="#top" @click="emit('goTo', lastPage.value, user)">
+        <a class="page" href="#top" @click="emit('goTo', lastPage)">
             {{ lastPage }}
         </a>
         <a href="#top" @click="emit('next')"><span class="material-symbols-sharp">last_page </span></a>
@@ -39,12 +37,9 @@ function pages() {
 
 <style scoped>
 .pagination {
-    width: 80%;
     display: flex;
     align-items: center;
     justify-content: center;
-    position: absolute;
-    bottom: 5px;
     display: none;
 }
 

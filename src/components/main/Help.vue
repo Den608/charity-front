@@ -1,9 +1,29 @@
 <script setup>
+import { ref } from 'vue'
+import UpdateCreateModal from '../UpdateCreateModal.vue';
+
+const title = ref('ثبت کمک جدید')
+const modalShow = ref(false)
+
+function setAllChecked(event) {
+    const allCheckboxes = document.querySelectorAll('input[type="checkbox"]')
+    allCheckboxes.forEach(el => {
+        el.checked = event.target.checked
+    })
+}
 
 </script>
 
 <template>
     <main>
+        
+        <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="title">
+            <input type="text" placeholder="عنوان">
+            <input type="text" placeholder="تعداد">
+            <input type="text" placeholder="اهدا کننده">
+            <textarea name="explanation" placeholder="توضیحات"></textarea>
+        </UpdateCreateModal>
+
         <div class="header">
             <h1>کمک های مردمی</h1>
 
@@ -13,7 +33,14 @@
                     <input type="text" placeholder="جستجو ">
                 </div>
                 <div class="buttons">
+                    <span class="material-symbols-sharp" style="color: red;">
+                        delete
+                    </span>
                     <span class="material-symbols-sharp">
+                        assignment_add
+                    </span>
+
+                    <span class="material-symbols-sharp" @click="modalShow = true">
                         add
                     </span>
                 </div>
@@ -23,22 +50,26 @@
         <table>
             <thead>
                 <tr>
-                    <th><input type="checkbox" /></th>
+                    <th><input type="checkbox" @change="setAllChecked" /></th>
                     <th>عنوان</th>
-                    <th>تعداد</th>
+                    <th>موجودی</th>
                     <th>اهدا کننده</th>
-                    <th> توضیحات </th>
-                    <th></th>
+                    <th class="responsive-hidden"> توضیحات </th>
+                    <th class="responsive-hidden"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="table-column"><input type="checkbox" /></td>
-                    <td class="table-column">کفش سایز 43</td>
-                    <td class="table-column">6</td>
-                    <td class="table-column">پرویز</td>
-                    <td class="table-column">کفش چرمی سایز 43 ارزش تقریبی 800 هزار تومان</td>
-                    <td class="primary">جزِییات</td>
+                    <td><input type="checkbox" /></td>
+                    <td>کفش سایز 43</td>
+                    <td>6</td>
+                    <td>پرویز</td>
+                    <td class="responsive-hidden">کفش چرمی سایز 43 ارزش تقریبی 800 هزار تومان</td>
+                    <td class="responsive-hidden primary">
+                        <span class="material-symbols-sharp">
+                            edit_square
+                        </span>
+                    </td>
                 </tr>
 
             </tbody>
@@ -47,6 +78,11 @@
 </template>
 
 <style scoped>
+input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
 main .header {
     display: flex;
     flex-direction: column;
@@ -85,11 +121,17 @@ main .header .search-bar span {
     color: green;
 }
 
+main .header .buttons {
+    display: flex;
+    flex-direction: row;
+    margin-left: 4rem;
+    gap: .8rem;
+}
+
 main .header .buttons span {
     height: 3rem;
     width: 3rem;
     color: rgb(0, 155, 0);
-    margin-left: 4rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -105,26 +147,93 @@ main .header .buttons span:hover {
     transition: all 300ms ease;
 }
 
+
 main table {
+    border-radius: var(--card-border-radius);
     text-align: center;
+    transition: all 300ms ease;
     width: 100%;
     padding: var(--card-padding);
-    margin-top: 2rem;
 }
 
-main table tr td,
-th {
-    border-bottom: 1px solid var(--color-light);
-    cursor: pointer;
-    height: 3.8rem;
+main table thead tr {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-bottom: 1rem;
 }
 
-main table .table-column:hover td{
-    box-shadow: none;
-    border-bottom: .8px solid var(--color-dark);
+
+main table tbody tr {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    height: 6rem;
+    background-color: var(--color-white);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
     transition: all 300ms ease;
 }
 
+main table tbody tr:hover {
+    box-shadow: none;
+    transition: all 300ms ease;
+}
 
+main table tbody tr td {
+    flex-basis: 20%;
+}
+
+main table tbody tr td:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+main table thead tr th {
+    flex-basis: 20%;
+}
+
+main table thead tr th:first-child {
+    flex-basis: 8%;
+}
+
+main table tbody tr td:first-child {
+    flex-basis: 8%;
+}
+
+@media screen and (max-width:768px) {
+
+    main {
+        width: 100vw;
+    }
+
+    main .header {
+        margin-top: 2rem;
+    }
+
+    main .header * {
+        margin: 0 1rem 0 0;
+    }
+
+    main table thead tr th {
+        flex-basis: 33%;
+    }
+
+    main table tbody tr td {
+        flex-basis: 33%;
+    }
+
+    table .responsive-hidden {
+        display: none;
+    }
+
+    main table tbody tr {
+        box-shadow: none;
+    }
+}
 </style>
 

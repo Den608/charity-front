@@ -13,12 +13,11 @@ const useAuthStore = defineStore('auth', () => {
   async function handleLogin(credentials) {
     if (!isValidNationalCode(credentials.national_code)) {
       componentStore.showPopup("فرمت کد ملی اشتباه است !!!", "error")
-      return 
+      return
     }
     await axios.post(`${baseUrl}/api/login`, credentials).then(response => {
       token.value = response.data.authorization.token
       window.localStorage.setItem('token', token.value)
-      window.localStorage.setItem('isAuthenticated', true)
       componentStore.showPopup("احراز هویت موفقیت امیز بود", "success")
       setTimeout(() => {
         router.push('/')
@@ -51,7 +50,7 @@ const useAuthStore = defineStore('auth', () => {
   function handleLogout() {
     token.value = null
     window.localStorage.removeItem('token')
-    window.localStorage.removeItem('isAuthenticated')
+    window.localStorage.removeItem('currentTab') 
     router.push('/login')
   }
 

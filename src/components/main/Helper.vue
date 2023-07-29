@@ -1,13 +1,17 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { useUsersApi } from '../../composables/useUsersApi'
 import useComponentStore from '../../store/componentStore';
 import Pagination from '../Pagination.vue';
-import { useUsersApi } from '../../composables/useUsersApi'
+import UpdateCreateModal from '../UpdateCreateModal.vue';
 
+
+const title = ref('ثبت مددیار')
+const modalShow = ref(false)
 const userApi = useUsersApi()
 const { users, currentPage, lastPage } = userApi
-
 const componentStore = useComponentStore()
+
 
 onMounted(async () => {
     componentStore.showLoading()
@@ -26,6 +30,12 @@ onMounted(async () => {
 
 <template>
     <main>
+        <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="title">
+            <input type="text" placeholder="نام ">
+            <input type="text" placeholder="نام خانوادگی">
+            <input type="text" placeholder="شماره ملی">
+            <input type="text" placeholder="شماره تلفن">
+        </UpdateCreateModal>
         <div class="header">
             <h1>افراد خیر</h1>
 
@@ -35,10 +45,17 @@ onMounted(async () => {
                     <input type="text" placeholder="جستجو ">
                 </div>
                 <div class="buttons">
-                    <span class="material-symbols-sharp">group_add</span>
+                    <span class="material-symbols-sharp" style="color: red;">
+                        delete
+                    </span>
+                    <span class="material-symbols-sharp" @click="modalShow = true">group_add</span>
                 </div>
             </div>
         </div>
+
+        <Pagination id="pagination" :currentPage="currentPage" :lastPage="lastPage" @next="userApi.nextPage"
+            @prev="userApi.prevPage" @goTo="userApi.gotoPage" />
+
         <table>
             <thead>
                 <tr>
@@ -57,12 +74,14 @@ onMounted(async () => {
                     <td class="responsive-hidden">{{ user.phone_number }}</td>
                     <td>{{ user.total_cash }}</td>
                     <td>{{ user.total_product }}</td>
-                    <td class="responsive-hidden"><a class="primary" href="#">جزئیات</a></td>
+                    <td class="responsive-hidden primary">
+                        <span class="material-symbols-sharp">
+                            edit_square
+                        </span>
+                    </td>
                 </tr>
             </tbody>
         </table>
-        <Pagination id="pagination" :current-page="currentPage"
-            :last-page="lastPage" @next="userApi.nextPage" @prev="userApi.prevPage" @goTo="userApi.gotoPage" />
     </main>
 </template>
 
@@ -105,11 +124,17 @@ main .header .search-bar span {
     color: green;
 }
 
+main .header .buttons {
+    display: flex;
+    flex-direction: row;
+    margin-left: 4rem;
+    gap: .8rem;
+}
+
 main .header .buttons span {
     height: 3rem;
     width: 3rem;
     color: rgb(0, 155, 0);
-    margin-left: 4rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -152,7 +177,6 @@ main table tbody tr {
     background-color: var(--color-white);
     border-radius: var(--card-border-radius);
     box-shadow: var(--box-shadow);
-    cursor: pointer;
     transition: all 300ms ease;
 }
 

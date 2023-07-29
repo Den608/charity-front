@@ -7,6 +7,7 @@ export function useUsersApi() {
     const lastPage = ref(1)
     const currentPage = ref(1)
     const usersCount = ref(0)
+    const user_role = ref('')
     const componentStore = useComponentStore()
 
     async function setAllUsers(role) {
@@ -15,6 +16,7 @@ export function useUsersApi() {
                 users.value = response.data.users
                 usersCount.value = response.data.count
                 lastPage.value = Math.ceil(usersCount.value / 10)
+                user_role.value = role
             })
             .catch(error => {
                 if (error.response.status != 401) {
@@ -26,7 +28,9 @@ export function useUsersApi() {
     async function nextPage() {
         if (currentPage.value < lastPage.value) {
             currentPage.value++
-            await axiosInstance.get(`/api/users?role=${role}&&page=${currentPage.value}`)
+
+            componentStore.showLoading()
+            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value}`)
                 .then(response => {
                     users.value = response.data.users
                 })
@@ -35,6 +39,7 @@ export function useUsersApi() {
                         componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
                     }
                 })
+            componentStore.dismissLoading()
         }
     }
 
@@ -42,7 +47,8 @@ export function useUsersApi() {
         if (currentPage.value > 1) {
             currentPage.value--
 
-            await axiosInstance.get(`/api/users?role=${role}&&page=${currentPage.value}`)
+            componentStore.showLoading()
+            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value}`)
                 .then(response => {
                     users.value = response.data.users
                 })
@@ -51,12 +57,16 @@ export function useUsersApi() {
                         componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
                     }
                 })
+            componentStore.dismissLoading(0)
         }
     }
 
     async function gotoPage(number) {
-        if (number < lastPage.value && number > 1) {
-            await axiosInstance.get(`/api/users?role=${role}&&page=${number}`)
+        if (number <= lastPage.value && number >= 1) {
+            currentPage.value=number
+            
+            componentStore.showLoading()
+            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${number}`)
                 .then(response => {
                     users.value = response.data.users
                 })
@@ -65,11 +75,13 @@ export function useUsersApi() {
                         componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
                     }
                 })
+            componentStore.dismissLoading()
         }
     }
 
     return {
         users,
+        usersCount,
         lastPage,
         currentPage,
         setAllUsers,

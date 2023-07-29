@@ -1,93 +1,80 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import useComponentStore from '../../store/componentStore';
-import { useUsersApi } from '../../composables/useUsersApi'
+import { ref } from 'vue'
 import UpdateCreateModal from '../UpdateCreateModal.vue';
-import Pagination from '../Pagination.vue';
 
-
-const title = ref('ثبت مددجو')
+const title = ref('ثبت  محصول')
 const modalShow = ref(false)
-const userApi = useUsersApi()
-const { users, currentPage, lastPage } = userApi
-const componentStore = useComponentStore()
 
-
-onMounted(async () => {
-    componentStore.showLoading()
-
-    await userApi.setAllUsers('help_seeker')
-
-    componentStore.dismissLoading()
-
-    if (currentPage.value != lastPage.value) {
-        const pagination = document.getElementById('pagination')
-        pagination.style.display = 'flex'
-    }
-})
+function setAllChecked(event) {
+    const allCheckboxes = document.querySelectorAll('input[type="checkbox"]')
+    allCheckboxes.forEach(el => {
+        el.checked = event.target.checked
+    })
+}
 
 </script>
 
 <template>
     <main>
         <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="title">
-            <input type="text" placeholder="نام ">
-            <input type="text" placeholder="نام خانوادگی">
-            <input type="text" placeholder="شماره ملی">
-            <input type="text" placeholder="شماره تلفن">
+            <input type="text" placeholder="عنوان">
+            <input type="text" placeholder="دسته بندی">
+            <textarea name="explanation" placeholder="توضیحات"></textarea>
         </UpdateCreateModal>
         <div class="header">
-            <h1>افراد نیازمند</h1>
+            <h1>محصولات</h1>
 
             <div class="input-fields">
                 <div class="search-bar">
                     <span class="material-symbols-sharp">travel_explore</span>
                     <input type="text" placeholder="جستجو ">
                 </div>
-                <div class="buttons">
+                <div class="buttons" >
                     <span class="material-symbols-sharp" style="color: red;">
                         delete
                     </span>
-                    <span class="material-symbols-sharp" @click="modalShow = true">group_add</span>
+
+                    <span class="material-symbols-sharp" @click="modalShow = true">
+                        add
+                    </span>
                 </div>
             </div>
         </div>
-        
-        <Pagination id="pagination" :currentPage="currentPage" :lastPage="lastPage" @next="userApi.nextPage"
-            @prev="userApi.prevPage" @goTo="userApi.gotoPage" />
-            
+
         <table>
             <thead>
                 <tr>
-                    <th>نام مددیار</th>
-                    <th class="responsive-hidden">شماره ملی</th>
-                    <th class="responsive-hidden">شماره تلفن</th>
-                    <th>کمک های نقدی</th>
-                    <th>کالاهای اهدایی</th>
+                    <th><input type="checkbox" @change="setAllChecked" /></th>
+                    <th>عنوان</th>
+                    <th>دسته بندی</th>
+                    <th class="responsive-hidden"> توضیحات </th>
                     <th class="responsive-hidden"></th>
                 </tr>
             </thead>
-            <tbody v-for="user in users" :key="user.id">
+            <tbody>
                 <tr>
-                    <td>{{ user.first_name + ' ' + user.last_name }}</td>
-                    <td class="responsive-hidden">{{ user.national_code }}</td>
-                    <td class="responsive-hidden">{{ user.phone_number }}</td>
-                    <td>{{ user.total_cash_allocated }}</td>
-                    <td>{{ user.total_product_allocated }}</td>
+                    <td><input type="checkbox" /></td>
+                    <td>کفش سایز 43</td>
+                    <td>Lorem ipsum dolor sit amet.</td>
+                    <td class="responsive-hidden">کفش چرمی سایز 43 ارزش تقریبی 800 هزار تومان</td>
                     <td class="responsive-hidden primary">
                         <span class="material-symbols-sharp">
                             edit_square
                         </span>
                     </td>
                 </tr>
+
             </tbody>
         </table>
-        <Pagination :current-page="currentPage" :last-page="lastPage" @next="userApi.nextPage" @prev="userApi.prevPage"
-            @goTo="userApi.gotoPage" />
     </main>
 </template>
 
 <style scoped>
+input[type="checkbox"] {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
 main .header {
     display: flex;
     flex-direction: column;
@@ -152,6 +139,7 @@ main .header .buttons span:hover {
     transition: all 300ms ease;
 }
 
+
 main table {
     border-radius: var(--card-border-radius);
     text-align: center;
@@ -201,6 +189,14 @@ main table thead tr th {
     flex-basis: 20%;
 }
 
+main table thead tr th:first-child {
+    flex-basis: 8%;
+}
+
+main table tbody tr td:first-child {
+    flex-basis: 8%;
+}
+
 @media screen and (max-width:768px) {
 
     main {
@@ -232,3 +228,4 @@ main table thead tr th {
     }
 }
 </style>
+

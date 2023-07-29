@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { ref, watchEffect, onMounted } from 'vue'
 import SideBar from '../components/SideBar.vue';
 import Navbar from '../components/Navbar.vue';
 import Dashboard from '../components/main/Dashboard.vue';
@@ -8,25 +8,32 @@ import HelpSeeker from '../components/main/HelpSeeker.vue';
 import Help from '../components/main/Help.vue';
 import Package from '../components/main/Package.vue';
 import Student from '../components/main/Student.vue';
+import Product from '../components/main/Product.vue';
+import Profile from '../components/main/Profile.vue';
 
+//this line set the initial tab
+const localTab = window.localStorage.getItem('currentTab')
+const currentTab = ref(parseInt(localTab) ? localTab : 0)
 
-
-//  Tab change Event Managment
-const currentTab = ref(0)
 const sidebarShow = ref(true)
+
 
 const renderPage = (index) => {
     currentTab.value = index
+    window.localStorage.setItem('currentTab', index)
 }
 
 const tabs = [
     Dashboard,
     Helper,
     HelpSeeker,
+    Product,
     Help,
     Package,
-    Student
+    Student,
+    Profile
 ]
+
 
 // manging visibility of sideBar when screen size chnages
 const windowWidth = ref(window.innerWidth)
@@ -54,7 +61,6 @@ watchEffect(() => {
 <template>
     <div class="grid-container">
         <Navbar class="navbar" @sideShow="sidebarShow = true" />
-
         <Transition name="side">
             <SideBar v-show="sidebarShow" class="sidebar" @changeTab="renderPage" @sideClose="sidebarShow = false" />
         </Transition>
@@ -90,7 +96,8 @@ watchEffect(() => {
 
 .components {
     grid-area: components;
-    width: 80vw;
+    max-height:50rem;
+    overflow-y: auto;
 }
 
 /* Animation Event setting */
