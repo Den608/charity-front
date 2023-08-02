@@ -377,10 +377,9 @@ main .left .top .recent-update .update span {
 
 @media screen and (max-width:768px) {
     main {
-        width: 100%;
         display: grid;
         grid-template-columns: 1fr;
-        grid-template-rows: 5rem 1fr .7fr auto;
+        grid-template-rows: 5rem 1fr 1fr 1fr;
         grid-template-areas: "header"
             "right"
             "left"

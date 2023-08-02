@@ -17,7 +17,6 @@ const currentTab = ref(parseInt(localTab) ? localTab : 0)
 
 const sidebarShow = ref(true)
 
-
 const renderPage = (index) => {
     currentTab.value = index
     window.localStorage.setItem('currentTab', index)
@@ -98,6 +97,7 @@ watchEffect(() => {
     grid-area: components;
     max-height:50rem;
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /* Animation Event setting */
@@ -158,11 +158,15 @@ watchEffect(() => {
 /* --------- MEDIA QUERY 2 for phone and smaller tablet----------- */
 @media screen and (max-width:768px) {
     .grid-container {
+        width: 100%;
         display: grid;
         grid-template-columns: 1fr;
         grid-template-rows: 3rem auto;
         gap: 0;
-        width: 100%;
+    }
+
+    .grid-container .components{
+        width: 100vw;
     }
 
 }

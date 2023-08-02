@@ -70,10 +70,6 @@ function setAllChecked(event) {
 </template>
 
 <style scoped>
-input[type="checkbox"] {
-    width: 1.1rem;
-    height: 1.1rem;
-}
 
 main .header {
     display: flex;

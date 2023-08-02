@@ -23,15 +23,15 @@ async function onSubmitForm(){
     <div class="container">
         <div class="center">
             <h1>ورود به سیستم</h1>
+
             <form @submit.prevent="onSubmitForm">
                 <div class="txt_field">
                     <input v-model="credentials.national_code" type="text" required>
-                    <span></span>
                     <label>کد ملی </label>
                 </div>
+
                 <div class="txt_field">
                     <input v-model="credentials.password" type="password" required>
-                    <span></span>
                     <label>رمز عبور</label>
                 </div>
                 <input type="submit" value="ورود">
@@ -39,6 +39,7 @@ async function onSubmitForm(){
                     <a href="#">فراموشی رمز عبور</a>
                 </div>
             </form>
+            
         </div>
     </div>
 </template>
@@ -52,10 +53,7 @@ async function onSubmitForm(){
     display: flex;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(120deg, #1d2634, #9e9ea4);
-    height: 100vh;
     overflow: hidden;
-    padding: 25px;
 }
 
 .center {
@@ -77,6 +75,7 @@ async function onSubmitForm(){
 }
 
 form .txt_field {
+    display: flex;
     position: relative;
     border-bottom: 2px solid #adadad;
     margin: 30px 0;
@@ -108,7 +107,7 @@ form .txt_field {
     position: absolute;
     top: 40px;
     left: 0;
-    width: 0%;
+    width: 100%;
     height: 2px;
     background: #2691d9;
     transition: .5s;

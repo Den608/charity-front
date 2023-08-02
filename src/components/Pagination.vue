@@ -4,8 +4,8 @@ const { currentPage, lastPage, user } = defineProps(['currentPage', 'lastPage', 
 
 function pages() {
     let arr = []
-    for (let i = currentPage.value; i < currentPage.value + 4; i++) {
-        if (i < lastPage.value) {
+    for (let i = currentPage; i < currentPage + 4; i++) {
+        if (i < lastPage) {
             arr.push(i)
         }
     }
@@ -14,7 +14,7 @@ function pages() {
 </script>
 
 <template >
-    <div v-if="lastPage.value != 1" class="pagination" dir="ltr">
+    <div class="pagination" dir="ltr">
 
         <a href="#top" @click="emit('prev')">
             <span class="material-symbols-sharp">first_page</span>
@@ -40,7 +40,7 @@ function pages() {
     display: flex;
     align-items: center;
     justify-content: center;
-    display: none;
+    display: flex;
 }
 
 .pagination * {

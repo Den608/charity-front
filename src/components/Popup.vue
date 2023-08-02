@@ -1,5 +1,5 @@
 <script setup>
-import { Transition, ref, onMounted } from 'vue';
+import { Transition} from 'vue';
 import useComponentStore from '../store/componentStore'
 
 const componentStore = useComponentStore()
@@ -24,6 +24,7 @@ const componentStore = useComponentStore()
     background-color: inherit;
     margin: 1rem 0;
     position: absolute;
+    z-index: 1001;
 }
 
 .popup .message {

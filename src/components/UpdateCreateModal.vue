@@ -1,8 +1,6 @@
 <script setup>
-import { defineProps } from 'vue'
-
-const emit = defineEmits(['onClose'])
-const { modalInputs, title } = defineProps(['modalInputs', 'title'])
+const emit = defineEmits(['onClose', 'onSubmit'])
+const { modalInputs, title, errorInput } = defineProps(['modalInputs', 'title', 'errorInput'])
 
 </script>
 
@@ -13,22 +11,28 @@ const { modalInputs, title } = defineProps(['modalInputs', 'title'])
                 close
             </span>
             <h2>{{ title }}</h2>
-                <slot>
+            <slot>
 
-                </slot>
-            <input type="button" value="ثبت">
+            </slot>
+            <label style="color: red; height: 1rem;">{{ errorInput.value }}</label>
+            <input type="button" value="ثبت" @click="emit('onSubmit');">
         </div>
     </div>
 </template>
 
 <style>
 .overlay {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    display: flex;
     align-items: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
     justify-content: center;
+    z-index: 999;
+    overflow: auto;
 }
 
 .overlay .modal {
@@ -43,10 +47,10 @@ const { modalInputs, title } = defineProps(['modalInputs', 'title'])
     justify-content: center;
     padding: var(--card-padding);
     position: relative;
-    width: 30rem;
+    width: 40rem;
     min-height: 30rem;
-    right: -15rem;
-    top: -5rem;
+    max-height: 50rem;
+    overflow-y: auto;
 }
 
 .overlay .modal span {
@@ -63,14 +67,15 @@ const { modalInputs, title } = defineProps(['modalInputs', 'title'])
     transition: all 300ms ease;
 }
 
-.overlay .modal input[type='text'] {
+.overlay .modal input[type='text'],
+input[type="password"] {
     background-color: var(--color-light);
     border-radius: var(--border-radius-1);
     color: var(--color-dark);
     font-size: 1.2rem !important;
-    margin-top: 2rem;
+    margin-top: 1rem;
     width: 90%;
-    height: 4rem;
+    height: 2.4em;
     padding: .6rem;
 
 }
@@ -85,8 +90,10 @@ const { modalInputs, title } = defineProps(['modalInputs', 'title'])
     margin-top: 2rem;
     width: 90%;
     height: 8rem;
+    max-height: 8rem;
+    overflow-y: auto;
     padding: .6rem;
-
+    resize: none;
 }
 
 .overlay .modal input[type='button'] {

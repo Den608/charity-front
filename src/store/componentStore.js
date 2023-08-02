@@ -7,16 +7,19 @@ const useComponentStore = defineStore('components', () =>{
     const popup=ref(false)
     const popupMessage=ref("")
     const popupStatus=ref("success")
+    const alert=ref(false)
+    const alertMessage=ref("")
+    const submitAlert=ref(false)
 
     function showLoading(){
         loading.value=true
     }
 
-    function dismissLoading(){
+    function dismissLoading(delay=1000){
         loading.value=false
     }
 
-    function showPopup(message, status){
+    function showPopup(message, status,timeout=5){
         popup.value=true
         popupMessage.value=message
         popupStatus.value=status
@@ -25,7 +28,17 @@ const useComponentStore = defineStore('components', () =>{
             popup.value=false
             popupMessage.value=""
             popupStatus.value="success"
-        },3000)
+        },timeout*1000)
+    }
+
+    function showAlert(message){
+        alert.value=true
+        alertMessage.value=message
+    }
+
+    function callSubmitAlert(){
+        submitAlert.value=false
+        alert.value=false
     }
 
     return{
@@ -33,6 +46,11 @@ const useComponentStore = defineStore('components', () =>{
         popup,
         popupMessage,
         popupStatus,
+        alert,
+        alertMessage,
+        submitAlert,
+        showAlert,
+        callSubmitAlert,
         showLoading,
         dismissLoading,
         showPopup
