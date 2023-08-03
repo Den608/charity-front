@@ -11,12 +11,21 @@ const useComponentStore = defineStore('components', () =>{
     const alertMessage=ref("")
     const submitAlert=ref(false)
 
+
     function showLoading(){
         loading.value=true
     }
 
     function dismissLoading(delay=1000){
         loading.value=false
+    }
+
+    function withLoadingIndicator(fn) {
+        return async function (...arg) {
+            showLoading()
+            await fn(...arg)
+            dismissLoading()
+        }
     }
 
     function showPopup(message, status,timeout=5){
@@ -53,6 +62,7 @@ const useComponentStore = defineStore('components', () =>{
         callSubmitAlert,
         showLoading,
         dismissLoading,
+        withLoadingIndicator,
         showPopup
     }
 })

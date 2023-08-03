@@ -1,4 +1,4 @@
-import { ref } from 'vue'
+import { ref, withScopeId } from 'vue'
 import axiosInstance from '../services/axios'
 import useComponentStore from '../store/componentStore'
 
@@ -10,6 +10,9 @@ export function useUsersApi() {
     const user_role = ref('')
     const errorInput = ref('')
     const componentStore = useComponentStore()
+    const {withLoadingIndicator,showPopup}=componentStore
+    let timerId
+
 
     async function setAllUsers(role) {
         await axiosInstance.get(`/api/users?role=${role}`)
@@ -21,7 +24,7 @@ export function useUsersApi() {
             })
             .catch(error => {
                 if (error.response.status != 401) {
-                    componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
+                    showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
                 }
             })
     }
@@ -33,9 +36,11 @@ export function useUsersApi() {
         if (!notValid) {
             user['role'] = user_role.value
             await axiosInstance.post(`/api/register/${user_role.value}`, user).then(response => {
-                componentStore.showPopup('با موفقیت افزوده شد !!!', 'success')
-                users.value.unshift(response.data.details.user)
-                usersCount.value++
+                showPopup('با موفقیت افزوده شد !!!', 'success')
+
+                setTimeout(() => {
+                    window.location.reload()
+                }, 3000)
             }).catch(error => {
                 let message = ''
                 if ('username' in error.response.data.errors) {
@@ -47,13 +52,14 @@ export function useUsersApi() {
                 } else {
                     message = 'خطایی در سیستم رخ داده است !!! با پشتیبانی ارتباط بگیرید'
                 }
-                componentStore.showPopup(message, 'error')
+                showPopup(message, 'error')
             })
         } else {
             setTimeout(() => {
                 errorInput.value = ''
             }, 3000)
         }
+
     }
 
     async function updateUser(user) {
@@ -62,11 +68,11 @@ export function useUsersApi() {
 
         if (!notValid) {
             await axiosInstance.put(`/api/users/${user.id}`, user).then(response => {
-                componentStore.showPopup('با موفقیت ویرایش شد !!!', 'success')
+                showPopup('با موفقیت ویرایش شد !!!', 'success')
 
-                const user = users.value.find(user => user.id = response.data.user.id)
-                Object.assign(user, response.data.user)
-
+                setTimeout(() => {
+                    window.location.reload()
+                }, 3000)
             }).catch(error => {
                 let message = ''
                 if ('username' in error.response.data.errors) {
@@ -80,7 +86,7 @@ export function useUsersApi() {
                 } else {
                     message = 'خطایی در سیستم رخ داده است !!! با پشتیبانی ارتباط بگیرید'
                 }
-                componentStore.showPopup(message, 'error')
+                showPopup(message, 'error')
             })
         } else {
             setTimeout(() => {
@@ -91,26 +97,26 @@ export function useUsersApi() {
 
     async function deleteUsers(userList = []) {
         if (userList.length > 0) {
-            let status = 'success'
-            let message = ''
             let user_ids = []
             userList.map(obj => user_ids.push(obj.id))
-            await axiosInstance.post(`/api/users/delete-multi`, {'user_ids':user_ids})
-                .then(response => {
 
-                    message = 'کاربران با موفقیت حذف شدند !!!'
-                    status = 'success'
+            await axiosInstance.post(`/api/users/delete-multi`, { 'user_ids': user_ids })
+                .then(response => {
+                    showPopup('کاربران با موفقیت حذف شدند !!!', 'success')
+
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 3000)
                 })
                 .catch(error => {
-                    message = 'مشکلی پیش امده با پشتیبانی تماس حاصل نمایید'
-                    status = 'error'
+                    showPopup('مشکلی پیش امده با پشتیبانی تماس حاصل نمایید', 'error')
                 })
-
-            componentStore.showPopup(message, status)
         }
     }
 
     async function filterUser(filter_field) {
+        componentStore.showLoading()
+
         let url = ''
         if (checkInputType(filter_field) == 'name') {
             let name = filter_field.split(" ")
@@ -132,63 +138,69 @@ export function useUsersApi() {
                 })
                 .catch(error => {
                     if (error.response.status != 401) {
-                        componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
+                        showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
                     }
                 })
         }
+        componentStore.dismissLoading()
     }
+
+    async function filterUserDebounced(filter_field) {
+        clearTimeout(timerId);
+
+        timerId = setTimeout(async () => {
+            await withLoadingIndicator(filterUser(filter_field));
+        }, 500);
+    }
+
 
     async function nextPage() {
         if (currentPage.value < lastPage.value) {
             currentPage.value++
 
-            componentStore.showLoading()
             await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value}`)
                 .then(response => {
                     users.value = response.data.users
                 })
                 .catch(error => {
                     if (error.response.status != 401) {
-                        componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
+                        showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
                     }
                 })
-            componentStore.dismissLoading()
         }
+
     }
 
     async function prevPage() {
         if (currentPage.value > 1) {
             currentPage.value--
 
-            componentStore.showLoading()
             await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value}`)
                 .then(response => {
                     users.value = response.data.users
                 })
                 .catch(error => {
                     if (error.response.status != 401) {
-                        componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
+                        showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
                     }
                 })
-            componentStore.dismissLoading(0)
         }
     }
 
     async function gotoPage(number) {
+
         if (number <= lastPage.value && number >= 1) {
             currentPage.value = number
 
-            componentStore.showLoading()
             await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${number}`)
                 .then(response => {
                     users.value = response.data.users
                 })
                 .catch(error => {
                     if (error.response.status != 401) {
-                        componentStore.showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
+                        showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error")
                     }
                 })
-            componentStore.dismissLoading()
         }
     }
 
@@ -224,19 +236,20 @@ export function useUsersApi() {
         }
     }
 
+
     return {
         users,
         usersCount,
         currentPage,
         lastPage,
         errorInput,
-        setAllUsers,
-        createUser,
-        updateUser,
-        deleteUsers,
-        filterUser,
-        nextPage,
-        prevPage,
-        gotoPage
+        setAllUsers: withLoadingIndicator(setAllUsers),
+        createUser: withLoadingIndicator(createUser),
+        updateUser: withLoadingIndicator(updateUser),
+        deleteUsers: withLoadingIndicator(deleteUsers),
+        filterUserDebounced,
+        nextPage: withLoadingIndicator(nextPage),
+        prevPage: withLoadingIndicator(prevPage),
+        gotoPage: withLoadingIndicator(gotoPage)
     }
 }

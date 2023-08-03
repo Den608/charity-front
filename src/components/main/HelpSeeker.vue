@@ -35,24 +35,18 @@ const modalMode = ref('create')
 const alertShow = ref(false)
 const alerMessage = ref('')
 
-onMounted(async () => {
-    componentStore.showLoading()
-
-    await userApi.setAllUsers('help_seeker')
-
-    componentStore.dismissLoading()
+onMounted(() => {
+    userApi.setAllUsers('help_seeker')
 })
 
 
-async function submitUser() {
-    componentStore.showLoading()
+function submitUser() {
     if (modalMode.value == 'create') {
-        await userApi.createUser(user)
+        userApi.createUser(user)
         for (const key in user) user[key] = ''
     } else if (modalMode.value == 'edit') {
-        await userApi.updateUser(user)
+        userApi.updateUser(user)
     }
-    componentStore.dismissLoading()
 }
 
 function showCreateModal() {
@@ -63,7 +57,7 @@ function showCreateModal() {
     Object.assign(user, initialUserValue)
 }
 
-async function showEditModal(user_obj) {
+function showEditModal(user_obj) {
     modalShow.value = true
     modalTitle.value = 'ویرایش مددجو'
     delete user.password
@@ -104,28 +98,19 @@ function deleteUsers() {
     }
 }
 
-async function submitDelete(type) {
+function submitDelete(type) {
     alertShow.value = false
     if (type == 'yes') {
-        componentStore.showLoading()
-        await userApi.deleteUsers(usersObjectList.value)
-        componentStore.dismissLoading()
+        userApi.deleteUsers(usersObjectList.value)
     }
-    setTimeout(()=>{
-        window.location.reload()
-    },2000)
 }
 
-watch(userSearchInput, async () => {
-
-    componentStore.showLoading()
+watch(userSearchInput, () => {
     if (userSearchInput.value.length > 2) {
-        await userApi.filterUser(userSearchInput.value)
-    } else if (userSearchInput.value.length<= 2) {
-        await userApi.setAllUsers('help_seeker')
+        userApi.filterUserDebounced(userSearchInput.value)
+    } else if (userSearchInput.value.length <= 2) {
+        userApi.setAllUsers('help_seeker')
     }
-
-    componentStore.dismissLoading()
 })
 </script>
 

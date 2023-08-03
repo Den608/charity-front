@@ -20,7 +20,15 @@ const { modalInputs, title, errorInput } = defineProps(['modalInputs', 'title', 
     </div>
 </template>
 
+
 <style>
+
+input:focus,
+select:focus,
+textarea:focus {
+    font-weight: bold;
+}
+
 .overlay {
     align-items: center;
     background-color: rgba(0, 0, 0, 0.3);
@@ -40,7 +48,6 @@ const { modalInputs, title, errorInput } = defineProps(['modalInputs', 'title', 
     background-color: var(--color-white);
     border-radius: var(--card-border-radius);
     box-shadow: var(--box-shadow);
-    cursor: pointer;
     display: flex;
     flex-direction: column;
     flex-wrap: nowrap;
@@ -55,6 +62,7 @@ const { modalInputs, title, errorInput } = defineProps(['modalInputs', 'title', 
 
 .overlay .modal span {
     color: var(--color-danger);
+    cursor: pointer;
     font-weight: bold;
     position: absolute;
     padding: 1rem;
@@ -68,7 +76,8 @@ const { modalInputs, title, errorInput } = defineProps(['modalInputs', 'title', 
 }
 
 .overlay .modal input[type='text'],
-input[type="password"] {
+input[type="password"],
+input[type="number"] {
     background-color: var(--color-light);
     border-radius: var(--border-radius-1);
     color: var(--color-dark);
@@ -78,6 +87,17 @@ input[type="password"] {
     height: 2.4em;
     padding: .6rem;
 
+}
+
+select {
+    background-color: var(--color-light);
+    border-radius: var(--border-radius-1);
+    color: var(--color-dark);
+    font-size: 1.2rem !important;
+    margin-top: 1rem;
+    width: 90%;
+    height: 2.4em;
+    padding: .6rem;
 }
 
 .overlay .modal textarea {
@@ -99,7 +119,7 @@ input[type="password"] {
 .overlay .modal input[type='button'] {
     background-color: var(--color-primary);
     border-radius: var(--card-border-radius);
-    color: white;
+    color: var(--color-white);
     cursor: pointer;
     font-size: 1.2rem;
     margin-top: 2.2rem;

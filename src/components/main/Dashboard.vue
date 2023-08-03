@@ -4,6 +4,7 @@ import { useUsersApi } from '../../composables/useUsersApi';
 import { usePeoplesAid } from '../../composables/usePeoplesAidApi'
 import { useAidAllocation } from '../../composables/useAidAllocationApi';
 import useComponentStore from '../../store/componentStore'
+import EmptyContent from '../EmptyContent.vue';
 
 const componentStore = useComponentStore()
 const peoplesAid = usePeoplesAid()
@@ -111,7 +112,7 @@ function getTimeDetail(time) {
 
         <div class="recent-help">
             <h2>کمک های اخیر </h2>
-            <table>
+            <table v-if="aidAllocation.length>0">
                 <thead>
                     <tr>
                         <th>نام کالا</th>
@@ -136,15 +137,18 @@ function getTimeDetail(time) {
                     </tr>
                 </tbody>
             </table>
-            <a href="#" class="primary show-all">نمایش همه</a>
+            <EmptyContent v-else/>
+            
+            <a v-if="aidAllocation.length>0"  href="#" class="primary show-all">نمایش همه</a>
+
             <!-- -------------- END OF Table ------------------ -->
         </div>
         <!-- ----------- End Of Recent Help ---------------->
 
-        <div class="left">
-            <div class="top">
-                <h2> بروز رسانی های اخیر</h2>
-                <div class="recent-update">
+        <div class="left" v-if="assignedAids.length>0" >
+            <div class="top" >
+                <h2 > بروز رسانی های اخیر</h2>
+                <div v-if="assignedAids.length>0" class="recent-update">
                     <div class="updates">
                         <div class="update" v-for="aid in assignedAids" :key="aid.id">
                             <div class="update-content">
@@ -156,6 +160,8 @@ function getTimeDetail(time) {
                         </div>
                     </div>
                 </div>
+                <!-- <EmptyContent v-else/> -->
+
             </div>
             <!----------- End of Recent Update ----------------->
         </div>

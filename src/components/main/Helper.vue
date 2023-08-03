@@ -5,7 +5,7 @@ import useComponentStore from '../../store/componentStore';
 import Pagination from '../Pagination.vue';
 import UpdateCreateModal from '../UpdateCreateModal.vue';
 import Alert from '../Alert.vue';
-import {Mutex} from 'async-mutex';
+import { Mutex } from 'async-mutex';
 
 
 const componentStore = useComponentStore()
@@ -35,24 +35,18 @@ const modalMode = ref('create')
 const alertShow = ref(false)
 const alerMessage = ref('')
 
-onMounted(async () => {
-    componentStore.showLoading()
-
-    await userApi.setAllUsers('helper')
-
-    componentStore.dismissLoading()
+onMounted(() => {
+    userApi.setAllUsers('helper')
 })
 
 
-async function submitUser() {
-    componentStore.showLoading()
+function submitUser() {
     if (modalMode.value == 'create') {
-        await userApi.createUser(user)
+        userApi.createUser(user)
         for (const key in user) user[key] = ''
     } else if (modalMode.value == 'edit') {
-        await userApi.updateUser(user)
+        userApi.updateUser(user)
     }
-    componentStore.dismissLoading()
 }
 
 function showCreateModal() {
@@ -104,32 +98,19 @@ function deleteUsers() {
     }
 }
 
-async function submitDelete(type) {
+function submitDelete(type) {
     alertShow.value = false
     if (type == 'yes') {
-        componentStore.showLoading()
-        await userApi.deleteUsers(usersObjectList.value)
-        componentStore.dismissLoading()
+        userApi.deleteUsers(usersObjectList.value)
     }
-    setTimeout(() => {
-        window.location.reload()
-    }, 2000)
 }
 
-watch(userSearchInput, async () => {
-
-    componentStore.showLoading()
+watch(userSearchInput, () => {
     if (userSearchInput.value.length > 2) {
-        console.log('here')
-        console.log(userSearchInput.value.length)
-        await userApi.filterUser(userSearchInput.value)
+         userApi.filterUserDebounced(userSearchInput.value)
     } else if (userSearchInput.value.length <= 2) {
-        await userApi.setAllUsers('helper')
-        console.log('here2')
-        console.log(userSearchInput.value.length <= 2)
+         userApi.setAllUsers('helper')
     }
-    componentStore.dismissLoading()
-
 })
 </script>
 

@@ -1,40 +1,153 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import UpdateCreateModal from '../UpdateCreateModal.vue';
+import Alert from '../Alert.vue';
+import useComponentStore from '../../store/componentStore';
+import { useProductApi } from '../../composables/userProductApi';
+
+const componentStore = useComponentStore()
 
 const title = ref('ثبت  محصول')
 const modalShow = ref(false)
+const modalMode = ref('create')
+
+const alertShow = ref(false)
+const alertMessage = ref('')
+
+const initialProduct = {
+    id: '',
+    name: '',
+    quantity:0,
+    type: '',
+    category_id: '',
+    description: '',
+    catagory: {
+        id: '',
+        name: '',
+        description: ''
+    }
+}
+const product = reactive(initialProduct)
+const productList = ref([])
+const productApi = useProductApi()
+const { products, productCatagories, productCount, currentPage, inputErrors } = productApi
+const productSearchInput = ref('')
+
+onMounted(() => {
+    productApi.setAllProdcuts()
+    productApi.setAllCatagories()
+})
+
 
 function setAllChecked(event) {
     const allCheckboxes = document.querySelectorAll('input[type="checkbox"]')
     allCheckboxes.forEach(el => {
         el.checked = event.target.checked
     })
+    if (event.target.checked) {
+        products.value.map(obj => productList.value.push(obj))
+    } else {
+        productList.value = []
+    }
 }
 
+function checked(event, product_obj) {
+    if (event.target.checked) {
+        productList.value.push(product_obj)
+    } else {
+        const index = productList.value.indexOf(product_obj)
+        productList.value.splice(index, 1)
+    }
+}
+
+function submitProduct() {
+    if (modalMode.value == 'create') {
+        productApi.createProdcut(product)
+    } else if (modalMode.value = 'edit') {
+        productApi.updateProduct(product)
+    }
+}
+
+function showCreateModal() {
+    modalShow.value = true
+    modalMode.value = 'create'
+    for (const key in product) product[key] = ''
+    title.value = 'اضافه کردن محصول جدید'
+}
+
+function showEditModal(product_obj) {
+    modalShow.value = true
+    modalMode.value = 'edit'
+    Object.assign(product, product_obj)
+    title.value = 'ویرایش کردن محصول جدید'
+}
+
+function deletProduct() {
+    if (productList.value.length > 0) {
+        alertMessage.value = 'ایا از حذف محصولات اطمینان دارید؟'
+        alertShow.value = true
+    } else {
+        componentStore.showPopup('هیچ محصولی انتخاب نشده است!!! ', 'error', 2)
+    }
+}
+
+function submitDelete(type) {
+    alertShow.value = false
+    if (type == 'yes') {
+        productApi.deleteProducts(productList.value)
+    }
+}
+
+watch(productSearchInput, () => {
+    if (productSearchInput.value.length > 2) {
+        productApi.filterDebounced(productSearchInput.value)
+    } else if (productSearchInput.value.length <= 2) {
+        productApi.setAllProdcuts()
+    }
+})
 </script>
 
 <template>
     <main>
-        <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="title">
-            <input type="text" placeholder="عنوان">
-            <input type="text" placeholder="دسته بندی">
-            <textarea name="explanation" placeholder="توضیحات"></textarea>
+
+        <Alert v-if="alertShow" @submit="submitDelete" :message="alertMessage" />
+        <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="title" :errorInput="inputErrors"
+            @onSubmit="submitProduct">
+            <input type="text" placeholder="عنوان" v-model="product.name">
+            <input type="number" placeholder="تعداد" min="0" v-model="product.quantity">
+            <select name="type" v-model="product.type">
+                <option value="" selected disabled>نوع محصول </option>
+                <option value="product">کالا</option>
+                <option value="cash">نقدی</option>
+            </select>
+
+            <select name="catagory" v-model="product.category_id">
+                <option value="" selected disabled>دسته بندی</option>
+                <option v-for="catagory in productCatagories" :value="catagory.id" :key="catagory.id">{{ catagory.name }}
+                </option>
+            </select>
+
+            <textarea name="explanation" placeholder="توضیحات" v-model="product.description"></textarea>
         </UpdateCreateModal>
+
         <div class="header">
             <h1>محصولات</h1>
 
             <div class="input-fields">
                 <div class="search-bar">
                     <span class="material-symbols-sharp">travel_explore</span>
-                    <input type="text" placeholder="جستجو ">
+                    <input type="text" placeholder="جستجو " v-model="productSearchInput">
                 </div>
-                <div class="buttons" >
-                    <span class="material-symbols-sharp" style="color: red;">
+                <div class="buttons">
+                    <span class="material-symbols-sharp" style="color: red;" @click="deletProduct">
                         delete
                     </span>
 
-                    <span class="material-symbols-sharp" @click="modalShow = true">
+                    <span class="material-symbols-sharp">
+                        heart_plus
+                    </span>
+                    
+                    <span class="material-symbols-sharp" @click="showCreateModal">
                         add
                     </span>
                 </div>
@@ -52,25 +165,24 @@ function setAllChecked(event) {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><input type="checkbox" /></td>
-                    <td>کفش سایز 43</td>
-                    <td>Lorem ipsum dolor sit amet.</td>
-                    <td class="responsive-hidden">کفش چرمی سایز 43 ارزش تقریبی 800 هزار تومان</td>
+                <tr v-for="product in products" :key="product.id">
+                    <td><input type="checkbox" @change="checked($event, product)" /></td>
+                    <td>{{ product.name }}</td>
+
+                    <td v-if="product.category != null">{{ product.category.name }}</td>
+                    <td class="responsive-hidden">{{ product.description }}</td>
                     <td class="responsive-hidden primary">
-                        <span class="material-symbols-sharp">
+                        <span class="material-symbols-sharp" @click="showEditModal(product)">
                             edit_square
                         </span>
                     </td>
                 </tr>
-
             </tbody>
         </table>
     </main>
 </template>
 
 <style scoped>
-
 main .header {
     display: flex;
     flex-direction: column;
