@@ -20,6 +20,7 @@ export function useProductApi() {
             .then(response => {
                 products.value = response.data.products
                 productCount.value = response.data.count
+                lastPage.value = Math.ceil(productCount.value / 10)
             })
             .catch(error => {
                 showPopup('مشکلی رخ داده ', 'error')
@@ -115,6 +116,43 @@ export function useProductApi() {
         }, 500)
     }
 
+
+    async function nextPage() {
+        if (currentPage.value < lastPage.value) {
+            await axiosInstance.get(`/api/products?page=${currentPage.value++}`)
+                .then(response => {
+                    products.value = response.data.products
+                })
+                .catch(error => {
+                    showPopup('مشکلی رخ داده ', 'error')
+                })
+        }
+    }
+
+    async function prevPage() {
+        if (currentPage.value > 1) {
+            await axiosInstance.get(`/api/products?page=${currentPage.value--}`)
+                .then(response => {
+                    products.value = response.data.products
+                })
+                .catch(error => {
+                    showPopup('مشکلی رخ داده ', 'error')
+                })
+        }
+    }
+
+    async function gotoPage(number) {
+        if (currentPage.value > 1) {
+            await axiosInstance.get(`/api/products?page=${number}`)
+                .then(response => {
+                    products.value = response.data.products
+                })
+                .catch(error => {
+                    showPopup('مشکلی رخ داده ', 'error')
+                })
+        }
+    }
+
     function validateFields(product_obj) {
         if (product_obj.name < 2) {
             return 'عنوان نمیتواند خالی باشد'
@@ -142,6 +180,9 @@ export function useProductApi() {
         createProdcut: withLoadingIndicator(createProdcut),
         updateProduct: withLoadingIndicator(updateProduct),
         deleteProducts: withLoadingIndicator(deleteProducts),
-        filterDebounced
+        filterDebounced,
+        nextPage,
+        prevPage,
+        gotoPage
     }
 }

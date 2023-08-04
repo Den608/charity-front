@@ -222,7 +222,6 @@ export function useUsersApi() {
             return 'فرمت ایمیل اشتباه است '
         } else if (!phonePattern.test(obj.phone_number)) {
             return 'فرمت شماره تلفن اشتباه است '
-
         }
     }
 
