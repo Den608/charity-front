@@ -20,7 +20,7 @@ const useComponentStore = defineStore('components', () =>{
         loading.value=false
     }
 
-    function withLoadingIndicator(fn) {
+    async function withLoadingIndicator(fn) {
         return async function (...arg) {
             showLoading()
             await fn(...arg)

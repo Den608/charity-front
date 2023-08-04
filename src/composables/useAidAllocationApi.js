@@ -18,6 +18,7 @@ export function useAidAllocation() {
         await axiosInstance.get('/api/aid-allocations/?page=1')
             .then((response) => {
                 aidAllocations.value = response.data.allocations
+                console.log(aidAllocations.value)
             }).catch((error) => {
                 console.log(error)
             })

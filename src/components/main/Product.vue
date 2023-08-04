@@ -3,9 +3,10 @@ import { ref, reactive, onMounted, watch } from 'vue'
 import UpdateCreateModal from '../UpdateCreateModal.vue';
 import Alert from '../Alert.vue';
 import useComponentStore from '../../store/componentStore';
-import { useProductApi } from '../../composables/userProductApi';
+import {useProduct } from '../../composables/userProductApi';
 
 const componentStore = useComponentStore()
+const { showLoading ,dismissLoading}=componentStore
 
 const title = ref('ثبت  محصول')
 const modalShow = ref(false)
@@ -29,13 +30,15 @@ const initialProduct = {
 }
 const product = reactive(initialProduct)
 const productList = ref([])
-const productApi = useProductApi()
+const productApi = useProduct()
 const { products, productCatagories, productCount, currentPage, inputErrors } = productApi
 const productSearchInput = ref('')
 
-onMounted(() => {
-    productApi.setAllProdcuts()
-    productApi.setAllCatagories()
+onMounted(async () => {
+    showLoading()
+    await productApi.setAllProdcuts()
+    await productApi.setAllCatagories()
+    dismissLoading()
 })
 
 
@@ -60,12 +63,14 @@ function checked(event, product_obj) {
     }
 }
 
-function submitProduct() {
+async function submitProduct() {
+    showLoading()
     if (modalMode.value == 'create') {
-        productApi.createProdcut(product)
+        await productApi.createProdcut(product)
     } else if (modalMode.value = 'edit') {
-        productApi.updateProduct(product)
+        await productApi.updateProduct(product)
     }
+    dismissLoading()
 }
 
 function showCreateModal() {
@@ -91,18 +96,18 @@ function deletProduct() {
     }
 }
 
-function submitDelete(type) {
+async function submitDelete(type) {
     alertShow.value = false
     if (type == 'yes') {
-        productApi.deleteProducts(productList.value)
+        await productApi.deleteProducts(productList.value)
     }
 }
 
-watch(productSearchInput, () => {
+watch(productSearchInput, async() => {
     if (productSearchInput.value.length > 2) {
-        productApi.filterDebounced(productSearchInput.value)
+        await productApi.filterDebounced(productSearchInput.value)
     } else if (productSearchInput.value.length <= 2) {
-        productApi.setAllProdcuts()
+        await productApi.setAllProdcuts()
     }
 })
 </script>

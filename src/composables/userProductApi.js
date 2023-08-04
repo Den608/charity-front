@@ -3,7 +3,7 @@ import axiosInstance from '../services/axios'
 import useComponentStore from '../store/componentStore'
 import axios from 'axios'
 
-export function useProductApi() {
+export function useProduct() {
     const products = ref([{}])
     const productCatagories = ref([])
     const productCount = ref(0)
@@ -11,7 +11,7 @@ export function useProductApi() {
     const lastPage = ref(1)
     const inputErrors = ref('')
     const componentStore = useComponentStore()
-    const { withLoadingIndicator, showPopup } = componentStore
+    const { withLoadingIndicator, showPopup, showLoading, dismissLoading } = componentStore
     let timeID
 
 
@@ -99,6 +99,7 @@ export function useProductApi() {
 
 
     async function filterProdcuts(key) {
+        showLoading()
         await axiosInstance.get(`/api/products?name=${key}`)
             .then(response => {
                 products.value = response.data.products
@@ -107,9 +108,10 @@ export function useProductApi() {
             .catch(error => {
                 showPopup('مشکلی رخ داده است!!!', 'error')
             })
+        dismissLoading()
     }
 
-    function filterDebounced(key) {
+    async function filterDebounced(key) {
         clearTimeout(timeID)
         timeID = setTimeout(async () => {
             await withLoadingIndicator(filterProdcuts(key));
@@ -118,8 +120,9 @@ export function useProductApi() {
 
 
     async function nextPage() {
+        showLoading()
         if (currentPage.value < lastPage.value) {
-            await axiosInstance.get(`/api/products?page=${currentPage.value++}`)
+            await axiosInstance.get(`/api/products?page=${++currentPage.value}`)
                 .then(response => {
                     products.value = response.data.products
                 })
@@ -127,11 +130,13 @@ export function useProductApi() {
                     showPopup('مشکلی رخ داده ', 'error')
                 })
         }
+        dismissLoading()
     }
 
     async function prevPage() {
+        showLoading()
         if (currentPage.value > 1) {
-            await axiosInstance.get(`/api/products?page=${currentPage.value--}`)
+            await axiosInstance.get(`/api/products?page=${--currentPage.value}`)
                 .then(response => {
                     products.value = response.data.products
                 })
@@ -139,9 +144,11 @@ export function useProductApi() {
                     showPopup('مشکلی رخ داده ', 'error')
                 })
         }
+        dismissLoading()
     }
 
     async function gotoPage(number) {
+        showLoading()
         if (currentPage.value > 1) {
             await axiosInstance.get(`/api/products?page=${number}`)
                 .then(response => {
@@ -151,6 +158,7 @@ export function useProductApi() {
                     showPopup('مشکلی رخ داده ', 'error')
                 })
         }
+        dismissLoading()
     }
 
     function validateFields(product_obj) {
@@ -175,11 +183,11 @@ export function useProductApi() {
         currentPage,
         lastPage,
         inputErrors,
-        setAllProdcuts: withLoadingIndicator(setAllProdcuts),
+        setAllProdcuts,
         setAllCatagories,
-        createProdcut: withLoadingIndicator(createProdcut),
-        updateProduct: withLoadingIndicator(updateProduct),
-        deleteProducts: withLoadingIndicator(deleteProducts),
+        createProdcut,
+        updateProduct,
+        deleteProducts,
         filterDebounced,
         nextPage,
         prevPage,

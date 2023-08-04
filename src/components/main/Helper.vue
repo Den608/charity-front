@@ -9,7 +9,7 @@ import { Mutex } from 'async-mutex';
 
 
 const componentStore = useComponentStore()
-
+const { showLoading, dismissLoading } = componentStore
 // user
 const initialUserValue = {
     username: '',
@@ -35,18 +35,22 @@ const modalMode = ref('create')
 const alertShow = ref(false)
 const alerMessage = ref('')
 
-onMounted(() => {
-    userApi.setAllUsers('helper')
+onMounted(async () => {
+    showLoading()
+    await userApi.setAllUsers('helper')
+    dismissLoading()
 })
 
 
-function submitUser() {
+async function submitUser() {
+    showLoading()
     if (modalMode.value == 'create') {
-        userApi.createUser(user)
+        await userApi.createUser(user)
         for (const key in user) user[key] = ''
     } else if (modalMode.value == 'edit') {
-        userApi.updateUser(user)
+        await userApi.updateUser(user)
     }
+    dismissLoading()
 }
 
 function showCreateModal() {
@@ -98,18 +102,20 @@ function deleteUsers() {
     }
 }
 
-function submitDelete(type) {
+async function submitDelete(type) {
+    showLoading()
     alertShow.value = false
     if (type == 'yes') {
-        userApi.deleteUsers(usersObjectList.value)
+        await userApi.deleteUsers(usersObjectList.value)
     }
+    dismissLoading()
 }
 
-watch(userSearchInput, () => {
-    if (userSearchInput.value.length > 2) {
-         userApi.filterUserDebounced(userSearchInput.value)
-    } else if (userSearchInput.value.length <= 2) {
-         userApi.setAllUsers('helper')
+watch(userSearchInput, async() => {
+    if (userSearchInput.value.length > 1) {
+        await userApi.filterUserDebounced(userSearchInput.value)
+    } else if (userSearchInput.value.length <= 1) {
+        await userApi.setAllUsers('helper')
     }
 })
 </script>

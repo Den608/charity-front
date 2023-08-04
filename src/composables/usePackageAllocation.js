@@ -11,7 +11,7 @@ export function usePeoplesAid() {
     const error = ref('')
     let timeID
     const componentStore = useComponentStore()
-    const { showPopup } = componentStore
+    const { showPopup,showLoading,dismissLoading } = componentStore
 
 
     async function setAllPackAllocation() {
@@ -80,12 +80,14 @@ export function usePeoplesAid() {
     }
 
     async function filterPackAllocation(key) {
+        showLoading()
         await axiosInstance.get(`/api/package-allocations?title=${key}`)
             .then((response) => {
                 packAllocations.value = response.data.packages
             }).catch((error) => {
                 showPopup('مشکلی پیش امده است', 'error')
             })
+            dismissLoading()
     }
 
     function filterDebounced(key) {
@@ -97,6 +99,7 @@ export function usePeoplesAid() {
     }
 
     async function nextPage() {
+        showLoading()
         if (currentPage.value < lastPage.value) {
             await axiosInstance.get(`/api/package-allocations?page=${currentPage.value++}`)
                 .then((response) => {
@@ -105,6 +108,7 @@ export function usePeoplesAid() {
                     showPopup('مشکلی پیش امده است', 'error')
                 })
         }
+        dismissLoading()
     }
 
     async function prevPage() {

@@ -1,45 +1,151 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive, watch, onMounted } from 'vue'
 import UpdateCreateModal from '../UpdateCreateModal.vue';
+import Alert from '../Alert.vue';
+import useComponentStore from '../../store/componentStore';
+import { usePacks } from '../../composables/usePackApi'
 
-const title = ref('ثبت  بسته های مناسبتی')
+
+const componentStore = useComponentStore()
+const { showPopup, showLoading, dismissLoading } = componentStore
+
+//help
+const intialPackValue = {
+    title: '',
+    product_id: '',
+    helper_id: '',
+    quantity: 0
+}
+const packApi = usePacks()
+const { packs, currentPage, lastPage, error } = packApi
+const pack = reactive(intialPackValue)
+const packList = ref([])
+const packSearchInput = ref('')
+
+// modal
+const modalTitle = ref('ثبت پکیج')
 const modalShow = ref(false)
+const modalMode = ref('create')
 
+// alert
+const alertShow = ref(false)
+const alerMessage = ref('')
+
+onMounted(async () => {
+    showLoading()
+    await packApi.setAllPacks()
+    dismissLoading()
+})
+
+async function submitPackage() {
+    showLoading()
+
+    if (modalMode.value == 'create') {
+        await packApi.createPack(pack)
+        for (const key in pack) pack[key] = ''
+    } else if (modalMode.value == 'edit') {
+        await packApi.updatePack(pack)
+    }
+
+    dismissLoading()
+}
+
+function showCreateModal() {
+    modalShow.value = true
+    modalMode.value = 'create'
+    for (const key in pack) pack[key] = ''
+    modalTitle.value = 'ثبت پکیج'
+    Object.assign(pack, intialPackValue)
+}
+
+async function showEditModal(pack_obj) {
+    modalShow.value = true
+    modalTitle.value = 'ویرایش پکیج'
+    Object.assign(pack, pack_obj)
+    modalMode.value = 'edit'
+}
 
 function setAllChecked(event) {
     const allCheckboxes = document.querySelectorAll('input[type="checkbox"]')
     allCheckboxes.forEach(el => {
         el.checked = event.target.checked
     })
+
+    if (event.target.checked) {
+        packs.value.map(obj => {
+            packList.value.push(obj)
+        })
+    } else {
+        packList.value.length = 0
+    }
 }
+
+function checked(pack_obj) {
+    if (pack_obj.checked) {
+        packList.value.push(pack_obj)
+    } else {
+        const index = packList.value.indexOf(pack_obj);
+        packList.value.splice(index, 1)
+    }
+}
+
+function deletePacks() {
+    if (packList.value.length > 0) {
+        alertShow.value = true
+        alerMessage.value = 'ایا از حذف ایتم های انتخابی اطمینان دارید ؟'
+    } else {
+        showPopup('هیچ کمکی برای حذف انتخاب نشده است!!!', 'error', 3)
+    }
+}
+
+async function submitDelete(type) {
+    showLoading()
+    alertShow.value = false
+    if (type == 'yes') {
+        await packApi.deletePacks(packList.value)
+    }
+    dismissLoading()
+}
+
+watch(packSearchInput, async () => {
+    if (packSearchInput.value.length > 1) {
+        await packApi.filterPack(packSearchInput.value)
+    } else if (packSearchInput.value.length <= 1) {
+        await packApi.setAllPacks()
+    }
+})
 
 </script>
 
 <template>
     <main>
-        <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="title">
+        <Alert v-if="alertShow" @submit="submitDelete" @onSubmit="submitPackage" :message="alerMessage" />
+        
+        <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="title" :errorInput="error"
+            @onSubmit="submitPackage">
             <input type="text" placeholder="عنوان">
             <input type="text" placeholder="تعداد">
             <input type="text" placeholder="تعداد کالا">
             <textarea name="explanation" placeholder="توضیحات"></textarea>
         </UpdateCreateModal>
+
         <div class="header">
             <h1>بسته های مناسبتی</h1>
 
             <div class="input-fields">
                 <div class="search-bar">
                     <span class="material-symbols-sharp">travel_explore</span>
-                    <input type="text" placeholder="جستجو ">
+                    <input type="text" placeholder="جستجو " v-model="packSearchInput">
                 </div>
-                <div class="buttons" >
-                    <span class="material-symbols-sharp" style="color: red;">
+                <div class="buttons">
+                    <span class="material-symbols-sharp" style="color: red;" @click="deletePacks">
                         delete
                     </span>
                     <span class="material-symbols-sharp">
-                        assignment_add
+                        heart_plus
                     </span>
 
-                    <span class="material-symbols-sharp" @click="modalShow = true">
+                    <span class="material-symbols-sharp" @click="showCreateModal">
                         add
                     </span>
                 </div>
@@ -58,15 +164,14 @@ function setAllChecked(event) {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><input type="checkbox" /></td>
-                    <td>پکیج اهدایی کمپین رمضان 1403</td>
-                    <td>6</td>
-                    <td>5</td>
-                    <td class="responsive-hidden">Lor12 ipsum dolor sit amet consectetur adipisicing elit. Fugit sed sit
-                        voluptatum....</td>
-                        <td class="responsive-hidden primary">
-                        <span class="material-symbols-sharp">
+                <tr v-for="pack in packs" :key="pack.id">
+                    <td><input type="checkbox" v-model="pack.checked" @change="checked(pack)"/></td>
+                    <td>{{ pack.title }}</td>
+                    <td>{{ pack.quantity }}</td>
+                    <td>{{ pack.package_items_count }}</td>
+                    <td class="responsive-hidden">{{ pack.description }}</td>
+                    <td class="responsive-hidden primary">
+                        <span class="material-symbols-sharp" @click="showEditModal(pack)">
                             edit_square
                         </span>
                     </td>

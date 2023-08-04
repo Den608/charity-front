@@ -10,7 +10,7 @@ export function useUsersApi() {
     const user_role = ref('')
     const errorInput = ref('')
     const componentStore = useComponentStore()
-    const {withLoadingIndicator,showPopup}=componentStore
+    const { showLoading,dismissLoading, showPopup } = componentStore
     let timerId
 
 
@@ -149,17 +149,19 @@ export function useUsersApi() {
         clearTimeout(timerId);
 
         timerId = setTimeout(async () => {
-            await withLoadingIndicator(filterUser(filter_field));
+            await filterUser(filter_field);
         }, 500);
     }
 
 
     async function nextPage() {
-        if (currentPage.value < lastPage.value) {
+        showLoading()
 
-            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value++}`)
+        if (currentPage.value < lastPage.value) {
+            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${++currentPage.value}`)
                 .then(response => {
                     users.value = response.data.users
+
                 })
                 .catch(error => {
                     if (error.response.status != 401) {
@@ -168,12 +170,14 @@ export function useUsersApi() {
                 })
         }
 
+        dismissLoading()
     }
 
     async function prevPage() {
+        showLoading()
         if (currentPage.value > 1) {
 
-            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value--}`)
+            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${--currentPage.value}`)
                 .then(response => {
                     users.value = response.data.users
                 })
@@ -183,10 +187,12 @@ export function useUsersApi() {
                     }
                 })
         }
+
+        dismissLoading()
     }
 
     async function gotoPage(number) {
-
+        showLoading()
         if (number <= lastPage.value && number >= 1) {
             currentPage.value = number
 
@@ -200,6 +206,7 @@ export function useUsersApi() {
                     }
                 })
         }
+        dismissLoading()
     }
 
 
@@ -240,13 +247,13 @@ export function useUsersApi() {
         currentPage,
         lastPage,
         errorInput,
-        setAllUsers: withLoadingIndicator(setAllUsers),
-        createUser: withLoadingIndicator(createUser),
-        updateUser: withLoadingIndicator(updateUser),
-        deleteUsers: withLoadingIndicator(deleteUsers),
+        setAllUsers,
+        createUser,
+        updateUser,
+        deleteUsers,
         filterUserDebounced,
-        nextPage: withLoadingIndicator(nextPage),
-        prevPage: withLoadingIndicator(prevPage),
-        gotoPage: withLoadingIndicator(gotoPage)
+        nextPage,
+        prevPage,
+        gotoPage
     }
 }

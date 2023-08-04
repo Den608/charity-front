@@ -6,7 +6,7 @@ import useComponentStore from '../../store/componentStore';
 import {useAids} from '../../composables/useAidsApi'
 
 const componentStore=useComponentStore()
-const {showPopup}=componentStore
+const {showPopup,showLoading,dismissLoading}=componentStore
 
 //help
 const intialPeopleAid={
@@ -15,8 +15,8 @@ const intialPeopleAid={
     helper_id:'',
     quantity:0
 }
-const AidApi=useAids()
-const {peopleAids,currentPage,lastPage,error}=AidApi
+const aidApi=useAids()
+const {peopleAids,currentPage,lastPage,error}=aidApi
 const aid = reactive(intialPeopleAid)
 const aidstList=ref([])
 const aidsSearchInput=ref('')
@@ -30,17 +30,23 @@ const modalMode = ref('create')
 const alertShow = ref(false)
 const alerMessage = ref('')
 
-onMounted(() => {
-    AidApi.setAllAids()
+onMounted(async() => {
+    showLoading()
+    await aidApi.setAllAids()
+    dismissLoading()
 })
 
-function submitAid() {
+async function submitAid() {
+    showLoading()
+
     if (modalMode.value == 'create') {
-        AidApi.createUser(aid)
+        await aidApi.createUser(aid)
         for (const key in aid) user[key] = ''
     } else if (modalMode.value == 'edit') {
-        AidApi.updateUser(aid)
-    }
+        await aidApi.updateUser(aid)
+    } 
+
+    dismissLoading()
 }
 
 function showCreateModal() {
@@ -91,18 +97,20 @@ function deleteAids() {
     }
 }
 
-function submitDelete(type) {
+async function submitDelete(type) {
+    showLoading()
     alertShow.value = false
     if (type == 'yes') {
-        AidApi.deleteAids(aidstList.value)
+        await aidApi.deleteAids(aidstList.value)
     }
+    dismissLoading()
 }
 
-watch(aidsSearchInput, () => {
+watch(aidsSearchInput, async() => {
     if (aidsSearchInput.value.length > 1) {
-        AidApi.filterAid(aidsSearchInput.value)
+        await aidApi.filterAids(aidsSearchInput.value)
     } else if (aidsSearchInput.value.length <= 1) {
-        AidApi.setAllAids()
+        await aidApi.setAllAids()
     }
 })
 
@@ -124,7 +132,7 @@ watch(aidsSearchInput, () => {
             <div class="input-fields">
                 <div class="search-bar">
                     <span class="material-symbols-sharp">travel_explore</span>
-                    <input type="text" placeholder="جستجو ">
+                    <input type="text" placeholder="جستجو " v-model="aidsSearchInput">
                 </div>
                 <div class="buttons">
                     <span class="material-symbols-sharp" style="color: red;" @click="deleteAids">
