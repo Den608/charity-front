@@ -17,9 +17,10 @@ export function usePeoplesAid() {
     async function setAllPacks() {
         await axiosInstance.get('/api/packages?page=1')
             .then((response) => {
-                packs.value = response.data.count
+                packs.value = response.data.packages
+                packCount.value=response.data.count
             }).catch((error) => {
-                console.log(error)
+                showPopup('مشکلی پیش امده است','error')
             })
     }
 
@@ -28,7 +29,11 @@ export function usePeoplesAid() {
         if (!notValid) {
             await axiosInstance.post('/api/packages?page=1', pack)
                 .then((response) => {
-                    cashDonations.value = response.data.count
+                    showPopup('با موفقیت ساخته شد!!!','success')
+
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 2000);
                 }).catch((error) => {
                     showPopup('مشکلی پیش امده است','error')
                 })
@@ -43,7 +48,11 @@ export function usePeoplesAid() {
         if (!notValid) {
             await axiosInstance.put('/api/packages', peopleAid)
                 .then((response) => {
-                    cashDonations.value = response.data.count
+                    showPopup('با موفقیت ویرایش شد!!!','success')
+
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 2000);
                 }).catch((error) => {
                     showPopup('مشکلی پیش امده است','error')
                 })
@@ -52,13 +61,17 @@ export function usePeoplesAid() {
         }
     }
 
-    async function deletePacks(peopleAidList = []) {
-        if (peopleAidList.length > 0) {
-            const people_aid_ids = peopleAidList.map(obj => obj.id)
+    async function deletePacks(packList = []) {
+        if (packList.length > 0) {
+            const pack_id = packList.map(obj => obj.id)
 
-            await axiosInstance.put('/api/packages/delete-multi', { 'people_aid_ids': people_aid_ids })
+            await axiosInstance.put('/api/packages/delete-multi', { 'package_ids': pack_id })
                 .then((response) => {
-                    cashDonations.value = response.data.count
+                    showPopup('با موفقیت حذف شد!!!','success')
+
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 2000);
                 }).catch((error) => {
                     showPopup('مشکلی پیش امده است','error')
                 })
@@ -68,7 +81,7 @@ export function usePeoplesAid() {
     async function filterPack(key) {
         await axiosInstance.get(`/api/packages?title=${key}`)
             .then((response) => {
-                cashDonations.value = response.data.count
+                packs.value = response.data.packages
             }).catch((error) => {
                 showPopup('مشکلی پیش امده است','error')
             })
@@ -117,11 +130,7 @@ export function usePeoplesAid() {
 
     function ValidateFields(obj) {
         if (obj.title == '') {
-            return Error('عنوان نمیتواند خالی باشد')
-        } else if (obj.product_id == '') {
-            return Error('کالای مورد نظر را انتخاب کنید')
-        } else if (obj.helper_id) {
-            return Error('مددیار مورد نظر خود را وارد نمایید')
+            return 'عنوان نمیتواند خالی باشد'
         } else if (obj.quantity <= 0) {
             return Error('تعداد کالا های اهدایی را مشخص کنید')
         }

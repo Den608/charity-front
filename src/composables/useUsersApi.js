@@ -156,9 +156,8 @@ export function useUsersApi() {
 
     async function nextPage() {
         if (currentPage.value < lastPage.value) {
-            currentPage.value++
 
-            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value}`)
+            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value++}`)
                 .then(response => {
                     users.value = response.data.users
                 })
@@ -173,9 +172,8 @@ export function useUsersApi() {
 
     async function prevPage() {
         if (currentPage.value > 1) {
-            currentPage.value--
 
-            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value}`)
+            await axiosInstance.get(`/api/users?role=${user_role.value}&&page=${currentPage.value--}`)
                 .then(response => {
                     users.value = response.data.users
                 })
