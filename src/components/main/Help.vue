@@ -1,27 +1,121 @@
 <script setup>
-import { ref } from 'vue'
+import { ref,watch,onMounted,reactive } from 'vue'
 import UpdateCreateModal from '../UpdateCreateModal.vue';
+import Alert from '../Alert.vue';
+import useComponentStore from '../../store/componentStore';
+import {useAids} from '../../composables/useAidsApi'
 
-const title = ref('ثبت کمک جدید')
+const componentStore=useComponentStore()
+const {showPopup}=componentStore
+
+//help
+const intialPeopleAid={
+    title:'',
+    product_id:'',
+    helper_id:'',
+    quantity:0
+}
+const AidApi=useAids()
+const {peopleAids,currentPage,lastPage,error}=AidApi
+const aid = reactive(intialPeopleAid)
+const aidstList=ref([])
+const aidsSearchInput=ref('')
+
+// modal
+const modalTitle = ref('ثبت مددیار')
 const modalShow = ref(false)
+const modalMode = ref('create')
+
+// alert
+const alertShow = ref(false)
+const alerMessage = ref('')
+
+onMounted(() => {
+    AidApi.setAllAids()
+})
+
+function submitAid() {
+    if (modalMode.value == 'create') {
+        AidApi.createUser(aid)
+        for (const key in aid) user[key] = ''
+    } else if (modalMode.value == 'edit') {
+        AidApi.updateUser(aid)
+    }
+}
+
+function showCreateModal() {
+    modalShow.value = true
+    modalMode.value = 'create'
+    for (const key in aid) aid[key] = ''
+    modalTitle.value = 'ثبت کمک'
+    Object.assign(user, initialUserValue)
+}
+
+async function showEditModal(user_obj) {
+    modalShow.value = true
+    modalTitle.value = 'ویرایش کمک'
+    Object.assign(user, user_obj)
+    modalMode.value = 'edit'
+}
 
 function setAllChecked(event) {
     const allCheckboxes = document.querySelectorAll('input[type="checkbox"]')
     allCheckboxes.forEach(el => {
         el.checked = event.target.checked
     })
+
+    if (event.target.checked) {
+        peopleAids.value.map(obj => {
+            aidstList.value.push(obj)
+        })
+    } else {
+        aidstList.value.length = 0
+    }
 }
+
+function checked(aid_obj) {
+    if (aid_obj.checked) {
+        aidstList.value.push(aid_obj)
+    } else {
+        const index = aidstList.value.indexOf(aid_obj);
+        aidstList.value.splice(index, 1)
+    }
+}
+
+function deleteAids() {
+    if (aidstList.value.length > 0) {
+        alertShow.value = true
+        alerMessage.value = 'ایا از حذف ایتم های انتخابی اطمینان دارید ؟'
+    } else {
+        showPopup('هیچ کمکی برای حذف انتخاب نشده است!!!', 'error', 3)
+    }
+}
+
+function submitDelete(type) {
+    alertShow.value = false
+    if (type == 'yes') {
+        AidApi.deleteAids(aidstList.value)
+    }
+}
+
+watch(aidsSearchInput, () => {
+    if (aidsSearchInput.value.length > 1) {
+        AidApi.filterAid(aidsSearchInput.value)
+    } else if (aidsSearchInput.value.length <= 1) {
+        AidApi.setAllAids()
+    }
+})
 
 </script>
 
 <template>
     <main>
-        
-        <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="title">
-            <input type="text" placeholder="عنوان">
-            <input type="text" placeholder="تعداد">
-            <input type="text" placeholder="اهدا کننده">
-            <textarea name="explanation" placeholder="توضیحات"></textarea>
+        <Alert v-if="alertShow" @submit="submitDelete" @onSubmit="submitAid" :message="alerMessage" />
+        <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="modalTitle" errorInput="error">
+            <input type="text" placeholder="عنوان" v-model="aid.title">
+            <input type="number" placeholder="تعداد" v-model="aid.quantity">
+            <input type="text" placeholder="اهدا کننده" v-model="aid.helper_id">
+            <textarea name="explanation" placeholder="توضیحات" v-model="aid.description"></textarea>
         </UpdateCreateModal>
 
         <div class="header">
@@ -33,14 +127,15 @@ function setAllChecked(event) {
                     <input type="text" placeholder="جستجو ">
                 </div>
                 <div class="buttons">
-                    <span class="material-symbols-sharp" style="color: red;">
+                    <span class="material-symbols-sharp" style="color: red;" @click="deleteAids">
                         delete
                     </span>
+
                     <span class="material-symbols-sharp">
-                        assignment_add
+                        heart_plus
                     </span>
 
-                    <span class="material-symbols-sharp" @click="modalShow = true">
+                    <span class="material-symbols-sharp" @click="showCreateModal">
                         add
                     </span>
                 </div>
@@ -59,14 +154,14 @@ function setAllChecked(event) {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td><input type="checkbox" /></td>
-                    <td>کفش سایز 43</td>
-                    <td>6</td>
-                    <td>پرویز</td>
-                    <td class="responsive-hidden">کفش چرمی سایز 43 ارزش تقریبی 800 هزار تومان</td>
+                <tr v-for="aid in peopleAids">
+                    <td><input type="checkbox" v-model="aid.checked" @change="checked(aid)"/></td>
+                    <td>{{ aid.title }}</td>
+                    <td>{{aid.quantity}}</td>
+                    <td>{{ aid.helper_name.first_name + ' ' +aid.helper_name.last_name }}</td>
+                    <td class="responsive-hidden">{{ aid.description }}</td>
                     <td class="responsive-hidden primary">
-                        <span class="material-symbols-sharp">
+                        <span class="material-symbols-sharp" @click="showEditModal">
                             edit_square
                         </span>
                     </td>

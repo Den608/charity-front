@@ -3,7 +3,7 @@ import axiosInstance from "../services/axios";
 import useComponentStore from '../store/componentStore';
 
 
-export function usePeoplesAid() {
+export function useAids() {
     const peopleAids = ref([])
     const peopleAidCount = ref(0)
     const currentPage = ref(1)
@@ -11,34 +11,17 @@ export function usePeoplesAid() {
     const cashDonations = ref(0)
     const productDonationsCount = ref(0)
     const productDonations = ref({})
-    const error = ref('')
+    const inputError = ref('')
     let timeID
     const componentStore = useComponentStore()
-    const { showPopup } = componentStore
+    const { showPopup, withLoadingIndicator } = componentStore
 
-    async function setCashDonation() {
-        await axiosInstance.get('/api/people-aids?type=cash')
-            .then((response) => {
-                cashDonations.value = response.data.count
-            }).catch((error) => {
-                console.log(error)
-            })
-    }
-
-    async function setProductDonation() {
-        await axiosInstance.get('/api/people-aids?type=product')
-            .then((response) => {
-                productDonations.value = response.data
-                productDonationsCount.value = response.data.count
-            }).catch((error) => {
-                console.log(error)
-            })
-    }
+    
 
     async function setAllAids() {
         await axiosInstance.get('/api/people-aids')
             .then((response) => {
-                peopleAids.value = response.data.people_aid
+                peopleAids.value = response.data.peopleAids
                 peopleAidCount.value = response.data.count
                 lastPage.value = Math.ceil(peopleAidCount.value / 10)
             }).catch((error) => {
@@ -61,7 +44,7 @@ export function usePeoplesAid() {
                     showPopup('مشکلی پیش امده است', 'error')
                 })
         } else {
-            error.value = notValid
+            inputError.value = notValid
         }
     }
 
@@ -79,7 +62,7 @@ export function usePeoplesAid() {
                     showPopup('مشکلی پیش امده است', 'error')
                 })
         } else {
-            error.value = notValid
+            inputError.value = notValid
         }
     }
 
@@ -87,9 +70,14 @@ export function usePeoplesAid() {
         if (peopleAidList.length > 0) {
             const people_aid_ids = peopleAidList.map(obj => obj.id)
 
-            await axiosInstance.put('/api/people-aids/delete-multi', { 'people_aid_ids': people_aid_ids })
+            await axiosInstance.post('/api/people-aids/delete-multi', { 'people_aid_ids': people_aid_ids })
                 .then((response) => {
-                    cashDonations.value = response.data.count
+                    showPopup('با موفقیت حذف شد', 'success')
+
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 2000);
+
                 }).catch((error) => {
                     showPopup('مشکلی پیش امده است', 'error')
                 })
@@ -99,7 +87,7 @@ export function usePeoplesAid() {
     async function filterAids(key) {
         await axiosInstance.get(`/api/people-aids?title=${key}`)
             .then((response) => {
-                cashDonations.value = response.data
+                peopleAids.value = response.data.peopleAids
             })
             .catch((error) => {
                 showPopup('مشکلی پیش امده است', 'error')
@@ -118,7 +106,7 @@ export function usePeoplesAid() {
         if (currentPage.value < lastPage.value) {
             await axiosInstance.get(`/api/people-aids?page=${currentPage.value++}`)
                 .then((response) => {
-                    cashDonations.value = response.data.count
+                    peopleAids.value = response.data.peopleAids
                 }).catch((error) => {
                     showPopup('مشکلی پیش امده است', 'error')
                 })
@@ -129,7 +117,7 @@ export function usePeoplesAid() {
         if (currentPage.value > 1) {
             await axiosInstance.get(`/api/people-aids?page=${currentPage.value--}`)
                 .then((response) => {
-                    cashDonations.value = response.data.count
+                    peopleAids.value = response.data.peopleAids
                 }).catch((error) => {
                     showPopup('مشکلی پیش امده است', 'error')
                 })
@@ -140,7 +128,7 @@ export function usePeoplesAid() {
         if (number <= lastPage.value && number > 0) {
             await axiosInstance.get(`/api/people-aids?page=${number}`)
                 .then((response) => {
-                    cashDonations.value = response.data.count
+                    peopleAids.value = response.data.peopleAids
                 }).catch((error) => {
                     showPopup('مشکلی پیش امده است', 'error')
                 })
@@ -160,18 +148,18 @@ export function usePeoplesAid() {
     }
 
     return {
-        cashDonations,
-        productDonations,
-        productDonationsCount,
-        setCashDonation,
-        setProductDonation,
-        setAllAids,
-        createAids,
-        updateAids,
-        deleteAids,
-        filterDebounced,
+        peopleAids,
+        currentPage,
+        lastPage,
+        error: inputError,
+        setAllAids: withLoadingIndicator(setAllAids),
+        createAids: withLoadingIndicator(createAids),
+        updateAids:withLoadingIndicator(updateAids),
+        deleteAids:withLoadingIndicator(deleteAids),
+        filterAid:withLoadingIndicator(filterDebounced),
         nextPage,
         prevPage,
         gotoPage
     }
 }
+

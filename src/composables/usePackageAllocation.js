@@ -143,6 +143,7 @@ export function usePeoplesAid() {
         packAllocations,
         lastPage,
         currentPage,
+        error,
         setAllPackAllocation,
         createPackAllocation,
         updatePackAllocation,

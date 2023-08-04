@@ -14,7 +14,7 @@ export function useAidAllocation() {
             })
     }
 
-    async function setAidAllocation() {
+    async function setAllAidAllocations() {
         await axiosInstance.get('/api/aid-allocations/?page=1')
             .then((response) => {
                 aidAllocations.value = response.data.allocations
@@ -27,6 +27,6 @@ export function useAidAllocation() {
         assignedAids,
         aidAllocations,
         setAssignedAids,
-        setAidAllocation
+        setAllAidAllocations
     }
 }

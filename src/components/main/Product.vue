@@ -142,10 +142,6 @@ watch(productSearchInput, () => {
                     <span class="material-symbols-sharp" style="color: red;" @click="deletProduct">
                         delete
                     </span>
-
-                    <span class="material-symbols-sharp">
-                        heart_plus
-                    </span>
                     
                     <span class="material-symbols-sharp" @click="showCreateModal">
                         add

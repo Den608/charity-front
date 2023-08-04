@@ -1,14 +1,14 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useUsersApi } from '../../composables/useUsersApi';
-import { usePeoplesAid } from '../../composables/usePeoplesAidApi'
+import { useAids } from '../../composables/useAidsApi'
 import { useAidAllocation } from '../../composables/useAidAllocationApi';
 import useComponentStore from '../../store/componentStore'
 import EmptyContent from '../EmptyContent.vue';
 
 const componentStore = useComponentStore()
-const peoplesAid = usePeoplesAid()
-const { cashDonations, productDonations, productDonationsCount } = peoplesAid
+const aidApi = useAids()
+const { cashDonations, productDonations, productDonationsCount } = aidApi
 const userApi = useUsersApi()
 const { usersCount } = userApi
 const aidAllocation = useAidAllocation()
@@ -17,8 +17,8 @@ const { assignedAids, aidAllocations } = aidAllocation
 
 onMounted(async () => {
     componentStore.showLoading()
-    await peoplesAid.setCashDonation()
-    await peoplesAid.setProductDonation()
+    await aidApi.setCashDonation()
+    await aidApi.setProductDonation()
     await userApi.setAllUsers('help_seeker')
     await aidAllocation.setAidAllocation()
     await aidAllocation.setAssignedAids()

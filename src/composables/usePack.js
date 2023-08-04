@@ -137,10 +137,17 @@ export function usePeoplesAid() {
     }
 
     return {
-        cashDonations,
-        productDonations,
-        productDonationsCount,
-        setCashDonation,
-        setProductDonation,
+        packs,
+        currentPage,
+        lastPage,
+        error,
+        setAllPacks,
+        createPack,
+        updatePack,
+        deletePacks,
+        filterDebounced,
+        prevPage,
+        nextPage,
+        gotoPage
     }
 }
