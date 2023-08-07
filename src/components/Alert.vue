@@ -1,5 +1,5 @@
 <script setup>
-import { Transition,defineProps } from 'vue';
+import { Transition } from 'vue';
 
 const emit=defineEmits(['submit'])
 const {message}=defineProps(['message'])

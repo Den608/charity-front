@@ -63,8 +63,7 @@ watchEffect(() => {
         <Transition name="side">
             <SideBar v-show="sidebarShow" class="sidebar" @changeTab="renderPage" @sideClose="sidebarShow = false" />
         </Transition>
-
-        
+ 
         <Transition name="tab" appear>
         <component :is="tabs[currentTab]" class="components"></component>
         </Transition>
