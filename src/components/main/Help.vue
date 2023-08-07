@@ -121,9 +121,9 @@ watch(aidsSearchInput, async() => {
         <Alert v-if="alertShow" @submit="submitDelete" @onSubmit="submitAid" :message="alerMessage" />
         <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="modalTitle" errorInput="error">
             <input type="text" placeholder="عنوان" v-model="aid.title">
-            <input type="number" placeholder="تعداد" v-model="aid.quantity">
+            <input type="number" placeholder="دسته بندی محصول در انبار" v-model="aid.product_id">
             <input type="text" placeholder="اهدا کننده" v-model="aid.helper_id">
-            <textarea name="explanation" placeholder="توضیحات" v-model="aid.description"></textarea>
+            <input type="text" placeholder="تعداد" v-model="aid.quantity">
         </UpdateCreateModal>
 
         <div class="header">

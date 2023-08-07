@@ -16,22 +16,22 @@ function pages() {
 <template >
     <div class="pagination" dir="ltr">
 
-        <a href="#top" @click="emit('prev')">
+        <a @click="emit('prev')">
             <span class="material-symbols-sharp">first_page</span>
         </a>
 
-        <a class="current" href="#top" @click="emit('goTo', currentPage)">
+        <!-- <a class="current" href="#top" @click="emit('goTo', currentPage)">
             {{ currentPage }}
-        </a>
+        </a> -->
 
-        <a v-for="page in pages()" class="page" href="#top" @click="emit('goTo', page)">
+        <a v-for="page in pages()" class="page" @click="emit('goTo', page)">
             {{ page }}
         </a> ...
 
-        <a class="page" href="#top" @click="emit('goTo', lastPage)">
+        <a class="page" @click="emit('goTo', lastPage)">
             {{ lastPage }}
         </a>
-        <a href="#top" @click="emit('next')"><span class="material-symbols-sharp">last_page </span></a>
+        <a @click="emit('next')"><span class="material-symbols-sharp">last_page </span></a>
     </div>
 </template>
 
