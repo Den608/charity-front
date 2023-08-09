@@ -7,7 +7,7 @@ const { modalInputs, title, errorInput } = defineProps(['modalInputs', 'title', 
 <template>
     <div class="overlay">
         <div class="modal">
-            <span class="material-symbols-sharp" @click="emit('onClose')">
+            <span class="material-symbols-sharp" id="close" @click="emit('onClose')">
                 close
             </span>
             <h2>{{ title }}</h2>
@@ -15,7 +15,7 @@ const { modalInputs, title, errorInput } = defineProps(['modalInputs', 'title', 
 
             </slot>
             <label style="color: red; height: 1rem;">{{ errorInput.value }}</label>
-            <input type="button" value="ثبت" @click="emit('onSubmit');">
+            <input id="submit" type="button" value="ثبت" @click="emit('onSubmit');">
         </div>
     </div>
 </template>
@@ -23,11 +23,11 @@ const { modalInputs, title, errorInput } = defineProps(['modalInputs', 'title', 
 
 <style>
 
-input:focus,
+/* input:focus,
 select:focus,
 textarea:focus {
     font-weight: bold;
-}
+} */
 
 .overlay {
     align-items: center;
@@ -39,7 +39,7 @@ textarea:focus {
     width: 100vw;
     height: 100vh;
     justify-content: center;
-    z-index: 999;
+    z-index: 9;
     overflow: auto;
 }
 
@@ -57,10 +57,10 @@ textarea:focus {
     width: 40rem;
     min-height: 30rem;
     max-height: 50rem;
-    overflow-y: auto;
+    /* overflow-y: auto; */
 }
 
-.overlay .modal span {
+.overlay .modal #close {
     color: var(--color-danger);
     cursor: pointer;
     font-weight: bold;
@@ -70,7 +70,7 @@ textarea:focus {
     right: 1rem;
 }
 
-.overlay .modal span:hover {
+.overlay .modal #close:hover {
     color: red;
     transition: all 300ms ease;
 }
@@ -86,7 +86,6 @@ input[type="number"] {
     width: 90%;
     height: 2.4em;
     padding: .6rem;
-
 }
 
 select {
@@ -116,7 +115,7 @@ select {
     resize: none;
 }
 
-.overlay .modal input[type='button'] {
+.overlay .modal #submit {
     background-color: var(--color-primary);
     border-radius: var(--card-border-radius);
     color: var(--color-white);

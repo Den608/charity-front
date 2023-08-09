@@ -1,342 +1,400 @@
 <script setup>
-import { ref,watch,onMounted,reactive } from 'vue'
-import UpdateCreateModal from '../UpdateCreateModal.vue';
-import Alert from '../Alert.vue';
-import useComponentStore from '../../store/componentStore';
-import {useAids} from '../../composables/useAidsApi'
+import { ref, watch, onMounted, reactive, computed } from "vue";
+import UpdateCreateModal from "../UpdateCreateModal.vue";
+import Alert from "../Alert.vue";
+import DropDown from "../DropDown.vue";
+import useComponentStore from "../../store/componentStore";
+import { useAids } from "../../composables/useAidsApi";
+import { useProduct } from "../../composables/userProductApi";
+import { useUsersApi } from "../../composables/useUsersApi";
+const componentStore = useComponentStore();
+const { showPopup, showLoading, dismissLoading } = componentStore;
 
-const componentStore=useComponentStore()
-const {showPopup,showLoading,dismissLoading}=componentStore
+//aid
+const intialPeopleAid = {
+  title: "",
+  product_id: "",
+  helper_id: "",
+  quantity: 0,
+};
+const aidApi = useAids();
+const { peopleAids, currentPage, lastPage, inputError } = aidApi;
+const aid = reactive(intialPeopleAid);
+const aidstList = ref([]);
+const aidsSearchInput = ref("");
 
-//help
-const intialPeopleAid={
-    title:'',
-    product_id:'',
-    helper_id:'',
-    quantity:0
-}
-const aidApi=useAids()
-const {peopleAids,currentPage,lastPage,error}=aidApi
-const aid = reactive(intialPeopleAid)
-const aidstList=ref([])
-const aidsSearchInput=ref('')
+// product
+const productApi = useProduct();
+const {
+  products,
+  lastPage: productLastPage,
+  currentPage: productCurrentPage,
+} = productApi;
+const productIntialValue = ref("");
+
+// helper
+const useUser = useUsersApi();
+const { users, currentPage: userCurrentPage, lastPage: userLastPage } = useUser;
+const helperModalIntialvalue = ref("");
 
 // modal
-const modalTitle = ref('ثبت مددیار')
-const modalShow = ref(false)
-const modalMode = ref('create')
+const modalTitle = ref("ثبت کمک جدید");
+const modalShow = ref(false);
+const modalMode = ref("create");
 
 // alert
-const alertShow = ref(false)
-const alerMessage = ref('')
+const alertShow = ref(false);
+const alerMessage = ref("");
 
-onMounted(async() => {
-    showLoading()
-    await aidApi.setAllAids()
-    dismissLoading()
-})
+onMounted(async () => {
+  showLoading();
+  await aidApi.setAllAids();
+  await productApi.setAllProdcuts();
+  await useUser.setAllUsers("helper");
+  dismissLoading();
+});
 
 async function submitAid() {
-    showLoading()
+  showLoading();
+  if (modalMode.value == "create") {
+    await aidApi.createAids(aid);
+    for (const key in aid) aid[key] = "";
+  } else if (modalMode.value == "edit") {
+    await aidApi.updateAids(aid);
+  }
 
-    if (modalMode.value == 'create') {
-        await aidApi.createUser(aid)
-        for (const key in aid) user[key] = ''
-    } else if (modalMode.value == 'edit') {
-        await aidApi.updateUser(aid)
-    } 
-
-    dismissLoading()
+  dismissLoading();
 }
 
 function showCreateModal() {
-    modalShow.value = true
-    modalMode.value = 'create'
-    for (const key in aid) aid[key] = ''
-    modalTitle.value = 'ثبت کمک'
-    Object.assign(user, initialUserValue)
+  modalShow.value = true;
+  modalMode.value = "create";
+  for (const key in aid) aid[key] = "";
+  modalTitle.value = "ثبت کمک جدید";
+  productIntialValue.value = "نام محصول";
+  helperModalIntialvalue.value = "نام مددیار";
+  Object.assign(aid, intialPeopleAid);
 }
 
-async function showEditModal(user_obj) {
-    modalShow.value = true
-    modalTitle.value = 'ویرایش کمک'
-    Object.assign(user, user_obj)
-    modalMode.value = 'edit'
+async function showEditModal(aid_obj) {
+  modalShow.value = true;
+  modalTitle.value = "ویرایش کمک";
+  Object.assign(aid, aid_obj);
+  productIntialValue.value = aid.product_name.title
+    ? aid.product_name.title
+    : "نام محصول";
+  helperModalIntialvalue.value = aid.helper_name.first_name
+    ? aid.helper_name.first_name + " " + aid.helper_name.last_name
+    : "نام مددیار";
+  modalMode.value = "edit";
 }
 
 function setAllChecked(event) {
-    const allCheckboxes = document.querySelectorAll('input[type="checkbox"]')
-    allCheckboxes.forEach(el => {
-        el.checked = event.target.checked
-    })
+  const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+  allCheckboxes.forEach((el) => {
+    el.checked = event.target.checked;
+  });
 
-    if (event.target.checked) {
-        peopleAids.value.map(obj => {
-            aidstList.value.push(obj)
-        })
-    } else {
-        aidstList.value.length = 0
-    }
+  if (event.target.checked) {
+    peopleAids.value.map((obj) => {
+      aidstList.value.push(obj);
+    });
+  } else {
+    aidstList.value.length = 0;
+  }
 }
 
 function checked(aid_obj) {
-    if (aid_obj.checked) {
-        aidstList.value.push(aid_obj)
-    } else {
-        const index = aidstList.value.indexOf(aid_obj);
-        aidstList.value.splice(index, 1)
-    }
+  if (aid_obj.checked) {
+    aidstList.value.push(aid_obj);
+  } else {
+    const index = aidstList.value.indexOf(aid_obj);
+    aidstList.value.splice(index, 1);
+  }
 }
 
 function deleteAids() {
-    if (aidstList.value.length > 0) {
-        alertShow.value = true
-        alerMessage.value = 'ایا از حذف ایتم های انتخابی اطمینان دارید ؟'
-    } else {
-        showPopup('هیچ کمکی برای حذف انتخاب نشده است!!!', 'error', 3)
-    }
+  if (aidstList.value.length > 0) {
+    alertShow.value = true;
+    alerMessage.value = "ایا از حذف ایتم های انتخابی اطمینان دارید ؟";
+  } else {
+    showPopup("هیچ کمکی برای حذف انتخاب نشده است!!!", "error", 3);
+  }
 }
 
 async function submitDelete(type) {
-    showLoading()
-    alertShow.value = false
-    if (type == 'yes') {
-        await aidApi.deleteAids(aidstList.value)
-    }
-    dismissLoading()
+  showLoading();
+  alertShow.value = false;
+  if (type == "yes") {
+    await aidApi.deleteAids(aidstList.value);
+  }
+  dismissLoading();
 }
 
-watch(aidsSearchInput, async() => {
-    if (aidsSearchInput.value.length > 1) {
-        await aidApi.filterAids(aidsSearchInput.value)
-    } else if (aidsSearchInput.value.length <= 1) {
-        await aidApi.setAllAids()
-    }
-})
-
+watch(aidsSearchInput, async () => {
+  if (aidsSearchInput.value.length > 1) {
+    await aidApi.filterAids(aidsSearchInput.value);
+  } else if (aidsSearchInput.value.length <= 1) {
+    await aidApi.setAllAids();
+  }
+});
 </script>
 
 <template>
-    <main>
-        <Alert v-if="alertShow" @submit="submitDelete" @onSubmit="submitAid" :message="alerMessage" />
-        <UpdateCreateModal v-if="modalShow" @onClose="modalShow = false" :title="modalTitle" errorInput="error">
-            <input type="text" placeholder="عنوان" v-model="aid.title">
-            <input type="number" placeholder="دسته بندی محصول در انبار" v-model="aid.product_id">
-            <input type="text" placeholder="اهدا کننده" v-model="aid.helper_id">
-            <input type="text" placeholder="تعداد" v-model="aid.quantity">
-        </UpdateCreateModal>
+  <main>
+    <Alert
+      v-if="alertShow"
+      @submit="submitDelete"
+      @onSubmit="submitAid"
+      :message="alerMessage"
+    />
+    <UpdateCreateModal
+      v-if="modalShow"
+      @onClose="modalShow = false"
+      @onSubmit="submitAid"
+      :title="modalTitle"
+      :errorInput="inputError"
+    >
+      <input type="text" placeholder="عنوان" v-model="aid.title" />
 
-        <div class="header">
-            <h1>کمک های مردمی</h1>
+      <DropDown
+        :lastpage="productLastPage"
+        :current="productCurrentPage"
+        :dataList="products"
+        :initialValue="productIntialValue"
+        :apiComposable="productApi"
+        @onFilter="productApi.filterDebounced"
+        @onSelect="(data) => (aid.product_id = data.id)"
+      />
 
-            <div class="input-fields">
-                <div class="search-bar">
-                    <span class="material-symbols-sharp">travel_explore</span>
-                    <input type="text" placeholder="جستجو " v-model="aidsSearchInput">
-                </div>
-                <div class="buttons">
-                    <span class="material-symbols-sharp" style="color: red;" @click="deleteAids">
-                        delete
-                    </span>
+      <DropDown
+        :lastpage="userLastPage"
+        :current="userCurrentPage"
+        :dataList="users"
+        :initialValue="helperModalIntialvalue"
+        :apiComposable="useUser"
+        @onFilter="useUser.filterUserDebounced"
+        @onSelect="(data) => (aid.helper_id = data.id)"
+      />
+      <input type="number" placeholder="تعداد" v-model="aid.quantity" />
+    </UpdateCreateModal>
 
-                    <span class="material-symbols-sharp">
-                        heart_plus
-                    </span>
+    <div class="header">
+      <h1>کمک های مردمی</h1>
 
-                    <span class="material-symbols-sharp" @click="showCreateModal">
-                        add
-                    </span>
-                </div>
-            </div>
+      <div class="input-fields">
+        <div class="search-bar">
+          <span class="material-symbols-sharp">travel_explore</span>
+          <input type="text" placeholder="جستجو " v-model="aidsSearchInput" />
         </div>
+        <div class="buttons">
+          <span
+            class="material-symbols-sharp"
+            style="color: red"
+            @click="deleteAids"
+          >
+            delete
+          </span>
 
-        <table>
-            <thead>
-                <tr>
-                    <th><input type="checkbox" @change="setAllChecked" /></th>
-                    <th>عنوان</th>
-                    <th>موجودی</th>
-                    <th>اهدا کننده</th>
-                    <th class="responsive-hidden"> توضیحات </th>
-                    <th class="responsive-hidden"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="aid in peopleAids">
-                    <td><input type="checkbox" v-model="aid.checked" @change="checked(aid)"/></td>
-                    <td>{{ aid.title }}</td>
-                    <td>{{aid.quantity}}</td>
-                    <td>{{ aid.helper_name.first_name + ' ' +aid.helper_name.last_name }}</td>
-                    <td class="responsive-hidden">{{ aid.description }}</td>
-                    <td class="responsive-hidden primary">
-                        <span class="material-symbols-sharp" @click="showEditModal">
-                            edit_square
-                        </span>
-                    </td>
-                </tr>
+          <span class="material-symbols-sharp"> heart_plus </span>
 
-            </tbody>
-        </table>
-    </main>
+          <span class="material-symbols-sharp" @click="showCreateModal">
+            add
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th><input type="checkbox" @change="setAllChecked" /></th>
+          <th>عنوان</th>
+          <th>موجودی</th>
+          <th>اهدا کننده</th>
+          <th class="responsive-hidden">توضیحات</th>
+          <th class="responsive-hidden"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="aid in peopleAids" :key="aid.id">
+          <td>
+            <inputF
+              type="checkbox"
+              v-model="aid.checked"
+              @change="checked(aid)"
+            />
+          </td>
+          <td>{{ aid.title }}</td>
+          <td>{{ aid.quantity }}</td>
+          <td>
+            {{ aid.helper_name.first_name + " " + aid.helper_name.last_name }}
+          </td>
+          <td class="responsive-hidden">{{ aid.description }}</td>
+          <td class="responsive-hidden primary">
+            <span class="material-symbols-sharp" @click="showEditModal(aid)">
+              edit_square
+            </span>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </main>
 </template>
 
 <style scoped>
 input[type="checkbox"] {
-    width: 1.1rem;
-    height: 1.1rem;
+  width: 1.1rem;
+  height: 1.1rem;
 }
 
 main .header {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 main .header .input-fields {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 main .header .search-bar {
-    align-items: center;
-    background-color: var(--color-white);
-    border-radius: .8rem;
-    color: var(--color-dark);
-    display: flex;
-    gap: .3rem;
-    height: 3rem;
-    width: 20rem;
+  align-items: center;
+  background-color: var(--color-white);
+  border-radius: 0.8rem;
+  color: var(--color-dark);
+  display: flex;
+  gap: 0.3rem;
+  height: 3rem;
+  width: 20rem;
 }
 
 main .header .search-bar input {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    border-radius: inherit;
-    background-color: inherit;
-    color: inherit;
-    font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border-radius: inherit;
+  background-color: inherit;
+  color: inherit;
+  font-size: 1.4rem;
 }
 
 main .header .search-bar span {
-    color: green;
+  color: green;
 }
 
 main .header .buttons {
-    display: flex;
-    flex-direction: row;
-    margin-left: 4rem;
-    gap: .8rem;
+  display: flex;
+  flex-direction: row;
+  margin-left: 4rem;
+  gap: 0.8rem;
 }
 
 main .header .buttons span {
-    height: 3rem;
-    width: 3rem;
-    color: rgb(0, 155, 0);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    background-color: var(--color-white);
-    cursor: pointer;
-    box-shadow: var(--box-shadow);
-    transition: all 300ms ease;
+  height: 3rem;
+  width: 3rem;
+  color: rgb(0, 155, 0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background-color: var(--color-white);
+  cursor: pointer;
+  box-shadow: var(--box-shadow);
+  transition: all 300ms ease;
 }
 
 main .header .buttons span:hover {
-    box-shadow: none;
-    transition: all 300ms ease;
+  box-shadow: none;
+  transition: all 300ms ease;
 }
 
-
 main table {
-    border-radius: var(--card-border-radius);
-    text-align: center;
-    transition: all 300ms ease;
-    width: 100%;
-    padding: var(--card-padding);
+  border-radius: var(--card-border-radius);
+  text-align: center;
+  transition: all 300ms ease;
+  width: 100%;
+  padding: var(--card-padding);
 }
 
 main table thead tr {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    margin-bottom: 1rem;
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin-bottom: 1rem;
 }
 
-
 main table tbody tr {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    height: 6rem;
-    background-color: var(--color-white);
-    border-radius: var(--card-border-radius);
-    box-shadow: var(--box-shadow);
-    transition: all 300ms ease;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  height: 6rem;
+  background-color: var(--color-white);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--box-shadow);
+  transition: all 300ms ease;
 }
 
 main table tbody tr:hover {
-    box-shadow: none;
-    transition: all 300ms ease;
+  box-shadow: none;
+  transition: all 300ms ease;
 }
 
 main table tbody tr td {
-    flex-basis: 20%;
+  flex-basis: 20%;
 }
 
 main table tbody tr td:first-child {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 main table thead tr th {
-    flex-basis: 20%;
+  flex-basis: 20%;
 }
 
 main table thead tr th:first-child {
-    flex-basis: 8%;
+  flex-basis: 8%;
 }
 
 main table tbody tr td:first-child {
-    flex-basis: 8%;
+  flex-basis: 8%;
 }
 
-@media screen and (max-width:768px) {
+@media screen and (max-width: 768px) {
+  main {
+    width: 100vw;
+  }
 
-    main {
-        width: 100vw;
-    }
+  main .header {
+    margin-top: 2rem;
+  }
 
-    main .header {
-        margin-top: 2rem;
-    }
+  main .header * {
+    margin: 0 1rem 0 0;
+  }
 
-    main .header * {
-        margin: 0 1rem 0 0;
-    }
+  main table thead tr th {
+    flex-basis: 33%;
+  }
 
-    main table thead tr th {
-        flex-basis: 33%;
-    }
+  main table tbody tr td {
+    flex-basis: 33%;
+  }
 
-    main table tbody tr td {
-        flex-basis: 33%;
-    }
+  table .responsive-hidden {
+    display: none;
+  }
 
-    table .responsive-hidden {
-        display: none;
-    }
-
-    main table tbody tr {
-        box-shadow: none;
-    }
+  main table tbody tr {
+    box-shadow: none;
+  }
 }
 </style>
-

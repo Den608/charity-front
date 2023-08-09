@@ -24,7 +24,7 @@ const componentStore = useComponentStore()
     background-color: inherit;
     margin: 1rem 0;
     position: absolute;
-    z-index: 1001;
+    z-index: 11;
 }
 
 .popup .message {

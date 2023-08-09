@@ -1,88 +1,164 @@
 <script setup>
-import { ref, watch } from 'vue'
-import Pagination from './Pagination.vue';
+import { ref, watch, onMounted } from "vue";
+import Pagination from "./Pagination.vue";
 
-const input = ref('')
-const emit = defineEmits(['onTextChange'])
-const { dataList } = defineProps(['dataList'])
+const menu = ref(false);
+const input = ref("");
+const emit = defineEmits(["onFilter", "onSelect", "api"]);
+const { dataList, current, lastpage, initialValue, api } = defineProps([
+  "dataList",
+  "current",
+  "lastpage",
+  "initialValue",
+  "next",
+  "prev",
+]);
 
+const selectValue = ref(initialValue);
+
+function onSelect(data) {
+  menu.value = false;
+  if (data.name) {
+    selectValue.value = data.name;
+  } else if (data.first_name) {
+    selectValue.value = data.first_name + " " + data.last_name;
+  }
+  emit("onSelect", data);
+}
+
+function onOpenerClick() {
+  menu.value = !menu.value;
+}
 
 watch(input, () => {
-    emit('onTextChange', input.value)
-})
+  emit("onFilter", input.value);
+});
 </script>
 
 <template>
-    <div class="menu-container">
-
-        <!-- TextBox -->
-        <div class="menu">
-            <div class="input">
-                <span class="material-symbols-sharp">arrow_drop_down</span>
-                <input type="text" v-model="input">
-            </div>
-
-
-            <!-- Menu -->
-            <div class="drop-down" id="drop-menu">
-                <Pagination v-if="dataList" id="pagination" :currentPage="1" :lastPage="10" @next="" @prev="" @goTo="" />
-
-                <ul v-if="dataList">
-                    <li v-for="data in dataList" :key="Math.random(0, 1000)">{{ data }}</li>
-                </ul>
-            </div>
-        </div>
+  <div class="menu-layout">
+    <div class="opener">
+      <span
+        v-if="!menu"
+        class="material-symbols-sharp ico"
+        id="opener-span"
+        @click="onOpenerClick"
+        >expand_more</span
+      >
+      <span
+        v-if="menu"
+        class="material-symbols-sharp ico"
+        id="opener-span"
+        @click="onOpenerClick"
+        >close</span
+      >
+      <input
+        type="button"
+        id="opener-button"
+        :value="selectValue"
+        @click="onOpenerClick"
+      />
     </div>
+
+    <div v-if="menu" class="menu" id="#menu">
+      <div class="input">
+        <span class="material-symbols-sharp search">search</span>
+        <input type="text" v-model="input" />
+      </div>
+
+      <!-- Menu -->
+      <div class="data-list" i>
+        <ul>
+          <li v-for="data in dataList" @click="onSelect(data)" :key="data.id">
+            {{ data.name }} {{ data.first_name }}
+            {{ data.last_name }}
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-.menu-container {
-    width: inherit;
-    background-color: var(--color-white);
+.menu-layout {
+  align-items: center;
+  background-color: var(--color-light);
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  height: 2.4rem;
+  margin-top: 1rem;
+  position: relative;
 }
 
-.menu-container .menu {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-
+.menu-layout .opener {
+  border-radius: var(--border-radius-1);
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: center;
 }
 
-.menu-container .menu .input {
-    width: inherit;
-    display: flex;
-    background-color: white;
-    align-items: center;
-    height: 2.5rem;
+.menu-layout .opener #opener-button {
+  width: inherit;
+  background-color: inherit;
+  text-align: right;
 }
 
-
-.menu-container .menu .input input {
-    display: flex;
-    align-items: center;
-    height: inherit;
-    width: inherit;
-    background-color: inherit;
-    color: inherit;
-    font-size: 1.4rem;
+.menu-layout .menu {
+  align-items: center;
+  background-color: var(--color-primary);
+  border-radius: 0 0 1rem 1rem;
+  color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-height: 20rem;
+  overflow: auto;
+  padding: 0.6rem;
+  position: absolute;
+  top: 2.4rem;
+  width: 100%;
+  z-index: 12;
 }
 
-.menu-container .menu .input span {
-    height: inherit;
+.menu-layout .menu .input {
+  width: inherit;
+  display: flex;
+  background-color: white;
+  align-items: center;
+  height: 2.4rem;
 }
 
-.menu-container .menu .input span:hover {
-    background-color: var(--color-primary);
-    color: var(--color-white);
+.menu-layout .menu .input input {
+  background-color: var(--color-white);
+  border-radius: var(--border-radius-1);
+  width: 100%;
+  height: 2.4rem;
+  padding-right: 2rem;
+  margin: 0px !important;
 }
 
-.menu-container .drop-down ul li {
-    height: 2rem;
-    text-align: center;
+.menu-layout .menu .input .search {
+  font-weight: bold;
+  position: absolute;
+  text-align: center;
+}
+.menu-layout .menu .data-list {
+  width: 100%;
+}
+.menu-layout .menu .data-list ul {
+  width: 100%;
+}
+.menu-layout .menu .data-list ul li {
+  height: 2rem;
+  width: inherit;
+  text-align: center;
 }
 
-.menu-container .drop-down ul li:hover {
-    background-color: var(--color-primary);
-    color: var(--color-white);
+.menu-layout .menu .data-list ul li:hover {
+  background-color: var(--color-light);
+  color: var(--color-white);
+  transition: all 300ms ease;
 }
 </style>

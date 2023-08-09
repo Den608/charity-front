@@ -18,7 +18,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
+    z-index: 10;
     background-color: rgba(0, 0, 0, 0.3);
     overflow: auto;
     /* Add this line to enable scrolling when content overflows */

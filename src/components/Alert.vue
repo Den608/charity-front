@@ -35,7 +35,7 @@ function submitAction(type){
     width: 100vw;
     height: 100vh;
     justify-content: center;
-    z-index: 999;
+    z-index: 8;
     overflow: auto;
 }
 
@@ -47,7 +47,7 @@ function submitAction(type){
     height: 10rem;
     width: 20rem;
     position: relative;
-    z-index: 999;
+    z-index: 9;
     padding: 2rem;
 }
 
