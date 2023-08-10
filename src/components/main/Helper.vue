@@ -173,7 +173,6 @@ watch(userSearchInput, async () => {
         </div>
       </div>
     </div>
-
     <Pagination
       v-if="usersCount > 10"
       id="pagination"

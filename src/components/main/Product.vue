@@ -3,6 +3,7 @@ import { ref, reactive, onMounted, watch } from "vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
 import useComponentStore from "../../store/componentStore";
+import Pagination from "../Pagination.vue";
 import { useProduct } from "../../composables/userProductApi";
 
 const componentStore = useComponentStore();
@@ -31,7 +32,7 @@ const initialProduct = {
 const product = reactive(initialProduct);
 const productList = ref([]);
 const productApi = useProduct();
-const { products, productCatagories, productCount, currentPage, inputErrors } =
+const { products, productCatagories, lastPage, currentPage, inputErrors } =
   productApi;
 const productSearchInput = ref("");
 
@@ -180,6 +181,16 @@ watch(productSearchInput, async () => {
         </div>
       </div>
     </div>
+    
+    <Pagination
+      v-if="lastPage>1"
+      id="pagination"
+      :currentPage="currentPage"
+      :lastPage="lastPage"
+      @next="productApi.nextPage"
+      @prev="productApi.prevPage"
+      @goTo="productApi.gotoPage"
+    />
 
     <table>
       <thead>

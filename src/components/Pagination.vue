@@ -1,53 +1,59 @@
 <script setup>
-const emit = defineEmits(["next", "prev", "goTo"]);
-const { currentPage, lastPage, user } = defineProps([
-  "currentPage",
-  "lastPage",
-  "user",
-]);
+import { onMounted, ref, toRef } from "vue";
 
-function pages() {
-  let arr = [];
-  for (let i = currentPage; i < currentPage + 3; i++) {
-    if (i < lastPage && i!=1) {
-      arr.push(i);
+const pageList = ref([]);
+const emit = defineEmits(["next", "prev", "goTo"]);
+const props = defineProps(["currentPage", "lastPage"]);
+const { lastPage } = props;
+const currentPageToRef = toRef(props, "currentPage");
+
+function refactorPages(page) {
+  console.log(page)
+  pageList.value = [];
+  pageList.value.push(1);
+  for (let i = page - 2; i <= page + 2; i++) {
+    if (i < lastPage && i > 1) {
+      pageList.value.push(i);
     }
   }
-  return arr;
+  pageList.value.push(lastPage);
 }
 
 function gotoPage(page) {
+  refactorPages(page);
   emit("goTo", page);
 }
+
+onMounted(() => {
+  refactorPages(1);
+});
 </script>
 
 <template >
   <div class="pagination" dir="ltr">
-    <a @click="emit('prev')">
+    <a
+      @click="
+        emit('prev');
+        refactorPages(currentPageToRef-1);
+      "
+    >
       <span class="material-symbols-sharp">first_page</span>
     </a>
 
-    <a :class="currentPage==1?'current':'page'" @click="gotoPage(1)">
-      {{ 1 }}
-    </a>
-    <span v-if="pages.length>3">...</span>
-
     <a
-      v-for="page in pages()"
-      :class="currentPage == page ? 'current' : 'page'"
+      v-for="page in pageList"
+      :class="currentPageToRef == page ? 'current' : 'page'"
       @click="gotoPage(page)"
       :key="page"
     >
       {{ page }}
     </a>
 
-    <span v-if="pages.length>3">...</span>
-
-    <a :class="currentPage==2?'current':'page'" @click="gotoPage(lastPage)">
-      {{ lastPage }}
-    </a>
-
-    <a @click="emit('next')"
+    <a
+      @click="
+        emit('next');
+        refactorPages(currentPageToRef+1);
+      "
       ><span class="material-symbols-sharp">last_page </span></a
     >
   </div>
@@ -72,8 +78,8 @@ function gotoPage(page) {
   display: flex;
   text-align: center;
   justify-content: center;
-  border-radius: 0.4rem;
-  background-color: var(--color-primary);
+  border-radius: 50%;
+  background-color: var(--color-primary-light);
   color: var(--color-white);
 }
 
@@ -83,13 +89,13 @@ function gotoPage(page) {
   display: flex;
   text-align: center;
   justify-content: center;
-  border-radius: 0.4rem;
+  border-radius: 50%;
   background-color: var(--color-info-light);
-  color: var(--color-dark);
-  border: 1px solid var(--color-dark);
+  color: var(--color-white);
+  border: 1px solid var(--color-primary-light);
 }
 
 .pagination .page:hover {
-  color: var(--color-danger);
+  background-color: var(--color-danger);
 }
 </style>

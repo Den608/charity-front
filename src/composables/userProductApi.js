@@ -143,7 +143,7 @@ export function useProduct() {
 
   async function prevPage() {
     showLoading();
-    if (currentPage.value > 1) {
+    if (currentPage.value > 0) {
       await axiosInstance
         .get(`/api/products?page=${--currentPage.value}`)
         .then((response) => {
@@ -158,11 +158,12 @@ export function useProduct() {
 
   async function gotoPage(number) {
     showLoading();
-    if (currentPage.value > 1) {
+    if (number >= 1) {
       await axiosInstance
         .get(`/api/products?page=${number}`)
         .then((response) => {
           products.value = response.data.products;
+          currentPage.value=number
         })
         .catch((error) => {
           showPopup("مشکلی رخ داده ", "error");
