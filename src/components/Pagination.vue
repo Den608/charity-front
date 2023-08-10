@@ -9,7 +9,7 @@ const { currentPage, lastPage, user } = defineProps([
 function pages() {
   let arr = [];
   for (let i = currentPage; i < currentPage + 3; i++) {
-    if (i < lastPage) {
+    if (i < lastPage && i!=1) {
       arr.push(i);
     }
   }
@@ -27,23 +27,23 @@ function gotoPage(page) {
       <span class="material-symbols-sharp">first_page</span>
     </a>
 
-    <a class="page" @click="gotoPage(1)">
+    <a :class="currentPage==1?'current':'page'" @click="gotoPage(1)">
       {{ 1 }}
     </a>
-    ...
+    <span v-if="pages.length>3">...</span>
 
     <a
-      v-for="(page, index) in pages()"
-      class="page"
-      :class="index == 0 ? 'current' : ''"
+      v-for="page in pages()"
+      :class="currentPage == page ? 'current' : 'page'"
       @click="gotoPage(page)"
       :key="page"
     >
       {{ page }}
     </a>
-    ...
 
-    <a class="page" @click="gotoPage(lastPage)">
+    <span v-if="pages.length>3">...</span>
+
+    <a :class="currentPage==2?'current':'page'" @click="gotoPage(lastPage)">
       {{ lastPage }}
     </a>
 

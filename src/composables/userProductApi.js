@@ -61,7 +61,7 @@ export function useProduct() {
   }
 
   async function updateProduct(product_obj) {
-    const notValid = ValidateFields(peopleAid);
+    const notValid = validateFields(product_obj);
     inputError.value = notValid;
     if (!notValid) {
       await axiosInstance
