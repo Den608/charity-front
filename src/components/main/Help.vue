@@ -37,6 +37,10 @@ const useUser = useUsersApi();
 const { users, currentPage: userCurrentPage, lastPage: userLastPage } = useUser;
 const helperModalIntialvalue = ref("");
 
+
+//alocate
+
+
 // modal
 const modalTitle = ref("ثبت کمک جدید");
 const modalShow = ref(false);
@@ -58,11 +62,12 @@ async function submitAid() {
   showLoading();
   if (modalMode.value == "create") {
     await aidApi.createAids(aid);
-    for (const key in aid) aid[key] = "";
+    if (inputError.value.length == 0) {
+      for (const key in aid) aid[key] = "";
+    }
   } else if (modalMode.value == "edit") {
     await aidApi.updateAids(aid);
   }
-
   dismissLoading();
 }
 
@@ -80,12 +85,11 @@ async function showEditModal(aid_obj) {
   modalShow.value = true;
   modalTitle.value = "ویرایش کمک";
   Object.assign(aid, aid_obj);
-  productIntialValue.value = aid.product_name.title
-    ? aid.product_name.title
-    : "نام محصول";
+  productIntialValue.value = aid.product.name ? aid.product.name : "نام محصول";
   helperModalIntialvalue.value = aid.helper_name.first_name
     ? aid.helper_name.first_name + " " + aid.helper_name.last_name
     : "نام مددیار";
+  console.log(aid);
   modalMode.value = "edit";
 }
 
@@ -153,10 +157,8 @@ watch(aidsSearchInput, async () => {
       @onClose="modalShow = false"
       @onSubmit="submitAid"
       :title="modalTitle"
-      :errorInput="inputError"
+      :errorInput="aidApi.inputError"
     >
-      <input type="text" placeholder="عنوان" v-model="aid.title" />
-
       <DropDown
         :lastpage="productLastPage"
         :current="productCurrentPage"
@@ -164,7 +166,12 @@ watch(aidsSearchInput, async () => {
         :initialValue="productIntialValue"
         :apiComposable="productApi"
         @onFilter="productApi.filterDebounced"
-        @onSelect="(data) => (aid.product_id = data.id)"
+        @onSelect="
+          (data) => {
+            aid.product_id = data.id;
+            aid.title = data.name;
+          }
+        "
       />
 
       <DropDown
@@ -174,9 +181,10 @@ watch(aidsSearchInput, async () => {
         :initialValue="helperModalIntialvalue"
         :apiComposable="useUser"
         @onFilter="useUser.filterUserDebounced"
-        @onSelect="(data) => (aid.helper_id = data.id)"
+        @onSelect="(data) => (aid.helper_id = data.helper.id)"
       />
       <input type="number" placeholder="تعداد" v-model="aid.quantity" />
+      <input type="text" placeholder="توضیحات" v-model="aid.description" />
     </UpdateCreateModal>
 
     <div class="header">
@@ -219,7 +227,7 @@ watch(aidsSearchInput, async () => {
       <tbody>
         <tr v-for="aid in peopleAids" :key="aid.id">
           <td>
-            <inputF
+            <input
               type="checkbox"
               v-model="aid.checked"
               @change="checked(aid)"

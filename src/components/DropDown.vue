@@ -24,6 +24,7 @@ function onSelect(data) {
     selectValue.value = data.first_name + " " + data.last_name;
   }
   emit("onSelect", data);
+  console.log(data)
 }
 
 function onOpenerClick() {
@@ -32,6 +33,21 @@ function onOpenerClick() {
 
 watch(input, () => {
   emit("onFilter", input.value);
+});
+
+function closeMenuOnClickOutside(event) {
+  if (
+    menu.value &&
+    !document.getElementById("drop-down-menu").contains(event.target) &
+      (event.target.id != "opener-button") &
+      (event.target.id != "opener-span")
+  ) {
+    menu.value = false;
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", closeMenuOnClickOutside);
 });
 </script>
 
@@ -59,8 +75,7 @@ watch(input, () => {
         @click="onOpenerClick"
       />
     </div>
-
-    <div v-if="menu" class="menu" id="#menu">
+    <div v-if="menu" class="menu" id="drop-down-menu">
       <div class="input">
         <span class="material-symbols-sharp search">search</span>
         <input type="text" v-model="input" />
@@ -107,9 +122,8 @@ watch(input, () => {
 
 .menu-layout .menu {
   align-items: center;
-  background-color: var(--color-primary);
-  border-radius: 0 0 1rem 1rem;
-  color: var(--color-white);
+  background-color: var(--color-background);
+  border-radius: 0 0 0.4rem 0.4rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -151,14 +165,15 @@ watch(input, () => {
   width: 100%;
 }
 .menu-layout .menu .data-list ul li {
+  color: var(--color-dark);
   height: 2rem;
-  width: inherit;
   text-align: center;
+  width: inherit;
 }
 
 .menu-layout .menu .data-list ul li:hover {
   background-color: var(--color-light);
-  color: var(--color-white);
+  color: var(--color-primary);
   transition: all 300ms ease;
 }
 </style>

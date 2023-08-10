@@ -9,6 +9,8 @@ import Help from '../components/main/Help.vue';
 import Package from '../components/main/Package.vue';
 import Student from '../components/main/Student.vue';
 import Product from '../components/main/Product.vue';
+import AidAlocation from '../components/main/AidAlocation.vue';
+import PackageAllocation from '../components/main/PackageAllocation.vue';
 import Profile from '../components/main/Profile.vue';
 
 //this line set the initial tab
@@ -30,6 +32,8 @@ const tabs = [
     Help,
     Package,
     Student,
+    AidAlocation,
+    PackageAllocation,
     Profile
 ]
 

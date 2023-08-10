@@ -16,7 +16,7 @@ const { cashDonations, productDonations } = aidApi
 const userApi = useUsersApi()
 const { usersCount } = userApi
 
-//aloocation
+//alocation
 const aidAllocation = useAidAllocation()
 const { assignedAids, aidAllocations } = aidAllocation
 

@@ -16,118 +16,112 @@ export function useAids() {
   const { showPopup, showLoading, dismissLoading } = componentStore;
 
   async function setCashDonation() {
-    await axiosInstance
-      .get("/api/people-aids?type=cash")
-      .then((response) => {
-        cashDonations.value = response.data.count;
-      })
-      .catch((error) => {
-        showPopup("مشکلی رخ داده است!!!", "error");
-      });
+    try {
+      const response = await axiosInstance.get("/api/people-aids?type=cash");
+      cashDonations.value = response.data.count;
+    } catch (error) {
+      showPopup("مشکلی رخ داده است!!!", "error");
+    }
   }
 
   async function setProductDonation() {
-    await axiosInstance
-      .get("/api/people-aids?type=product&page=1")
-      .then((response) => {
-        productDonations.value = response.data;
-        productDonationsCount.value = response.data.count;
-      })
-      .catch((error) => {
-        showPopup("مشکلی رخ داده است!!!", "error");
-      });
+    try {
+      const response = await axiosInstance.get("/api/people-aids/");
+      productDonations.value = response.data;
+      productDonationsCount.value = response.data.count;
+    } catch (error) {
+      showPopup("مشکلی رخ داده است!!!", "error");
+    }
   }
 
   async function setAllAids() {
-    await axiosInstance
-      .get("/api/people-aids")
-      .then((response) => {
-        peopleAids.value = response.data.peopleAids;
-        peopleAidCount.value = response.data.count;
-        lastPage.value = Math.ceil(peopleAidCount.value / 10);
-      })
-      .catch((error) => {
-        showPopup("مشکلی رخ داده است!!!", "error");
-      });
+    try {
+      const response = await axiosInstance.get("/api/people-aids");
+      peopleAids.value = response.data.peopleAids;
+      peopleAidCount.value = response.data.count;
+      lastPage.value = Math.ceil(peopleAidCount.value / 10);
+    } catch (error) {
+      showPopup("مشکلی رخ داده است!!!", "error");
+    }
   }
 
   async function createAids(peopleAid) {
-    const notValid = ValidateFields(peopleAid);
-    inputError.value = notValid;
-    if (!notValid) {
-      await axiosInstance
-        .post("/api/people-aids", peopleAid)
-        .then((response) => {
-          componentStore.showPopup("با موفقیت ساخته شد !!!", "success");
-
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
-    } else {
+    try {
+      ValidateFields(peopleAid);
+      await axiosInstance.post("/api/people-aids", peopleAid);
+      componentStore.showPopup("با موفقیت ساخته شد !!!", "success");
       setTimeout(() => {
-        errorInput.value = "";
-      }, 3000);
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      if (error.isAxiosError) {
+        showPopup("مشکلی پیش امده است", "error");
+      } else {
+        inputError.value = error.message;
+        setTimeout(() => {
+          inputError.value = "";
+        }, 3000);
+      }
     }
   }
 
   async function updateAids(peopleAid) {
-    const notValid = ValidateFields(peopleAid);
-    inputError.value = notValid;
-    if (!notValid) {
-      await axiosInstance
-        .put("/api/people-aids", peopleAid)
-        .then((response) => {
-          componentStore.showPopup("با موفقیت ویرایش شد !!!", "success");
+    try {
+      ValidateFields(peopleAid);
+      await axiosInstance.put("/api/people-aids", peopleAid);
+      componentStore.showPopup("با موفقیت ویرایش شد !!!", "success");
 
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
-    } else {
       setTimeout(() => {
-        errorInput.value = "";
-      }, 3000);
+        window.location.reload();
+      }, 2000);
+    } catch (error) {
+      if (error.isAxiosError) {
+        showPopup("مشکلی پیش امده است", "error");
+      } else {
+        inputError.value = error.message;
+        setTimeout(() => {
+          inputError.value = "";
+        }, 3000);
+      }
     }
   }
 
   async function deleteAids(peopleAidList = []) {
     if (peopleAidList.length > 0) {
       const people_aid_ids = peopleAidList.map((obj) => obj.id);
-
-      await axiosInstance
-        .post("/api/people-aids/delete-multi", {
+      try {
+        await axiosInstance.post("/api/people-aids/delete-multi", {
           people_aid_ids: people_aid_ids,
-        })
-        .then((response) => {
-          showPopup("با موفقیت حذف شد", "success");
-
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
         });
+        showPopup("با موفقیت حذف شد", "success");
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      } catch (error) {
+        if (error.isAxiosError) {
+          showPopup("مشکلی پیش امده است", "error");
+        } else {
+          inputError.value = error.message;
+          setTimeout(() => {
+            inputError.value = "";
+          }, 3000);
+        }
+      }
     }
   }
 
   async function filterAids(key) {
     showLoading();
-    await axiosInstance
-      .get(`/api/people-aids?title=${key}`)
-      .then((response) => {
-        peopleAids.value = response.data.peopleAids;
-      })
-      .catch((error) => {
-        showPopup("مشکلی پیش امده است", "error");
-      });
+    try {
+      await axiosInstance
+        .get(`/api/people-aids?title=${key}`)
+        .then((response) => {
+          peopleAids.value = response.data.peopleAids;
+        });
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    }
     dismissLoading();
   }
 
@@ -168,7 +162,6 @@ export function useAids() {
   }
 
   async function gotoPage(number) {
-    showLoading();
     if (number <= lastPage.value && number > 0) {
       await axiosInstance
         .get(`/api/people-aids?page=${number}`)
@@ -179,18 +172,17 @@ export function useAids() {
           showPopup("مشکلی پیش امده است", "error");
         });
     }
-    dismissLoading();
   }
 
   function ValidateFields(obj) {
     if (obj.title == "") {
-      return "عنوان نمیتواند خالی باشد";
+      throw new Error("عنوان نمیتواند خالی باشد");
     } else if (obj.product_id == "") {
-      return "کالای مورد نظر را انتخاب کنید";
-    } else if (obj.helper_id) {
-      return "مددیار مورد نظر خود را وارد نمایید";
+      throw new Error("کالای مورد نظر را انتخاب کنید");
+    } else if (obj.helper_id == "") {
+      throw new Error("مددیار مورد نظر خود را انتخاب نمایید");
     } else if (obj.quantity <= 0) {
-      return "تعداد کالا های اهدایی را مشخص کنید";
+      throw new Error("تعداد کالا های اهدایی را مشخص کنید");
     }
   }
 
