@@ -68,7 +68,7 @@ export function useAids() {
   async function updateAids(peopleAid) {
     try {
       ValidateFields(peopleAid);
-      await axiosInstance.put("/api/people-aids", peopleAid);
+      await axiosInstance.put(`/api/people-aids/${peopleAid.id}`, peopleAid);
       componentStore.showPopup("با موفقیت ویرایش شد !!!", "success");
 
       setTimeout(() => {
@@ -137,7 +137,7 @@ export function useAids() {
     showLoading();
     if (currentPage.value < lastPage.value) {
       await axiosInstance
-        .get(`/api/people-aids?page=${currentPage.value++}`)
+        .get(`/api/people-aids?page=${++currentPage.value}`)
         .then((response) => {
           peopleAids.value = response.data.peopleAids;
         })
@@ -149,9 +149,10 @@ export function useAids() {
   }
 
   async function prevPage() {
+    showLoading();
     if (currentPage.value > 1) {
       await axiosInstance
-        .get(`/api/people-aids?page=${currentPage.value--}`)
+        .get(`/api/people-aids?page=${--currentPage.value}`)
         .then((response) => {
           peopleAids.value = response.data.peopleAids;
         })
@@ -159,19 +160,23 @@ export function useAids() {
           showPopup("مشکلی پیش امده است", "error");
         });
     }
+    dismissLoading()
   }
 
   async function gotoPage(number) {
+    showLoading()
     if (number <= lastPage.value && number > 0) {
       await axiosInstance
         .get(`/api/people-aids?page=${number}`)
         .then((response) => {
           peopleAids.value = response.data.peopleAids;
+          currentPage.value=number
         })
         .catch((error) => {
           showPopup("مشکلی پیش امده است", "error");
         });
     }
+    dismissLoading()
   }
 
   function ValidateFields(obj) {

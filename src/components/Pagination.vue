@@ -8,7 +8,6 @@ const { lastPage } = props;
 const currentPageToRef = toRef(props, "currentPage");
 
 function refactorPages(page) {
-  console.log(page)
   pageList.value = [];
   pageList.value.push(1);
   for (let i = page - 2; i <= page + 2; i++) {
@@ -34,7 +33,7 @@ onMounted(() => {
     <a
       @click="
         emit('prev');
-        refactorPages(currentPageToRef-1);
+        refactorPages(currentPageToRef - 1);
       "
     >
       <span class="material-symbols-sharp">first_page</span>
@@ -52,7 +51,7 @@ onMounted(() => {
     <a
       @click="
         emit('next');
-        refactorPages(currentPageToRef+1);
+        refactorPages(currentPageToRef + 1);
       "
       ><span class="material-symbols-sharp">last_page </span></a
     >
@@ -92,7 +91,8 @@ onMounted(() => {
   border-radius: 50%;
   background-color: var(--color-info-light);
   color: var(--color-white);
-  border: 1px solid var(--color-primary-light);
+  border: 2px solid var(--color-info-dark);
+  font-weight: bold;
 }
 
 .pagination .page:hover {

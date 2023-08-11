@@ -98,9 +98,11 @@ function deletProduct() {
 }
 
 async function submitDelete(type) {
+  showLoading();
   alertShow.value = false;
   if (type == "yes") {
     await productApi.deleteProducts(productList.value);
+    dismissLoading();
   }
 }
 
@@ -181,9 +183,9 @@ watch(productSearchInput, async () => {
         </div>
       </div>
     </div>
-    
+
     <Pagination
-      v-if="lastPage>1"
+      v-if="lastPage > 1"
       id="pagination"
       :currentPage="currentPage"
       :lastPage="lastPage"
@@ -374,4 +376,3 @@ main table tbody tr td:first-child {
   }
 }
 </style>
-

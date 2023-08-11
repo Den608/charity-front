@@ -4,7 +4,7 @@ import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
 import useComponentStore from "../../store/componentStore";
 import { usePacks } from "../../composables/usePackApi";
-
+import DropDownList from "../DropDownList.vue";
 const componentStore = useComponentStore();
 const { showPopup, showLoading, dismissLoading } = componentStore;
 
@@ -133,7 +133,8 @@ watch(packSearchInput, async () => {
     >
       <input type="text" placeholder="عنوان" />
       <input type="text" placeholder="تعداد" />
-      <input type="text" placeholder="تعداد کالا" />
+      <input type="text" placeholder=" کالاها" />
+      <DropDownList/>
       <textarea name="explanation" placeholder="توضیحات"></textarea>
     </UpdateCreateModal>
 
@@ -355,4 +356,3 @@ main table tbody tr td:first-child {
   }
 }
 </style>
-

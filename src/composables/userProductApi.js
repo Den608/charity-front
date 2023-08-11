@@ -62,7 +62,7 @@ export function useProduct() {
 
   async function updateProduct(product_obj) {
     const notValid = validateFields(product_obj);
-    inputError.value = notValid;
+    inputErrors.value = notValid;
     if (!notValid) {
       await axiosInstance
         .put(`/api/products/${product_obj.id}`, product_obj)

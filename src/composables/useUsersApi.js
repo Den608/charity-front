@@ -165,7 +165,7 @@ export function useUsersApi() {
 
     timerId = setTimeout(async () => {
       await filterUser(filter_field);
-    }, 500);
+    }, 800);
   }
 
   async function nextPage() {

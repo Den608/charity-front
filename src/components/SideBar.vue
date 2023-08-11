@@ -124,7 +124,7 @@ onMounted(() => {
         </div>
       </div>
 
-      <div
+      <!-- <div
         class="tab-container"
         :class="{ active: activeTab[6] }"
         @click="onTabClicked(6)"
@@ -133,7 +133,7 @@ onMounted(() => {
           <span class="material-symbols-sharp">school</span>
           <h3>دانشجویان و دانش اموزان</h3>
         </div>
-      </div>
+      </div> -->
 
       <div
         class="tab-container"

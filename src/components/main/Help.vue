@@ -4,6 +4,7 @@ import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
 import DropDown from "../DropDown.vue";
 import useComponentStore from "../../store/componentStore";
+import Pagination from "../Pagination.vue";
 import { useAids } from "../../composables/useAidsApi";
 import { useProduct } from "../../composables/userProductApi";
 import { useUsersApi } from "../../composables/useUsersApi";
@@ -37,14 +38,13 @@ const useUser = useUsersApi();
 const { users, currentPage: userCurrentPage, lastPage: userLastPage } = useUser;
 const helperModalIntialvalue = ref("");
 
-
 //alocate
-
 
 // modal
 const modalTitle = ref("ثبت کمک جدید");
 const modalShow = ref(false);
 const modalMode = ref("create");
+const dropDownShow = ref([false, false]);
 
 // alert
 const alertShow = ref(false);
@@ -135,6 +135,8 @@ async function submitDelete(type) {
   dismissLoading();
 }
 
+function onOpenDropDown() {}
+
 watch(aidsSearchInput, async () => {
   if (aidsSearchInput.value.length > 1) {
     await aidApi.filterAids(aidsSearchInput.value);
@@ -204,14 +206,22 @@ watch(aidsSearchInput, async () => {
             delete
           </span>
 
-          <span class="material-symbols-sharp"> heart_plus </span>
-
           <span class="material-symbols-sharp" @click="showCreateModal">
             add
           </span>
         </div>
       </div>
     </div>
+
+    <Pagination
+      v-if="lastPage > 1"
+      id="pagination"
+      :currentPage="currentPage"
+      :lastPage="lastPage"
+      @next="aidApi.nextPage"
+      @prev="aidApi.prevPage"
+      @goTo="aidApi.gotoPage"
+    />
 
     <table>
       <thead>

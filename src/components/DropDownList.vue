@@ -4,12 +4,11 @@ import Pagination from "./Pagination.vue";
 
 let menuLayout;
 let menuButton;
-let openerSpan;
 
 const menu = ref(false);
 const input = ref("");
 const emit = defineEmits(["onFilter", "onSelect"]);
-const { dataList, current, lastpage, initialValue, index } = defineProps([
+const { dataList, current, lastpage, initialValue } = defineProps([
   "dataList",
   "current",
   "lastpage",
@@ -40,16 +39,13 @@ watch(input, () => {
 
 function closeMenuOnClickOutside(event) {
   menuLayout = document.getElementById("drop-down-menu");
-  openerSpan = document.getElementById("opener-span");
   menuButton = document.querySelector(".opener-button");
 
   if (menuLayout != null) {
     if (
       !menuLayout.contains(event.target) &
-      !openerSpan.contains(event.target) &
       (event.target.className != "opener-button")
-      ) {
-        
+    ) {
       menu.value = false;
     }
   }
@@ -73,6 +69,7 @@ onMounted(() => {
       <span
         v-if="menu"
         class="material-symbols-sharp ico"
+        id="opener-span"
         @click="onOpenerClick"
         >close</span
       >
@@ -83,7 +80,7 @@ onMounted(() => {
         @click="onOpenerClick"
       />
     </div>
-    <div v-if="menu" class="menu" id="drop-down-menu">
+    <div v-show="menu" class="menu" id="drop-down-menu">
       <div class="input">
         <span class="material-symbols-sharp search">search</span>
         <input type="text" v-model="input" />
