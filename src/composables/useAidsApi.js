@@ -134,49 +134,47 @@ export function useAids() {
   }
 
   async function nextPage() {
-    showLoading();
     if (currentPage.value < lastPage.value) {
-      await axiosInstance
-        .get(`/api/people-aids?page=${++currentPage.value}`)
-        .then((response) => {
-          peopleAids.value = response.data.peopleAids;
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
+      showLoading();
+      try {
+        const response=await axiosInstance.get(`/api/people-aids?page=${++currentPage.value}`);
+        peopleAids.value = response.data.peopleAids;
+      } catch (error) {
+        showPopup("مشکلی پیش امده است", "error");
+      } finally {
+        dismissLoading();
+      }
     }
-    dismissLoading();
   }
 
   async function prevPage() {
-    showLoading();
     if (currentPage.value > 1) {
-      await axiosInstance
-        .get(`/api/people-aids?page=${--currentPage.value}`)
-        .then((response) => {
-          peopleAids.value = response.data.peopleAids;
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
+      showLoading();
+      try {
+        const response=await axiosInstance.get(`/api/people-aids?page=${--currentPage.value}`);
+        peopleAids.value = response.data.peopleAids;
+      } catch (error) {
+        showPopup("مشکلی پیش امده است", "error");
+      } finally {
+        dismissLoading();
+      }
     }
-    dismissLoading()
   }
 
   async function gotoPage(number) {
-    showLoading()
-    if (number <= lastPage.value && number > 0) {
-      await axiosInstance
-        .get(`/api/people-aids?page=${number}`)
-        .then((response) => {
-          peopleAids.value = response.data.peopleAids;
-          currentPage.value=number
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
+    if ((number <= lastPage.value) & (number > 0)) {
+      showLoading();
+      try {
+        const response=await axiosInstance.get(`/api/people-aids?page=${number}`);
+        peopleAids.value = response.data.peopleAids;
+        currentPage.value=number
+      } catch (error) {
+        console.log(error)
+        showPopup("مشکلی پیش امده است", "error");
+      } finally {
+        dismissLoading();
+      }
     }
-    dismissLoading()
   }
 
   function ValidateFields(obj) {
