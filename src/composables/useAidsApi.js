@@ -193,7 +193,7 @@ export function useAids() {
     peopleAids,
     currentPage,
     lastPage,
-    productDonations,
+    productDonationsCount,
     cashDonations,
     inputError,
     setCashDonation,

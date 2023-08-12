@@ -28,7 +28,7 @@ onMounted(() => {
 });
 </script>
 
-<template >
+<template>
   <div class="pagination" dir="ltr">
     <a
       @click="

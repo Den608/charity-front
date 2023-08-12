@@ -64,7 +64,7 @@ onMounted(() => {
         @click="onTabClicked(0)"
       >
         <div class="tab">
-          <span class="material-symbols-sharp">dashboard</span>
+          <font-awesome-icon :icon="['fas', 'chart-line']" />
           <h3>داشبورد</h3>
         </div>
       </div>
@@ -75,7 +75,7 @@ onMounted(() => {
         @click="onTabClicked(1)"
       >
         <div class="tab">
-          <span class="material-symbols-sharp">group</span>
+          <font-awesome-icon :icon="['fass', 'person-shelter']" />
           <h3>افراد خیر</h3>
         </div>
       </div>
@@ -86,7 +86,7 @@ onMounted(() => {
         @click="onTabClicked(2)"
       >
         <div class="tab">
-          <span class="material-symbols-sharp">settings_accessibility</span>
+          <font-awesome-icon :icon="['fas', 'hands-holding-child']" />
           <h3>افراد نیازمند</h3>
         </div>
       </div>
@@ -97,8 +97,8 @@ onMounted(() => {
         @click="onTabClicked(3)"
       >
         <div class="tab">
-          <span class="material-symbols-sharp"> category </span>
-          <h3>محصولات</h3>
+          <font-awesome-icon :icon="['fas', 'warehouse']" />
+          <h3>انبار</h3>
         </div>
       </div>
 
@@ -108,7 +108,7 @@ onMounted(() => {
         @click="onTabClicked(4)"
       >
         <div class="tab">
-          <span class="material-symbols-sharp">inventory_2</span>
+          <font-awesome-icon :icon="['fas', 'hand-holding-hand']" />
           <h3>کمک های مردمی</h3>
         </div>
       </div>
@@ -119,8 +119,8 @@ onMounted(() => {
         @click="onTabClicked(5)"
       >
         <div class="tab">
-          <span class="material-symbols-sharp">deployed_code</span>
-          <h3>بسته های مناسبتی</h3>
+          <font-awesome-icon :icon="['fas', 'cubes']" />
+          <h3> پکیج ها </h3>
         </div>
       </div>
 
@@ -141,7 +141,7 @@ onMounted(() => {
         @click="onTabClicked(7)"
       >
         <div class="tab">
-          <span class="material-symbols-sharp">school</span>
+          <font-awesome-icon :icon="['fas', 'hand-holding-heart']" />
           <h3>کمک های اهدایی</h3>
         </div>
       </div>
@@ -152,7 +152,7 @@ onMounted(() => {
         @click="onTabClicked(8)"
       >
         <div class="tab">
-          <span class="material-symbols-sharp">school</span>
+          <font-awesome-icon :icon="['fas', 'boxes-packing']" />
           <h3>پیکیج های اهدایی</h3>
         </div>
       </div>
@@ -163,14 +163,14 @@ onMounted(() => {
         @click="onTabClicked(9)"
       >
         <div class="tab">
-          <span class="material-symbols-sharp"> person </span>
+          <font-awesome-icon :icon="['fas', 'user']" />
           <h3>پروفایل</h3>
         </div>
       </div>
 
       <div class="tab-container last-child">
         <div @click="authStore.handleLogout" class="tab">
-          <span class="material-symbols-sharp">logout</span>
+          <font-awesome-icon :icon="['fas', 'right-from-bracket']" />
           <h3>خروج از سیستم</h3>
         </div>
       </div>

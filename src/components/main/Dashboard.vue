@@ -10,7 +10,7 @@ const componentStore = useComponentStore()
 
 //aid
 const aidApi = useAids()
-const { cashDonations, productDonations } = aidApi
+const { cashDonations, productDonationsCount } = aidApi
 
 //user
 const userApi = useUsersApi()
@@ -95,7 +95,7 @@ function getTimeDetail(time) {
                     <div class="middle">
                         <div class="left">
                             <h3>کالاهای اهدایی</h3>
-                            <h1> {{ productDonations.count }}</h1>
+                            <h1> {{ productDonationsCount }}</h1>
                         </div>
                     </div>
                     <small>
