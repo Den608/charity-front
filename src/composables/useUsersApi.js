@@ -1,4 +1,4 @@
-import { ref, withScopeId } from "vue";
+import { isVNode, ref, withScopeId } from "vue";
 import axiosInstance from "../services/axios";
 import useComponentStore from "../store/componentStore";
 
@@ -14,54 +14,49 @@ export function useUsersApi() {
   let timerId;
 
   async function setAllUsers(role) {
-    await axiosInstance
-      .get(`/api/users?role=${role}`)
-      .then((response) => {
-        users.value = response.data.users;
-        usersCount.value = response.data.count;
-        lastPage.value = Math.ceil(usersCount.value / 10);
-        user_role.value = role;
-      })
-      .catch((error) => {
-        if (error.response.status != 401) {
-          showPopup(
-            "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
-            "error"
-          );
-        }
-      });
+    try {
+      const response = await axiosInstance.get(`/api/users?role=${role}`);
+      users.value = response.data.users;
+      usersCount.value = response.data.count;
+      lastPage.value = Math.ceil(usersCount.value / 10);
+      user_role.value = role;
+    } catch (error) {
+      showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error");
+    }
   }
 
   async function createUser(user) {
-    const notValid = validate_fields(user);
-    errorInput.value = notValid;
+    let isValid;
+    try {
+      isValid = validate_fields(user);
+      user['role']=user_role.value
+      const response = await axiosInstance.post(
+        `/api/register/${user_role.value}`,
+        user
+      );
+      showPopup("با موفقیت افزوده شد !!!", "success");
 
-    if (!notValid) {
-      user["role"] = user_role.value;
-      await axiosInstance
-        .post(`/api/register/${user_role.value}`, user)
-        .then((response) => {
-          showPopup("با موفقیت افزوده شد !!!", "success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } catch (error) {
+      let message = "";
+      if ("username" in error.response.data.errors) {
+        message = "کاربری با این نام کاربری قبلا در سیسستم ثبت شده";
+      } else if ("national_code" in error.response.data.errors) {
+        message = "کاربری با این کد ملی قبلا در سیستم ثبت شده است ";
+      } else if ("email" in error.response.data.errors) {
+        message = "کاربری با این ایمیل قبلا در سیستم ثبت شده است ";
+      } else {
+        message = "خطایی در سیستم رخ داده است !!! با پشتیبانی ارتباط بگیرید";
+      }
 
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        })
-        .catch((error) => {
-          let message = "";
-          if ("username" in error.response.data.errors) {
-            message = "کاربری با این نام کاربری قبلا در سیسستم ثبت شده";
-          } else if ("national_code" in error.response.data.errors) {
-            message = "کاربری با این کد ملی قبلا در سیستم ثبت شده است ";
-          } else if ("email" in error.response.data.errors) {
-            message = "کاربری با این ایمیل قبلا در سیستم ثبت شده است ";
-          } else {
-            message =
-              "خطایی در سیستم رخ داده است !!! با پشتیبانی ارتباط بگیرید";
-          }
-          showPopup(message, "error");
-        });
-    } else {
+      if (!isValid) {
+        errorInput.value =error.message;
+      } else {
+        showPopup(message, "error");
+      }
+    } finally {
       setTimeout(() => {
         errorInput.value = "";
       }, 3000);
@@ -69,36 +64,32 @@ export function useUsersApi() {
   }
 
   async function updateUser(user) {
-    const notValid = validate_fields(user);
-    errorInput.value = notValid;
+    let isValid;
+    try {
+      isValid = validate_fields(user);
+      const response = await axiosInstance.put(`/api/users/${user.id}`, user);
+      showPopup("با موفقیت انجام شد !!!", "success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+    } catch (error) {
+      let message = "";
+      if ("username" in error.response.data.errors) {
+        message = "کاربری با این نام کاربری قبلا در سیسستم ثبت شده";
+      } else if ("national_code" in error.response.data.errors) {
+        message = "کاربری با این کد ملی قبلا در سیستم ثبت شده است ";
+      } else if ("email" in error.response.data.errors) {
+        message = "کاربری با این ایمیل قبلا در سیستم ثبت شده است ";
+      } else {
+        message = "خطایی در سیستم رخ داده است !!! با پشتیبانی ارتباط بگیرید";
+      }
 
-    if (!notValid) {
-      await axiosInstance
-        .put(`/api/users/${user.id}`, user)
-        .then((response) => {
-          showPopup("با موفقیت ویرایش شد !!!", "success");
-
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        })
-        .catch((error) => {
-          let message = "";
-          if ("username" in error.response.data.errors) {
-            message = "کاربری با این نام کاربری قبلا در سیسستم ثبت شده";
-          } else if ("national_code" in error.response.data.errors) {
-            message = "کاربری با این کد ملی قبلا در سیستم ثبت شده است ";
-          } else if ("email" in error.response.data.errors) {
-            message = "کاربری با این ایمیل قبلا در سیستم ثبت شده است ";
-          } else if ("phone_number" in error.response.data.errors) {
-            message = "کاربری با این شماره تلفن قبلا در سیستم ثبت شده است ";
-          } else {
-            message =
-              "خطایی در سیستم رخ داده است !!! با پشتیبانی ارتباط بگیرید";
-          }
-          showPopup(message, "error");
-        });
-    } else {
+      if (!isValidّ) {
+        errorInput.value = error.message;
+      } else {
+        showPopup(message, "error");
+      }
+    } finally {
       setTimeout(() => {
         errorInput.value = "";
       }, 3000);
@@ -109,19 +100,18 @@ export function useUsersApi() {
     if (userList.length > 0) {
       let user_ids = [];
       userList.map((obj) => user_ids.push(obj.id));
-
-      await axiosInstance
-        .post(`/api/users/delete-multi`, { user_ids: user_ids })
-        .then((response) => {
-          showPopup("کاربران با موفقیت حذف شدند !!!", "success");
-
-          setTimeout(() => {
-            window.location.reload();
-          }, 3000);
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده با پشتیبانی تماس حاصل نمایید", "error");
+      try {
+        await axiosInstance.post(`/api/users/delete-multi`, {
+          user_ids: user_ids,
         });
+        showPopup("کاربران با موفقیت حذف شدند !!!", "success");
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+      } catch (error) {
+        showPopup("مشکلی پیش امده با پشتیبانی تماس حاصل نمایید", "error");
+      }
     }
   }
 
@@ -141,23 +131,19 @@ export function useUsersApi() {
     }
 
     if (url != "") {
-      await axiosInstance
-        .get(url)
-        .then((response) => {
-          users.value = response.data.users;
-          usersCount.value = response.data.count;
-          lastPage.value = Math.ceil(usersCount.value / 10);
-        })
-        .catch((error) => {
-          if (error.response.status != 401) {
-            showPopup(
-              "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
-              "error"
-            );
-          }
-        });
+      try {
+        const response = await axiosInstance.get(url);
+        users.value = response.data.users;
+        usersCount.value = response.data.count;
+        lastPage.value = Math.ceil(usersCount.value / 10);
+      } catch (error) {
+        showPopup(
+          "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
+          "error"
+        );
+      }
+      componentStore.dismissLoading();
     }
-    componentStore.dismissLoading();
   }
 
   async function filterUserDebounced(filter_field) {
@@ -170,65 +156,55 @@ export function useUsersApi() {
 
   async function nextPage() {
     showLoading();
-
     if (currentPage.value < lastPage.value) {
-      await axiosInstance
-        .get(`/api/users?role=${user_role.value}&&page=${++currentPage.value}`)
-        .then((response) => {
-          users.value = response.data.users;
-        })
-        .catch((error) => {
-          if (error.response.status != 401) {
-            showPopup(
-              "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
-              "error"
-            );
-          }
-        });
+      try {
+        const response = await axiosInstance.get(
+          `/api/users?role=${user_role.value}&&page=${++currentPage.value}`
+        );
+        users.value = response.data.users;
+      } catch (error) {
+        showPopup(
+          "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
+          "error"
+        );
+      }
     }
-
     dismissLoading();
   }
 
   async function prevPage() {
     showLoading();
     if (currentPage.value > 1) {
-      await axiosInstance
-        .get(`/api/users?role=${user_role.value}&&page=${--currentPage.value}`)
-        .then((response) => {
-          users.value = response.data.users;
-        })
-        .catch((error) => {
-          if (error.response.status != 401) {
-            showPopup(
-              "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
-              "error"
-            );
-          }
-        });
+      try {
+        const response = await axiosInstance.get(
+          `/api/users?role=${user_role.value}&&page=${--currentPage.value}`
+        );
+        users.value = response.data.users;
+      } catch (error) {
+        showPopup(
+          "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
+          "error"
+        );
+      }
     }
-
     dismissLoading();
   }
 
   async function gotoPage(number) {
     showLoading();
-    if (number <= lastPage.value && number >= 1) {
-      currentPage.value = number;
-
-      await axiosInstance
-        .get(`/api/users?role=${user_role.value}&&page=${number}`)
-        .then((response) => {
-          users.value = response.data.users;
-        })
-        .catch((error) => {
-          if (error.response.status != 401) {
-            showPopup(
-              "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
-              "error"
-            );
-          }
-        });
+    if ((number <= lastPage.value) & (number > 0)) {
+      try {
+        const response = await axiosInstance.get(
+          `/api/users?role=${user_role.value}&&page=${number}`
+        );
+        users.value = response.data.users;
+        currentPage.value = number;
+      } catch (error) {
+        showPopup(
+          "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
+          "error"
+        );
+      }
     }
     dismissLoading();
   }
@@ -238,18 +214,22 @@ export function useUsersApi() {
     const phonePattern = /^\d{4,12}$/;
 
     if (obj.username == "" && obj.username.length < 4) {
-      return "فرمت نام کاربری صحیح نیست !!!";
+      throw new Error("فرمت نام کاربری صحیح نیست !!!");
     } else if ("password" in obj) {
       if (obj.password.length < 8)
-        return "رمز عبور باید حداقل از 8 کاراکتر تشکیل شده باشد ";
+        throw new Error("رمز عبور باید حداقل از 8 کاراکتر تشکیل شده باشد ");
     } else if (obj.first_name.length < 3) {
-      return "نام کاربر باید حداقل از 3 کاراکتر تشکیل شده باشد ";
+      throw new Error("نام کاربر باید حداقل از 3 کاراکتر تشکیل شده باشد ");
     } else if (obj.last_name.length < 3) {
-      return "نام خانوادگی کاربر باید حداقل از 3 کاراکتر تشکیل شده باشد ";
+      throw new Error(
+        "نام خانوادگی کاربر باید حداقل از 3 کاراکتر تشکیل شده باشد "
+      );
     } else if (!emailPattern.test(obj.email)) {
-      return "فرمت ایمیل اشتباه است ";
+      throw new Error("فرمت ایمیل اشتباه است ");
     } else if (!phonePattern.test(obj.phone_number)) {
-      return "فرمت شماره تلفن اشتباه است ";
+      throw new Error("فرمت شماره تلفن اشتباه است ");
+    } else {
+      return true;
     }
   }
 
