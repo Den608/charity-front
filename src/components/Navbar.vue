@@ -1,7 +1,9 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, watchEffect } from "vue";
 import { storeToRefs } from "pinia";
 import useUserStore from "../store/userStore";
+
+const menuToggler = ref(false);
 
 const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
@@ -45,25 +47,48 @@ onMounted(() => {
   setInitialTheme();
   userStore.setUser();
 });
+
+const windowWidth = ref(window.innerWidth);
+watchEffect(() => {
+  const handleResize = () => {
+    windowWidth.value = window.innerWidth;
+    if (window.innerWidth < 768) {
+      menuToggler.value = true;
+    } else {
+      menuToggler.value = false;
+    }
+  };
+
+  handleResize();
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+});
 </script>
 
 <template>
   <nav>
     <div class="container">
       <span
+        v-if="menuToggler"
         @click="onMenuButton"
         class="material-symbols-sharp"
         :class="themeActive ? 'dark' : 'light'"
+        id="menu-toggeler"
         >menu</span
       >
       <div class="profile">
         <div class="profile-photo">
-          <img src="./images/profile-1.jpg" alt="" />
+          <img src="./images/logo.png" alt="" />
         </div>
         <p style="font-weight: 600">
           {{ user.first_name }} {{ user.last_name }}
         </p>
       </div>
+
       <div class="theme-mode" @click="setTheme">
         <span
           class="material-symbols-sharp"
@@ -97,9 +122,9 @@ nav p {
   color: var(--color-dark);
 }
 
-nav #menu {
+/* nav #menu {
   display: none;
-}
+} */
 
 nav .profile {
   position: absolute;

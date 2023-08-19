@@ -42,67 +42,6 @@ onMounted(async () => {
   dismissLoading();
 });
 
-function setAllChecked(event) {
-  const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
-  allCheckboxes.forEach((el) => {
-    el.checked = event.target.checked;
-  });
-  if (event.target.checked) {
-    products.value.map((obj) => productList.value.push(obj));
-  } else {
-    productList.value = [];
-  }
-}
-
-function checked(event, product_obj) {
-  if (event.target.checked) {
-    productList.value.push(product_obj);
-  } else {
-    const index = productList.value.indexOf(product_obj);
-    productList.value.splice(index, 1);
-  }
-}
-
-async function submitProduct() {
-  showLoading();
-  if (modalMode.value == "create") {
-    await productApi.createProdcut(product);
-  } else if ((modalMode.value = "edit")) {
-    await productApi.updateProduct(product);
-  }
-  dismissLoading();
-}
-
-function showCreateModal() {
-  modalShow.value = true;
-  modalMode.value = "create";
-  for (const key in product) product[key] = "";
-  title.value = "اضافه کردن محصول جدید";
-}
-
-function showEditModal(product_obj) {
-  modalShow.value = true;
-  modalMode.value = "edit";
-  Object.assign(product, product_obj);
-  title.value = "ویرایش کردن محصول جدید";
-}
-
-function deleteProduct() {
-  if (productList.value.length > 0) {
-    alertMessage.value = "ایا از حذف محصولات اطمینان دارید؟";
-    alertShow.value = true;
-  } else {
-    componentStore.showPopup("هیچ محصولی انتخاب نشده است!!! ", "error", 2);
-  }
-}
-
-async function submitDelete(type) {
-  alertShow.value = false;
-  if (type == "yes") {
-    await productApi.deleteProducts(productList.value);
-  }
-}
-
 watch(productSearchInput, async () => {
   if (productSearchInput.value.length > 2) {
     await productApi.filterDebounced(productSearchInput.value);
@@ -115,7 +54,7 @@ watch(productSearchInput, async () => {
 <template>
   <main>
     <div class="header">
-      <h1>پکیج های اهدایی</h1>
+      <h1>کمک های اهدایی</h1>
 
       <div class="input-fields">
         <div class="search-bar">
@@ -132,18 +71,27 @@ watch(productSearchInput, async () => {
     <table>
       <thead>
         <tr>
-          <th>عنوان</th>
-          <th>دسته بندی</th>
-          <th class="responsive-hidden">توضیحات</th>
+          <th>عنوان پکیج</th>
+          <th>نام مددیار</th>
+          <th>نام مددجو</th>
+          <th>تعداد</th>
+          <th>وضعیت</th>
           <th class="responsive-hidden"></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="product in products" :key="product.id">
-          <td>{{ product.name }}</td>
+        <tr>
+          <td>پکیچ ماه مبارک رمضان</td>
 
-          <td v-if="product.category != null">{{ product.category.name }}</td>
-          <td class="responsive-hidden">{{ product.description }}</td>
+          <td>علی رضایی</td>
+          <td>عرفان باقری</td>
+          <td class="responsive-hidden">1</td>
+          <!-- <td  :id="aid.status == 'assigned' ? 'deliver' : 'not-deliver'">
+            {{
+              aid.status == "assigned" ? "تحویل داده شده" : "در حال تحویل..."
+            }}
+          </td> -->
+          <td id="not-deliver">در حال تحویل...</td>
           <td class="responsive-hidden primary">
             <span
               class="material-symbols-sharp"
@@ -159,6 +107,14 @@ watch(productSearchInput, async () => {
 </template>
 
 <style scoped>
+#deliver {
+  color: var(--color-info-dark);
+}
+
+#not-deliver {
+  color: var(--color-warning);
+}
+
 main .header {
   display: flex;
   flex-direction: column;
@@ -272,11 +228,11 @@ main table thead tr th {
 }
 
 main table thead tr th:first-child {
-  flex-basis: 8%;
+  flex-basis: 15%;
 }
 
 main table tbody tr td:first-child {
-  flex-basis: 8%;
+  flex-basis: 15%;
 }
 
 @media screen and (max-width: 768px) {
@@ -293,11 +249,11 @@ main table tbody tr td:first-child {
   }
 
   main table thead tr th {
-    flex-basis: 33%;
+    flex-basis: 15%;
   }
 
   main table tbody tr td {
-    flex-basis: 33%;
+    flex-basis: 15%;
   }
 
   table .responsive-hidden {
@@ -309,4 +265,3 @@ main table tbody tr td:first-child {
   }
 }
 </style>
-

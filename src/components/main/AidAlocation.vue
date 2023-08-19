@@ -71,18 +71,25 @@ watch(productSearchInput, async () => {
     <table>
       <thead>
         <tr>
-          <th>عنوان</th>
-          <th>دسته بندی</th>
-          <th class="responsive-hidden">توضیحات</th>
+          <th>عنوان کمک</th>
+          <th>نام مددیار</th>
+          <th>نام مددجو</th>
+          <th>وضعیت</th>
           <th class="responsive-hidden"></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="product in products" :key="product.id">
-          <td>{{ product.name }}</td>
+        <tr>
+          <td>کاپشن زمستانی</td>
 
-          <td v-if="product.category != null">{{ product.category.name }}</td>
-          <td class="responsive-hidden">{{ product.description }}</td>
+          <td>علی رضایی</td>
+          <td>عرفان باقری</td>
+          <!-- <td  :id="aid.status == 'assigned' ? 'deliver' : 'not-deliver'">
+            {{
+              aid.status == "assigned" ? "تحویل داده شده" : "در حال تحویل..."
+            }}
+          </td> -->
+          <td id="not-deliver">در حال تحویل...</td>
           <td class="responsive-hidden primary">
             <span
               class="material-symbols-sharp"
@@ -98,6 +105,14 @@ watch(productSearchInput, async () => {
 </template>
 
 <style scoped>
+#deliver {
+  color: var(--color-info-dark);
+}
+
+#not-deliver {
+  color: var(--color-warning);
+}
+
 main .header {
   display: flex;
   flex-direction: column;
@@ -248,4 +263,3 @@ main table tbody tr td:first-child {
   }
 }
 </style>
-

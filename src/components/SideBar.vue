@@ -50,7 +50,7 @@ onMounted(() => {
   <aside>
     <div class="top">
       <div class="logo">
-        <img src="./images/logo.png" />
+        <!-- <img src="./images/logo.png" /> -->
         <h2>سامانه <span class="danger">اسایش</span></h2>
       </div>
       <div @click="onCLose" class="close">
@@ -124,17 +124,6 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- <div
-        class="tab-container"
-        :class="{ active: activeTab[6] }"
-        @click="onTabClicked(6)"
-      >
-        <div class="tab">
-          <span class="material-symbols-sharp">school</span>
-          <h3>دانشجویان و دانش اموزان</h3>
-        </div>
-      </div> -->
-
       <div
         class="tab-container"
         :class="{ active: activeTab[7] }"
@@ -158,7 +147,7 @@ onMounted(() => {
       </div>
 
       <div
-        class="tab-container pre-last-child"
+        class="tab-container"
         :class="{ active: activeTab[9] }"
         @click="onTabClicked(9)"
       >
