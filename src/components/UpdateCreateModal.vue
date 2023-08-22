@@ -71,7 +71,7 @@ const { modalInputs, title, errorInput } = defineProps([
 
 .overlay .modal input[type="text"],
 input[type="password"],
-input[type="number"] {
+input[type="number"]{
   background-color: var(--color-light);
   border-radius: var(--border-radius-1);
   color: var(--color-dark);

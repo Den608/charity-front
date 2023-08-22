@@ -3,8 +3,10 @@ import { ref, reactive, watch, onMounted } from "vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
 import useComponentStore from "../../store/componentStore";
-import { usePacks } from "../../composables/usePackApi";
 import DropDownList from "../DropDownList.vue";
+import { usePacks } from "../../composables/usePackApi";
+import productSelectBoxModal from "../productSelectBoxModal.vue";
+
 const componentStore = useComponentStore();
 const { showPopup, showLoading, dismissLoading } = componentStore;
 
@@ -25,7 +27,7 @@ const packSearchInput = ref("");
 const modalTitle = ref("ثبت پکیج");
 const modalShow = ref(false);
 const modalMode = ref("create");
-
+const productSelectShow=ref(false)
 // alert
 const alertShow = ref(false);
 const alerMessage = ref("");
@@ -123,7 +125,7 @@ watch(packSearchInput, async () => {
       @onSubmit="submitPackage"
       :message="alerMessage"
     />
-
+    <productSelectBoxModal v-if="productSelectShow" @onClose="productSelectShow=false"/>
     <UpdateCreateModal
       v-if="modalShow"
       @onClose="modalShow = false"
@@ -134,7 +136,7 @@ watch(packSearchInput, async () => {
       <input type="text" placeholder="عنوان" />
       <input type="text" placeholder="تعداد" />
       <input type="text" placeholder=" کالاها" />
-      <DropDownList/>
+      <input type="button" value="محصولات " @click="productSelectShow=true" />
       <textarea name="explanation" placeholder="توضیحات"></textarea>
     </UpdateCreateModal>
 
@@ -154,7 +156,6 @@ watch(packSearchInput, async () => {
           >
             delete
           </span>
-          <span class="material-symbols-sharp"> heart_plus </span>
 
           <span class="material-symbols-sharp" @click="showCreateModal">
             add
