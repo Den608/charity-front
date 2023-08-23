@@ -27,7 +27,10 @@ const packSearchInput = ref("");
 const modalTitle = ref("ثبت پکیج");
 const modalShow = ref(false);
 const modalMode = ref("create");
-const productSelectShow=ref(false)
+const productSelectShow = ref(false);
+const packProductsList = ref([]);
+const prodductModalOpenerValue = ref("");
+
 // alert
 const alertShow = ref(false);
 const alerMessage = ref("");
@@ -40,7 +43,6 @@ onMounted(async () => {
 
 async function submitPackage() {
   showLoading();
-
   if (modalMode.value == "create") {
     await packApi.createPack(pack);
     for (const key in pack) pack[key] = "";
@@ -108,6 +110,14 @@ async function submitDelete(type) {
   dismissLoading();
 }
 
+function productSelectedSubmmition(productList) {
+  packProductsList.value = productList;
+  prodductModalOpenerValue.value = productList.reduce((accumulator, item) => {
+    return accumulator + item.name + "-";
+  }, "");
+  productSelectShow.value = false;
+}
+
 watch(packSearchInput, async () => {
   if (packSearchInput.value.length > 1) {
     await packApi.filterPack(packSearchInput.value);
@@ -125,7 +135,12 @@ watch(packSearchInput, async () => {
       @onSubmit="submitPackage"
       :message="alerMessage"
     />
-    <productSelectBoxModal v-if="productSelectShow" @onClose="productSelectShow=false"/>
+    <productSelectBoxModal
+      v-if="productSelectShow"
+      @onClose="productSelectShow = false"
+      @onSubmit="productSelectedSubmmition"
+      :itemList="packProductsList"
+    />
     <UpdateCreateModal
       v-if="modalShow"
       @onClose="modalShow = false"
@@ -136,7 +151,14 @@ watch(packSearchInput, async () => {
       <input type="text" placeholder="عنوان" />
       <input type="text" placeholder="تعداد" />
       <input type="text" placeholder=" کالاها" />
-      <input type="button" value="محصولات " @click="productSelectShow=true" />
+      <input
+        type="button"
+        :value="
+          prodductModalOpenerValue ? prodductModalOpenerValue : 'محصولات پکیج '
+        "
+        @click="productSelectShow = true"
+        class="modal-opener"
+      />
       <textarea name="explanation" placeholder="توضیحات"></textarea>
     </UpdateCreateModal>
 

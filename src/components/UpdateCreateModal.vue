@@ -21,7 +21,6 @@ const { modalInputs, title, errorInput } = defineProps([
   </div>
 </template>
 
-
 <style>
 .overlay {
   align-items: center;
@@ -71,7 +70,7 @@ const { modalInputs, title, errorInput } = defineProps([
 
 .overlay .modal input[type="text"],
 input[type="password"],
-input[type="number"]{
+input[type="number"] {
   background-color: var(--color-light);
   border-radius: var(--border-radius-1);
   color: var(--color-dark);
@@ -106,6 +105,23 @@ select {
   overflow-y: auto;
   padding: 0.6rem;
   resize: none;
+}
+
+.overlay .modal .modal-opener {
+  background-color: var(--color-light);
+  border-radius: var(--border-radius-1);
+  cursor: pointer;
+  color: var(--color-dark);
+  margin-top: 1rem;
+  height: 2.6rem;
+  transition: all 300ms ease;
+  padding-right:1rem;
+  text-align: right;
+  width: 90%;
+}
+
+.overlay .modal .modal-opener:hover{
+  background-color: var(--color-background);
 }
 
 .overlay .modal #submit {

@@ -51,10 +51,12 @@ export function useProduct() {
     } catch (error) {
       if (isFieldsValid) {
         showPopup("مشکلی رخ داده ", "error");
+      }else{
+        inputErrors.value=error.message
       }
     } finally {
       setTimeout(() => {
-        errorInput.value = "";
+        inputErrors.value = "";
       }, 3000);
     }
   }
@@ -72,10 +74,12 @@ export function useProduct() {
         window.location.reload();
       }, 2000);
     } catch (error) {
-      showPopup("مشکلی رخ داده ", "error");
+      if(isFieldsValid){
+        showPopup("مشکلی رخ داده ", "error");
+      }
     } finally {
       setTimeout(() => {
-        errorInput.value = "";
+        inputErrors.value = "";
       }, 3000);
     }
   }
@@ -171,7 +175,7 @@ export function useProduct() {
   }
 
   function validateFields(product_obj) {
-    if (product_obj.name < 2) {
+    if (product_obj.name.length < 1) {
       throw Error("عنوان نمیتواند خالی باشد");
     } else if (product_obj.quantity < 0) {
       throw Error("تعداد محصولات نمیتواند منفی باید");
@@ -182,6 +186,7 @@ export function useProduct() {
     } else if (product_obj.type == "") {
       throw Error("لطفا نوع محصول را انتخاب کنید");
     }
+    return true
   }
 
   return {

@@ -5,29 +5,80 @@ import SimpleLoading from "./SimpleLoading.vue";
 import { useProduct } from "../composables/userProductApi";
 
 const emit = defineEmits(["onClose", "onSubmit"]);
+const { itemList } = defineProps(["itemList"]);
 
 const dropDown = ref(false);
 const selectedList = ref([]);
 const selectedListName = ref("");
 const searchInput = ref("");
 const loading = ref(false);
-
+const errorMessage = ref("");
 const productApi = useProduct();
-const { products, currentPage, lastPage,productLoading } = productApi;
+const { products, currentPage, lastPage, productLoading } = productApi;
 
 function onOpenerClick() {
   dropDown.value = !dropDown.value;
 }
 
-function productChecked(product) {
-  if (product.checked) {
-    selectedList.value.push(product);
+function addProductToSelected(product) {
+  const index = selectedList.value.findIndex((item) => item.id === product.id);
+  if (!product.inputQuantity) {
+    errorMessage.value = `لطفا تعداد کالا را مشخص نمایید!!!`;
+  } else if (index >= 0) {
+    let oldQuantity = selectedList.value[index].selectedQuantity;
+    let newQuantity = product.inputQuantity;
+    if (oldQuantity + newQuantity < product.quantity) {
+      selectedList.value[index].selectedQuantity = oldQuantity + newQuantity;
+    }
+    {
+      errorMessage.value = `موجودی کافی نیست!!!`;
+    }
   } else {
-    const index = selectedList.value.indexOf(product);
-    selectedList.value.splice(index, 1);
+    product.selectedQuantity = product.inputQuantity;
+    if (product.selectedQuantity <= product.quantity) {
+      selectedList.value.push(product);
+    } else {
+      errorMessage.value = `موجودی کافی نیست!!!`;
+    }
   }
+
   selectedListName.value = selectedList.value.reduce((accumulator, item) => {
-    return accumulator + item.name + "-";
+    return accumulator + item.name + `(${item.selectedQuantity})` + "-";
+  }, "");
+  setTimeout(() => {
+    errorMessage.value = "";
+  }, 2000);
+}
+
+function onDropDownDelete(product) {
+  const index = selectedList.value.indexOf(product);
+  selectedList.value.splice(index, 1);
+
+  selectedListName.value = selectedList.value.reduce((accumulator, item) => {
+    return accumulator + `(${item.selectedQuantity})` + item.name + "-";
+  }, "");
+}
+
+function onSubmit() {
+  if (selectedList.value.length > 0) {
+    selectedList.value.map((item) => {
+      item.quantity = item.selectedQuantity;
+      delete item.selectedQuantity;
+      delete item.inputQuantity;
+    });
+    emit("onSubmit", selectedList.value);
+  } else {
+    errorMessage.value = `لطفا محصولات مورد نظر خود را انتخاب نمایید!!!`;
+  }
+}
+
+function settingSelectedProduct() {
+  selectedList.value.map((item) => {
+    item.selectedQuantity = item.quantity;
+  });
+
+  selectedListName.value = selectedList.value.reduce((accumulator, item) => {
+    return accumulator + `(${item.selectedQuantity})` + item.name + "-";
   }, "");
 }
 
@@ -35,16 +86,18 @@ onMounted(async () => {
   loading.value = true;
   await productApi.setAllProdcuts();
   loading.value = false;
+  if (itemList.length > 0) {
+    selectedList.value = itemList;
+    settingSelectedProduct();
+  }
 });
 
 watch(searchInput, async () => {
-  loading.value = true;
   if (searchInput.value.length > 1) {
     await productApi.filterDebounced(searchInput.value);
   } else if (searchInput.value.length <= 1) {
     await productApi.setAllProdcuts();
   }
-  loading.value = false;
 });
 </script>
 
@@ -58,7 +111,7 @@ watch(searchInput, async () => {
       <div class="input">
         <span class="material-symbols-sharp search">search</span>
         <input type="text" v-model="searchInput" />
-        <input type="button" value="ثبت" />
+        <input type="submit" value="ثبت" @click="onSubmit" />
       </div>
 
       <div class="selected">
@@ -91,10 +144,17 @@ watch(searchInput, async () => {
               <tbody>
                 <tr v-for="obj in selectedList">
                   <td>
-                    <span class="material-symbols-sharp delete"> delete </span>
+                    <span
+                      class="material-symbols-sharp delete"
+                      @click="onDropDownDelete(obj)"
+                    >
+                      delete
+                    </span>
                   </td>
                   <td>{{ obj.name }}</td>
-                  <td><input type="number" :value="obj.quantity" /></td>
+                  <td>
+                    <input type="number" v-model="obj.selectedQuantity" />
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -128,11 +188,12 @@ watch(searchInput, async () => {
           <tbody>
             <tr v-for="product in products" :key="product.id">
               <td>
-                <input
-                  type="checkbox"
-                  v-model="product.checked"
-                  @change="productChecked(product)"
-                />
+                <span
+                  class="material-symbols-sharp add"
+                  @click="addProductToSelected(product)"
+                >
+                  add
+                </span>
               </td>
               <td>{{ product.name }}</td>
               <td v-if="product.category" class="responsive-hidden">
@@ -144,7 +205,8 @@ watch(searchInput, async () => {
                   type="number"
                   :min="0"
                   :max="product.quantity"
-                  v-model="product.quantity"
+                  :placeholder="product.quantity"
+                  v-model="product.inputQuantity"
                 />
               </td>
             </tr>
@@ -155,6 +217,8 @@ watch(searchInput, async () => {
       <div v-else class="loader">
         <SimpleLoading />
       </div>
+
+      <div class="error" v-if="errorMessage.length > 0">{{ errorMessage }}</div>
     </div>
   </div>
 </template>
@@ -197,7 +261,7 @@ input[type="number"] {
   position: relative;
   width: 40rem;
   min-height: 30rem;
-  max-height: 30rem;
+  max-height: 40rem;
   height: 100%;
   overflow: hidden;
 }
@@ -241,7 +305,7 @@ input[type="number"] {
   margin: 0px !important;
 }
 
-.select-overlay .select-modal .input input[type="button"] {
+.select-overlay .select-modal .input input[type="submit"] {
   background-color: var(--color-primary);
   border-radius: var(--border-radius-1);
   color: var(--color-white);
@@ -256,6 +320,7 @@ input[type="number"] {
   padding: 0.4rem 1rem;
   transition: all 300ms ease;
 }
+
 .selected {
   width: 100%;
   margin-top: 1rem;
@@ -279,13 +344,16 @@ input[type="number"] {
   border-radius: 0 0 1rem 1rem;
   box-shadow: var(--box-shadow);
   height: 10rem;
-  width: inherit;
   max-height: 10rem;
   overflow: auto;
+  width: inherit;
 }
 .selected .selected-box .selected-dropdown table {
-  margin: 0px;
-  padding: 0px;
+  cursor: pointer;
+  margin-top: 1.2rem;
+  text-align: center;
+  transition: all 300ms ease;
+  width: 100%;
 }
 
 .selected .selected-box .selected-dropdown table tr td {
@@ -306,12 +374,13 @@ input[type="number"] {
   background: var(--color-background);
   box-shadow: var(--box-shadow);
   border-radius: 0.4rem;
-  width: 100%;
-  max-height: 20rem;
+  height: 23rem;
+  max-height: 25rem;
   overflow: auto;
+  width: 100%;
 }
 
-.select-overlay .select-modal table {
+.select-overlay .select-modal .product-list table {
   cursor: pointer;
   margin-top: 1.2rem;
   text-align: center;
@@ -319,14 +388,23 @@ input[type="number"] {
   width: 100%;
 }
 
-.select-overlay .select-modal table:hover {
+.select-overlay .select-modal .product-list table:hover {
   box-shadow: none;
 }
 
-.select-overlay .select-modal table tbody tr td {
+.select-overlay .select-modal .product-list table tbody tr td {
   height: 3rem;
   border-bottom: 1px solid var(--color-light);
   color: var(--color-dark);
+}
+
+.select-overlay .select-modal .product-list .add {
+  background-color: var(--color-light);
+  border-radius: 50%;
+}
+.select-overlay .select-modal .product-list .add:hover {
+  background-color: var(--color-primary-light);
+  transition: all 300ms ease-in-out;
 }
 
 .select-overlay .select-modal table thead tr th {
@@ -355,5 +433,9 @@ input[type="number"] {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.select-overlay .select-modal .error {
+  color: var(--color-danger);
 }
 </style>
