@@ -115,12 +115,12 @@ select {
   margin-top: 1rem;
   height: 2.6rem;
   transition: all 300ms ease;
-  padding-right:1rem;
+  padding-right: 1rem;
   text-align: right;
   width: 90%;
 }
 
-.overlay .modal .modal-opener:hover{
+.overlay .modal .modal-opener:hover {
   background-color: var(--color-background);
 }
 

@@ -13,12 +13,12 @@ const { showPopup, showLoading, dismissLoading } = componentStore;
 //help
 const intialPackValue = {
   title: "",
-  product_id: "",
-  helper_id: "",
   quantity: 0,
+  description:"",
+  package_items:[]
 };
 const packApi = usePacks();
-const { packs, currentPage, lastPage, error } = packApi;
+const { packs, currentPage, lastPage, inputErrors } = packApi;
 const pack = reactive(intialPackValue);
 const packList = ref([]);
 const packSearchInput = ref("");
@@ -44,7 +44,7 @@ onMounted(async () => {
 async function submitPackage() {
   showLoading();
   if (modalMode.value == "create") {
-    await packApi.createPack(pack);
+    await packApi.createPack(pack, packProductsList);
     for (const key in pack) pack[key] = "";
   } else if (modalMode.value == "edit") {
     await packApi.updatePack(pack);
@@ -125,37 +125,38 @@ watch(packSearchInput, async () => {
     await packApi.setAllPacks();
   }
 });
+
 </script>
 
 <template>
   <main>
     <Alert
-      v-if="alertShow"
-      @submit="submitDelete"
-      @onSubmit="submitPackage"
-      :message="alerMessage"
+    v-if="alertShow"
+    @submit="submitDelete"
+    @onSubmit="submitPackage"
+    :message="alerMessage"
     />
+
     <productSelectBoxModal
       v-if="productSelectShow"
       @onClose="productSelectShow = false"
       @onSubmit="productSelectedSubmmition"
       :itemList="packProductsList"
     />
+
     <UpdateCreateModal
       v-if="modalShow"
       @onClose="modalShow = false"
-      :title="title"
-      :errorInput="error"
+      :title="modalTitle"
+      :errorInput="packApi.inputErrors"
       @onSubmit="submitPackage"
     >
-      <input type="text" placeholder="عنوان" />
-      <input type="text" placeholder="تعداد" />
-      <input type="text" placeholder=" کالاها" />
+      <input type="text" placeholder="عنوان" v-model="pack.title"/>
+      <input type="text" placeholder="تعداد" v-model="pack.quantity"/>
+
       <input
         type="button"
-        :value="
-          prodductModalOpenerValue ? prodductModalOpenerValue : 'محصولات پکیج '
-        "
+        :value="prodductModalOpenerValue ? prodductModalOpenerValue : 'کالاها'"
         @click="productSelectShow = true"
         class="modal-opener"
       />

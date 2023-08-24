@@ -135,8 +135,6 @@ async function submitDelete(type) {
   dismissLoading();
 }
 
-function onOpenDropDown() {}
-
 watch(aidsSearchInput, async () => {
   if (aidsSearchInput.value.length > 1) {
     await aidApi.filterAids(aidsSearchInput.value);

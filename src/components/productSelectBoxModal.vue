@@ -66,10 +66,8 @@ function onSubmit() {
       delete item.selectedQuantity;
       delete item.inputQuantity;
     });
-    emit("onSubmit", selectedList.value);
-  } else {
-    errorMessage.value = `لطفا محصولات مورد نظر خود را انتخاب نمایید!!!`;
   }
+  emit("onSubmit", selectedList.value);
 }
 
 function settingSelectedProduct() {

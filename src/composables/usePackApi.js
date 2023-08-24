@@ -4,96 +4,108 @@ import useComponentStore from "../store/componentStore";
 
 export function usePacks() {
   const packs = ref([]);
+  const packLoading = ref(false);
   const packCount = ref(0);
   const currentPage = ref(1);
   const lastPage = ref(1);
-  const error = ref("");
-  let timeID;
+  const inputErrors = ref("");
   const componentStore = useComponentStore();
   const { showPopup, showLoading, dismissLoading } = componentStore;
+  let timeID;
 
   async function setAllPacks() {
-    await axiosInstance
-      .get("/api/packages?page=1")
-      .then((response) => {
-        packs.value = response.data.packages;
-        packCount.value = response.data.count;
-      })
-      .catch((error) => {
-        showPopup("مشکلی پیش امده است", "error");
-      });
-  }
-
-  async function createPack(pack) {
-    const notValid = ValidateFields(peopleAid);
-    if (!notValid) {
-      await axiosInstance
-        .post("/api/packages?page=1", pack)
-        .then((response) => {
-          showPopup("با موفقیت ساخته شد!!!", "success");
-
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
-    } else {
-      error.value = notValid;
+    try {
+      packLoading.value = true;
+      const response = await axiosInstance.get("/api/packages?page=1");
+      packs.value = response.data.packages;
+      packCount.value = response.data.count;
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      packLoading.value = false;
     }
   }
 
-  async function updatePack(peopleAid) {
-    const notValid = ValidateFields(peopleAid);
-    if (!notValid) {
-      await axiosInstance
-        .put("/api/packages", peopleAid)
-        .then((response) => {
-          showPopup("با موفقیت ویرایش شد!!!", "success");
+  async function createPack(pack, pack_items) {
+    pack.package_items = pack_items.value.map((item) => ({
+      product_id: item.id,
+      quantity: item.quantity,
+    }));
 
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
-    } else {
-      error.value = notValid;
+    let isPackValid;
+    try {
+      isPackValid = ValidateFields(pack);
+      const response = await axiosInstance.post("/api/packages/create-package-with-items", pack);
+      showPopup("با موفقیت ساخته شد!!!", "success");
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      if (isPackValid) {
+        showPopup("مشکلی پیش امده است", "error");
+      } else {
+        inputErrors.value = error.message;
+      }
+    } finally {
+      setTimeout(() => {
+        inputErrors.value = "";
+      }, 2000);
+    }
+  }
+
+  async function updatePack(pack, pack_items) {
+    let isPackValid;
+    try {
+      isPackValid = ValidateFields(pack);
+      const response = await axiosInstance.put("/api/packages", pack);
+      showPopup("با موفقیت ویرایش شد!!!", "success");
+
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      if (isPackValid) {
+        showPopup("مشکلی پیش امده است", "error");
+      } else {
+        inputErrors.value = error.message;
+      }
+    } finally {
+      setTimeout(() => {
+        inputErrors.value = "";
+      }, 2000);
     }
   }
 
   async function deletePacks(packList = []) {
-    if (packList.length > 0) {
-      const pack_id = packList.map((obj) => obj.id);
+    try {
+      if (packList.length > 0) {
+        const pack_id = packList.map((obj) => obj.id);
+        const response = await axiosInstance.post(
+          "/api/packages/delete-multi",
+          { package_ids: pack_id }
+        );
+        showPopup("با موفقیت حذف شد!!!", "success");
 
-      await axiosInstance
-        .post("/api/packages/delete-multi", { package_ids: pack_id })
-        .then((response) => {
-          showPopup("با موفقیت حذف شد!!!", "success");
-
-          setTimeout(() => {
-            window.location.reload();
-          }, 2000);
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
     }
   }
 
   async function filterPack(key) {
-    showLoading();
-    await axiosInstance
-      .get(`/api/packages?title=${key}`)
-      .then((response) => {
-        packs.value = response.data.packages;
-      })
-      .catch((error) => {
-        showPopup("مشکلی پیش امده است", "error");
-      });
-    dismissLoading();
+    try {
+      packLoading.value = true;
+      const response = await axiosInstance.get(`/api/packages?title=${key}`);
+      packs.value = response.data.packages;
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      packLoading.value = false;
+    }
   }
 
   function filterDebounced(key) {
@@ -150,18 +162,20 @@ export function usePacks() {
   }
 
   function ValidateFields(obj) {
+    console.log(obj);
     if (obj.title == "") {
-      return "عنوان نمیتواند خالی باشد";
+      throw Error("عنوان نمیتواند خالی باشد");
     } else if (obj.quantity <= 0) {
-      return Error("تعداد کالا های اهدایی را مشخص کنید");
+      throw Error("تعداد کالا های اهدایی را مشخص کنید");
     }
+    return true
   }
 
   return {
     packs,
     currentPage,
     lastPage,
-    error,
+    inputErrors,
     setAllPacks,
     createPack,
     updatePack,
