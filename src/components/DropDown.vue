@@ -8,14 +8,13 @@ let openerSpan;
 
 const menu = ref(false);
 const input = ref("");
-const emit = defineEmits(["onFilter", "onSelect"]);
+const emit = defineEmits(["onFilter", "onSelect","nextPage","prevPage","gotoPage"]);
 const { dataList, current, lastpage, initialValue, index } = defineProps([
   "dataList",
   "current",
   "lastpage",
   "initialValue",
-  "next",
-  "prev",
+  "loading"
 ]);
 
 const selectValue = ref(initialValue);
@@ -31,7 +30,7 @@ function onSelect(data) {
 }
 
 function onOpenerClick() {
-  menu.value=!menu.value
+  menu.value = !menu.value;
 }
 
 watch(input, () => {
@@ -48,8 +47,7 @@ function closeMenuOnClickOutside(event) {
       !menuLayout.contains(event.target) &
       !openerSpan.contains(event.target) &
       (event.target.className != "opener-button")
-      ) {
-        
+    ) {
       menu.value = false;
     }
   }
@@ -87,6 +85,17 @@ onMounted(() => {
       <div class="input">
         <span class="material-symbols-sharp search">search</span>
         <input type="text" v-model="input" />
+      </div>
+
+      <div class="pagination">
+        <Pagination
+          id="pagination"
+          :currentPage="current"
+          :lastPage="lastpage"
+          @next="emit('nextPage');"
+          @prev="emit('prevPage');"
+          @goTo="emit('gotoPage',number);"
+        />
       </div>
 
       <!-- Menu -->
@@ -144,7 +153,7 @@ onMounted(() => {
   z-index: 12;
 }
 
-.menu-layout .disabled{
+.menu-layout .disabled {
   display: none;
 }
 

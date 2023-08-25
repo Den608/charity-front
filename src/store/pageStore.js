@@ -32,5 +32,10 @@ const usePageStore = defineStore("pageStore", () => {
       icon: "category",
       component: PackageAllocation,
     },
+    {
+      name: "پروفایل",
+      icon: "category",
+      component:Profile,
+    },
   ]);
 });

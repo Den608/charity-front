@@ -35,7 +35,10 @@ export function usePacks() {
     let isPackValid;
     try {
       isPackValid = ValidateFields(pack);
-      const response = await axiosInstance.post("/api/packages/create-package-with-items", pack);
+      const response = await axiosInstance.post(
+        "/api/packages/create-package-with-items",
+        pack
+      );
       showPopup("با موفقیت ساخته شد!!!", "success");
 
       setTimeout(() => {
@@ -58,7 +61,10 @@ export function usePacks() {
     let isPackValid;
     try {
       isPackValid = ValidateFields(pack);
-      const response = await axiosInstance.put("/api/packages", pack);
+      const response = await axiosInstance.put(
+        `/api/packages/${pack.id}`,
+        pack
+      );
       showPopup("با موفقیت ویرایش شد!!!", "success");
 
       setTimeout(() => {
@@ -117,48 +123,51 @@ export function usePacks() {
   }
 
   async function nextPage() {
-    showLoading();
-    if (currentPage.value < lastPage.value) {
-      await axiosInstance
-        .get(`/api/packages?page=${currentPage.value++}`)
-        .then((response) => {
-          packs.value = response.data.count;
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
+    try {
+      if (currentPage.value < lastPage.value) {
+        packLoading.value = true;
+        const response = await axiosInstance.get(
+          `/api/packages?page=${currentPage.value++}`
+        );
+        packs.value = response.data.count;
+      }
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      packLoading.value = false;
     }
-    dismissLoading();
   }
 
   async function prevPage() {
-    showLoading();
-    if (currentPage.value > 1) {
-      await axiosInstance
-        .get(`/api/packages?page=${currentPage.value--}`)
-        .then((response) => {
-          packs.value = response.data.count;
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
+    try {
+      if (currentPage.value > 1) {
+        packLoading.value = true;
+        const response = await axiosInstance.get(
+          `/api/packages?page=${currentPage.value--}`
+        );
+        packs.value = response.data.count;
+      }
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      packLoading.value = false;
     }
-    dismissLoading();
   }
 
   async function gotoPage(number) {
-    showLoading();
-    if (number <= lastPage.value && number > 0) {
-      await axiosInstance
-        .get(`/api/packages?page=${number}`)
-        .then((response) => {
-          packs.value = response.data.count;
-        })
-        .catch((error) => {
-          showPopup("مشکلی پیش امده است", "error");
-        });
+    try {
+      if (number <= lastPage.value && number > 0) {
+        packLoading.value = true;
+        const response = await axiosInstance.get(
+          `/api/packages?page=${number}`
+        );
+        packs.value = response.data.count;
+      }
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      packLoading.value = false;
     }
-    dismissLoading();
   }
 
   function ValidateFields(obj) {
@@ -168,7 +177,7 @@ export function usePacks() {
     } else if (obj.quantity <= 0) {
       throw Error("تعداد کالا های اهدایی را مشخص کنید");
     }
-    return true
+    return true;
   }
 
   return {

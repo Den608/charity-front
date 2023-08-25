@@ -9,12 +9,14 @@ export function useUsersApi() {
   const usersCount = ref(0);
   const user_role = ref("");
   const errorInput = ref("");
+  const userLoading = ref(false);
   const componentStore = useComponentStore();
   const { showLoading, dismissLoading, showPopup } = componentStore;
   let timerId;
 
   async function setAllUsers(role) {
     try {
+      userLoading.value = true;
       const response = await axiosInstance.get(`/api/users?role=${role}`);
       users.value = response.data.users;
       usersCount.value = response.data.count;
@@ -22,6 +24,8 @@ export function useUsersApi() {
       user_role.value = role;
     } catch (error) {
       showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error");
+    } finally {
+      userLoading.value = false;
     }
   }
 
@@ -29,7 +33,7 @@ export function useUsersApi() {
     let isValid;
     try {
       isValid = validate_fields(user);
-      user['role']=user_role.value
+      user["role"] = user_role.value;
       const response = await axiosInstance.post(
         `/api/register/${user_role.value}`,
         user
@@ -52,7 +56,7 @@ export function useUsersApi() {
       }
 
       if (!isValid) {
-        errorInput.value =error.message;
+        errorInput.value = error.message;
       } else {
         showPopup(message, "error");
       }
@@ -116,8 +120,6 @@ export function useUsersApi() {
   }
 
   async function filterUser(filter_field) {
-    componentStore.showLoading();
-
     let url = "";
     if (checkInputType(filter_field) == "name") {
       let name = filter_field.split(" ");
@@ -132,6 +134,7 @@ export function useUsersApi() {
 
     if (url != "") {
       try {
+        userLoading.value = true;
         const response = await axiosInstance.get(url);
         users.value = response.data.users;
         usersCount.value = response.data.count;
@@ -141,23 +144,24 @@ export function useUsersApi() {
           "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
           "error"
         );
+      } finally {
+        userLoading.value = false;
       }
-      componentStore.dismissLoading();
     }
   }
 
-  async function filterUserDebounced(filter_field) {
+  async function filterUserDebounced(filter_field=' ') {
     clearTimeout(timerId);
 
     timerId = setTimeout(async () => {
       await filterUser(filter_field);
-    }, 800);
+    }, 1000);
   }
 
   async function nextPage() {
-    showLoading();
     if (currentPage.value < lastPage.value) {
       try {
+        userLoading.value = true;
         const response = await axiosInstance.get(
           `/api/users?role=${user_role.value}&&page=${++currentPage.value}`
         );
@@ -167,15 +171,16 @@ export function useUsersApi() {
           "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
           "error"
         );
+      } finally {
+        userLoading.value = false;
       }
     }
-    dismissLoading();
   }
 
   async function prevPage() {
-    showLoading();
     if (currentPage.value > 1) {
       try {
+        userLoading.value = true;
         const response = await axiosInstance.get(
           `/api/users?role=${user_role.value}&&page=${--currentPage.value}`
         );
@@ -185,15 +190,16 @@ export function useUsersApi() {
           "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
           "error"
         );
+      } finally {
+        userLoading.value = false;
       }
     }
-    dismissLoading();
   }
 
   async function gotoPage(number) {
-    showLoading();
     if ((number <= lastPage.value) & (number > 0)) {
       try {
+        userLoading.value = true;
         const response = await axiosInstance.get(
           `/api/users?role=${user_role.value}&&page=${number}`
         );
@@ -204,9 +210,10 @@ export function useUsersApi() {
           "مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید",
           "error"
         );
+      } finally {
+        userLoading.value = false;
       }
     }
-    dismissLoading();
   }
 
   function validate_fields(obj) {
@@ -245,6 +252,7 @@ export function useUsersApi() {
 
   return {
     users,
+    userLoading,
     usersCount,
     currentPage,
     lastPage,

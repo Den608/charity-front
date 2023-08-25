@@ -3,6 +3,8 @@ import { ref, watch, onMounted, reactive, computed } from "vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
 import DropDown from "../DropDown.vue";
+import ProductDropDown from "../ProductDropDown.vue";
+import UserDropDown from "../UserDropDown.vue";
 import useComponentStore from "../../store/componentStore";
 import Pagination from "../Pagination.vue";
 import { useAids } from "../../composables/useAidsApi";
@@ -53,8 +55,6 @@ const alerMessage = ref("");
 onMounted(async () => {
   showLoading();
   await aidApi.setAllAids();
-  await productApi.setAllProdcuts();
-  await useUser.setAllUsers("helper");
   dismissLoading();
 });
 
@@ -136,11 +136,7 @@ async function submitDelete(type) {
 }
 
 watch(aidsSearchInput, async () => {
-  if (aidsSearchInput.value.length > 1) {
-    await aidApi.filterAids(aidsSearchInput.value);
-  } else if (aidsSearchInput.value.length <= 1) {
-    await aidApi.setAllAids();
-  }
+  await aidApi.filterAids(aidsSearchInput.value);
 });
 </script>
 
@@ -159,13 +155,9 @@ watch(aidsSearchInput, async () => {
       :title="modalTitle"
       :errorInput="aidApi.inputError"
     >
-      <DropDown
-        :lastpage="productLastPage"
-        :current="productCurrentPage"
+      <ProductDropDown
         :dataList="products"
         :initialValue="productIntialValue"
-        :apiComposable="productApi"
-        @onFilter="productApi.filterDebounced"
         @onSelect="
           (data) => {
             aid.product_id = data.id;
@@ -174,12 +166,10 @@ watch(aidsSearchInput, async () => {
         "
       />
 
-      <DropDown
-        :lastpage="userLastPage"
-        :current="userCurrentPage"
+      <UserDropDown
         :dataList="users"
         :initialValue="helperModalIntialvalue"
-        :apiComposable="useUser"
+        :role="'helper'"
         @onFilter="useUser.filterUserDebounced"
         @onSelect="(data) => (aid.helper_id = data.helper.id)"
       />

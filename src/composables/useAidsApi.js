@@ -5,6 +5,7 @@ import useComponentStore from "../store/componentStore";
 export function useAids() {
   const peopleAids = ref([]);
   const peopleAidCount = ref(0);
+  const peopleAidLoading=ref(false)
   const currentPage = ref(1);
   const lastPage = ref(1);
   const cashDonations = ref(0);
@@ -52,7 +53,7 @@ export function useAids() {
       componentStore.showPopup("با موفقیت ساخته شد !!!", "success");
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1000);
     } catch (error) {
       if (error.isAxiosError) {
         showPopup("مشکلی پیش امده است", "error");
@@ -73,7 +74,7 @@ export function useAids() {
 
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1000);
     } catch (error) {
       if (error.isAxiosError) {
         showPopup("مشکلی پیش امده است", "error");
@@ -97,7 +98,7 @@ export function useAids() {
 
         setTimeout(() => {
           window.location.reload();
-        }, 2000);
+        }, 1000);
       } catch (error) {
         if (error.isAxiosError) {
           showPopup("مشکلی پیش امده است", "error");
@@ -111,8 +112,7 @@ export function useAids() {
     }
   }
 
-  async function filterAids(key) {
-    showLoading();
+  async function filterAids(key=' ') {
     try {
       await axiosInstance
         .get(`/api/people-aids?title=${key}`)
@@ -122,7 +122,6 @@ export function useAids() {
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
     }
-    dismissLoading();
   }
 
   function filterDebounced(key) {

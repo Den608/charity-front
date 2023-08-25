@@ -32,16 +32,9 @@ const initialProduct = {
 const product = reactive(initialProduct);
 const productList = ref([]);
 const productApi = useProduct();
-const { products, productCatagories, lastPage, currentPage, inputErrors } =
+const { products, productCatagories, lastPage, currentPage, productLoading } =
   productApi;
 const productSearchInput = ref("");
-
-onMounted(async () => {
-  showLoading();
-  await productApi.setAllProdcuts();
-  await productApi.setAllCatagories();
-  dismissLoading();
-});
 
 function setAllChecked(event) {
   const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
@@ -107,11 +100,22 @@ async function submitDelete(type) {
 }
 
 watch(productSearchInput, async () => {
-  if (productSearchInput.value.length > 2) {
-    await productApi.filterDebounced(productSearchInput.value);
-  } else if (productSearchInput.value.length <= 2) {
-    await productApi.setAllProdcuts();
+  await productApi.filterDebounced(productSearchInput.value);
+});
+
+watch(productLoading, () => {
+  if (productLoading.value) {
+    showLoading();
+  } else {
+    dismissLoading();
   }
+});
+
+onMounted(async () => {
+  showLoading();
+  await productApi.setAllProdcuts();
+  await productApi.setAllCatagories();
+  dismissLoading();
 });
 </script>
 

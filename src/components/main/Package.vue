@@ -3,7 +3,6 @@ import { ref, reactive, watch, onMounted } from "vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
 import useComponentStore from "../../store/componentStore";
-import DropDownList from "../DropDownList.vue";
 import { usePacks } from "../../composables/usePackApi";
 import productSelectBoxModal from "../productSelectBoxModal.vue";
 
@@ -14,8 +13,8 @@ const { showPopup, showLoading, dismissLoading } = componentStore;
 const intialPackValue = {
   title: "",
   quantity: 0,
-  description:"",
-  package_items:[]
+  description: "",
+  package_items: [],
 };
 const packApi = usePacks();
 const { packs, currentPage, lastPage, inputErrors } = packApi;
@@ -34,12 +33,6 @@ const prodductModalOpenerValue = ref("");
 // alert
 const alertShow = ref(false);
 const alerMessage = ref("");
-
-onMounted(async () => {
-  showLoading();
-  await packApi.setAllPacks();
-  dismissLoading();
-});
 
 async function submitPackage() {
   showLoading();
@@ -65,6 +58,7 @@ async function showEditModal(pack_obj) {
   modalShow.value = true;
   modalTitle.value = "ویرایش پکیج";
   Object.assign(pack, pack_obj);
+  Object.assign(packProductsList, pack_obj.package_items);
   modalMode.value = "edit";
 }
 
@@ -110,6 +104,7 @@ async function submitDelete(type) {
   dismissLoading();
 }
 
+// product select box modal
 function productSelectedSubmmition(productList) {
   packProductsList.value = productList;
   prodductModalOpenerValue.value = productList.reduce((accumulator, item) => {
@@ -119,22 +114,32 @@ function productSelectedSubmmition(productList) {
 }
 
 watch(packSearchInput, async () => {
-  if (packSearchInput.value.length > 1) {
-    await packApi.filterPack(packSearchInput.value);
-  } else if (packSearchInput.value.length <= 1) {
-    await packApi.setAllPacks();
+  try {
+    if (packSearchInput.value.length > 1) {
+      await packApi.filterPack(packSearchInput.value);
+    } else if (packSearchInput.value.length <= 1) {
+      await packApi.setAllPacks();
+    }
+  } catch (error) {
+    showPopup("مشکلی پیش امده است ", "error");
+  } finally {
   }
 });
 
+onMounted(async () => {
+  showLoading();
+  await packApi.setAllPacks();
+  dismissLoading();
+});
 </script>
 
 <template>
   <main>
     <Alert
-    v-if="alertShow"
-    @submit="submitDelete"
-    @onSubmit="submitPackage"
-    :message="alerMessage"
+      v-if="alertShow"
+      @submit="submitDelete"
+      @onSubmit="submitPackage"
+      :message="alerMessage"
     />
 
     <productSelectBoxModal
@@ -151,8 +156,8 @@ watch(packSearchInput, async () => {
       :errorInput="packApi.inputErrors"
       @onSubmit="submitPackage"
     >
-      <input type="text" placeholder="عنوان" v-model="pack.title"/>
-      <input type="text" placeholder="تعداد" v-model="pack.quantity"/>
+      <input type="text" placeholder="عنوان" v-model="pack.title" />
+      <input type="text" placeholder="تعداد" v-model="pack.quantity" />
 
       <input
         type="button"

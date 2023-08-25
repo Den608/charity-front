@@ -3,7 +3,6 @@ import { RouterView } from "vue-router";
 import loading from "./components/loading.vue";
 import useComponentStore from "./store/componentStore";
 import popup from "./components/Popup.vue";
-import productSelectBoxModal from "./components/productSelectBoxModal.vue";
 
 const compoenentStore = useComponentStore();
 

@@ -51,8 +51,8 @@ export function useProduct() {
     } catch (error) {
       if (isFieldsValid) {
         showPopup("مشکلی رخ داده ", "error");
-      }else{
-        inputErrors.value=error.message
+      } else {
+        inputErrors.value = error.message;
       }
     } finally {
       setTimeout(() => {
@@ -74,7 +74,7 @@ export function useProduct() {
         window.location.reload();
       }, 2000);
     } catch (error) {
-      if(isFieldsValid){
+      if (isFieldsValid) {
         showPopup("مشکلی رخ داده ", "error");
       }
     } finally {
@@ -105,7 +105,7 @@ export function useProduct() {
     }
   }
 
-  async function filterProdcuts(key) {
+  async function filterProdcuts(key=' ') {
     try {
       productLoading.value = true;
       const response = await axiosInstance.get(`/api/products?name=${key}`);
@@ -118,11 +118,11 @@ export function useProduct() {
     }
   }
 
-  async function filterDebounced(key) {
+  function filterDebounced(key) {
     clearTimeout(timeID);
     timeID = setTimeout(async () => {
-      await withLoadingIndicator(filterProdcuts(key));
-    }, 500);
+      await filterProdcuts(key);
+    }, 1000);
   }
 
   async function nextPage() {
@@ -186,7 +186,7 @@ export function useProduct() {
     } else if (product_obj.type == "") {
       throw Error("لطفا نوع محصول را انتخاب کنید");
     }
-    return true
+    return true;
   }
 
   return {

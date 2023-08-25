@@ -21,7 +21,7 @@ const initialUserValue = {
   address: "",
 };
 const userApi = useUsersApi();
-const { users, currentPage, lastPage, usersCount } = userApi;
+const { users, currentPage, lastPage, usersCount,userLoading:loader } = userApi;
 const user = reactive(initialUserValue);
 const usersObjectList = ref([]);
 const userSearchInput = ref("");
@@ -33,12 +33,6 @@ const modalMode = ref("create");
 // alert
 const alertShow = ref(false);
 const alerMessage = ref("");
-
-onMounted(async () => {
-  showLoading();
-  await userApi.setAllUsers("helper");
-  dismissLoading();
-});
 
 async function submitUser() {
   showLoading();
@@ -114,11 +108,21 @@ async function submitDelete(type) {
 }
 
 watch(userSearchInput, async () => {
-  if (userSearchInput.value.length > 1) {
     await userApi.filterUserDebounced(userSearchInput.value);
-  } else if (userSearchInput.value.length <= 1) {
-    await userApi.setAllUsers("helper");
+});
+
+watch(loader,()=>{
+  if(loader.value){
+    showLoading()
+  }else{
+    dismissLoading()
   }
+})
+
+onMounted(async () => {
+  showLoading();
+  await userApi.setAllUsers("helper");
+  dismissLoading();
 });
 </script>
 
