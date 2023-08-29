@@ -4,6 +4,7 @@ import useComponentStore from "../store/componentStore";
 
 export function usePacks() {
   const packs = ref([]);
+  const singlePack = ref({});
   const packLoading = ref(false);
   const packCount = ref(0);
   const currentPage = ref(1);
@@ -26,11 +27,25 @@ export function usePacks() {
     }
   }
 
+  async function setSinglePack(id) {
+    try {
+      packLoading.value = true;
+      const response = await axiosInstance.get(`/api/packages/${id}`);
+      singlePack.value = response.data;
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      packLoading.value = false;
+    }
+  }
+
   async function createPack(pack, pack_items) {
     pack.package_items = pack_items.value.map((item) => ({
       product_id: item.id,
       quantity: item.quantity,
     }));
+
+    pack.organization_id = "1";
 
     let isPackValid;
     try {
@@ -53,7 +68,7 @@ export function usePacks() {
     } finally {
       setTimeout(() => {
         inputErrors.value = "";
-      }, 2000);
+      }, 1000);
     }
   }
 
@@ -129,7 +144,7 @@ export function usePacks() {
         const response = await axiosInstance.get(
           `/api/packages?page=${currentPage.value++}`
         );
-        packs.value = response.data.count;
+        packs.value = response.data;
       }
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
@@ -145,7 +160,7 @@ export function usePacks() {
         const response = await axiosInstance.get(
           `/api/packages?page=${currentPage.value--}`
         );
-        packs.value = response.data.count;
+        packs.value = response.data;
       }
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
@@ -161,7 +176,7 @@ export function usePacks() {
         const response = await axiosInstance.get(
           `/api/packages?page=${number}`
         );
-        packs.value = response.data.count;
+        packs.value = response.data;
       }
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
@@ -182,10 +197,12 @@ export function usePacks() {
 
   return {
     packs,
+    singlePack,
     currentPage,
     lastPage,
     inputErrors,
     setAllPacks,
+    setSinglePack,
     createPack,
     updatePack,
     deletePacks,

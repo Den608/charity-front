@@ -35,7 +35,7 @@ export function usePeoplesAid() {
 
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1000);
     } catch (error) {
       if (validation) {
         showPopup("مشکلی پیش امده است", "error");
@@ -57,7 +57,7 @@ export function usePeoplesAid() {
 
       setTimeout(() => {
         window.location.reload();
-      }, 2000);
+      }, 1000);
     } catch (error) {
       if (validation) {
         showPopup("مشکلی پیش امده است", "error");

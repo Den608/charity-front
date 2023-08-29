@@ -52,12 +52,6 @@ const dropDownShow = ref([false, false]);
 const alertShow = ref(false);
 const alerMessage = ref("");
 
-onMounted(async () => {
-  showLoading();
-  await aidApi.setAllAids();
-  dismissLoading();
-});
-
 async function submitAid() {
   showLoading();
   if (modalMode.value == "create") {
@@ -137,6 +131,12 @@ async function submitDelete(type) {
 
 watch(aidsSearchInput, async () => {
   await aidApi.filterAids(aidsSearchInput.value);
+});
+
+onMounted(async () => {
+  showLoading();
+  await aidApi.setAllAids();
+  dismissLoading();
 });
 </script>
 
@@ -236,7 +236,9 @@ watch(aidsSearchInput, async () => {
           <td>
             {{ aid.helper_name.first_name + " " + aid.helper_name.last_name }}
           </td>
-          <td class="responsive-hidden">{{ aid.description }}</td>
+          <td class="responsive-hidden">
+            {{ aid.description == null ? "......" : aid.description }}
+          </td>
           <td class="responsive-hidden primary">
             <span class="material-symbols-sharp" @click="showEditModal(aid)">
               edit_square

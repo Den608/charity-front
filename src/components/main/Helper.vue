@@ -38,7 +38,7 @@ async function submitUser() {
   showLoading();
   if (modalMode.value == "create") {
     await userApi.createUser(user);
-    for (const key in user) user[key] = "";
+    // for (const key in user) user[key] = "";
   } else if (modalMode.value == "edit") {
     await userApi.updateUser(user);
   }

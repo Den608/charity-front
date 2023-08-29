@@ -3,10 +3,13 @@ import { ref, reactive, onMounted, watch } from "vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
 import useComponentStore from "../../store/componentStore";
-import { useProduct } from "../../composables/userProductApi";
+import { useAidAllocation } from "../../composables/useAidAllocationApi";
 
 const componentStore = useComponentStore();
 const { showLoading, dismissLoading } = componentStore;
+
+const allocationAPi = useAidAllocation();
+const { aidAllocations } = allocationAPi;
 
 const title = ref("ثبت  محصول");
 const modalShow = ref(false);
@@ -15,40 +18,26 @@ const modalMode = ref("create");
 const alertShow = ref(false);
 const alertMessage = ref("");
 
-const initialProduct = {
-  id: "",
-  name: "",
-  quantity: 0,
-  type: "",
-  category_id: "",
-  description: "",
-  catagory: {
-    id: "",
-    name: "",
-    description: "",
-  },
+const initialAllocation = {
+  agent_id: "",
+  quantity: "",
+  help_seeker_id: "",
+  people_aid_id: "",
 };
-const product = reactive(initialProduct);
-const productList = ref([]);
-const productApi = useProduct();
-const { products, productCatagories, productCount, currentPage, inputErrors } =
-  productApi;
-const productSearchInput = ref("");
+
+const Allocation = reactive(initialAllocation);
+const allocationSearchInput = ref("");
+const createModalShow = ref(false);
+
+function submitAllocation() {}
 
 onMounted(async () => {
   showLoading();
-  await productApi.setAllProdcuts();
-  await productApi.setAllCatagories();
+  await allocationAPi.setAllAllocations();
   dismissLoading();
 });
 
-watch(productSearchInput, async () => {
-  if (productSearchInput.value.length > 2) {
-    await productApi.filterDebounced(productSearchInput.value);
-  } else if (productSearchInput.value.length <= 2) {
-    await productApi.setAllProdcuts();
-  }
-});
+watch(allocationSearchInput, async () => {});
 </script>
 
 <template>
@@ -65,6 +54,11 @@ watch(productSearchInput, async () => {
             v-model="productSearchInput"
           />
         </div>
+        <div class="buttons">
+          <span class="material-symbols-sharp" @click="showCreateModal">
+            add
+          </span>
+        </div>
       </div>
     </div>
 
@@ -79,17 +73,28 @@ watch(productSearchInput, async () => {
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>کاپشن زمستانی</td>
-
-          <td>علی رضایی</td>
-          <td>عرفان باقری</td>
-          <!-- <td  :id="aid.status == 'assigned' ? 'deliver' : 'not-deliver'">
+        <tr v-for="allocation in aidAllocations" :key="allocation.id">
+          <td>{{ allocation.people_aid.title }}</td>
+          <td>
             {{
-              aid.status == "assigned" ? "تحویل داده شده" : "در حال تحویل..."
+              allocation.helper_name.first_name +
+              " " +
+              allocation.helper_name.last_name
             }}
-          </td> -->
-          <td id="not-deliver">در حال تحویل...</td>
+          </td>
+          <td>
+            {{
+              allocation.help_seeker_name.first_name +
+              " " +
+              allocation.help_seeker_name.last_name
+            }}
+          </td>
+          <td v-if="allocation.status == 'not_assigned'" id="not-deliver">
+            در حال تحویل...
+          </td>
+          <td v-else id="deliver">
+            تحویل داده شد
+          </td>
           <td class="responsive-hidden primary">
             <span
               class="material-symbols-sharp"

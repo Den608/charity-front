@@ -5,7 +5,7 @@ import SimpleLoading from "./SimpleLoading.vue";
 import { useProduct } from "../composables/userProductApi";
 
 const emit = defineEmits(["onClose", "onSubmit"]);
-const { itemList } = defineProps(["itemList"]);
+const { itemList, pack } = defineProps(["itemList", "pack"]);
 
 const dropDown = ref(false);
 const selectedList = ref([]);
@@ -29,8 +29,7 @@ function addProductToSelected(product) {
     let newQuantity = product.inputQuantity;
     if (oldQuantity + newQuantity < product.quantity) {
       selectedList.value[index].selectedQuantity = oldQuantity + newQuantity;
-    }
-    {
+    } else {
       errorMessage.value = `موجودی کافی نیست!!!`;
     }
   } else {
@@ -84,6 +83,11 @@ onMounted(async () => {
   loading.value = true;
   await productApi.setAllProdcuts();
   loading.value = false;
+
+  if (pack != "") {
+    console.log(pack)
+  }
+
   if (itemList.length > 0) {
     selectedList.value = itemList;
     settingSelectedProduct();

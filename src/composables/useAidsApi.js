@@ -5,6 +5,8 @@ import useComponentStore from "../store/componentStore";
 export function useAids() {
   const peopleAids = ref([]);
   const peopleAidCount = ref(0);
+  const cashLoadingLoading=ref(false)
+  const productLoading=ref(false)
   const peopleAidLoading=ref(false)
   const currentPage = ref(1);
   const lastPage = ref(1);
@@ -18,20 +20,26 @@ export function useAids() {
 
   async function setCashDonation() {
     try {
+      cashLoadingLoading.value=true
       const response = await axiosInstance.get("/api/people-aids?type=cash");
       cashDonations.value = response.data.count;
     } catch (error) {
       showPopup("مشکلی رخ داده است!!!", "error");
+    }finally{
+      cashLoadingLoading.value=false
     }
   }
 
   async function setProductDonation() {
     try {
+      productLoading.value=true
       const response = await axiosInstance.get("/api/people-aids/");
       productDonations.value = response.data;
       productDonationsCount.value = response.data.count;
     } catch (error) {
       showPopup("مشکلی رخ داده است!!!", "error");
+    }finally{
+      productLoading.value=false
     }
   }
 

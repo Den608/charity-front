@@ -31,6 +31,7 @@ export function useUsersApi() {
 
   async function createUser(user) {
     let isValid;
+    let message = "";
     try {
       isValid = validate_fields(user);
       user["role"] = user_role.value;
@@ -42,25 +43,23 @@ export function useUsersApi() {
 
       setTimeout(() => {
         window.location.reload();
-      }, 3000);
+      }, 500);
     } catch (error) {
-      let message = "";
       if ("username" in error.response.data.errors) {
         message = "کاربری با این نام کاربری قبلا در سیسستم ثبت شده";
       } else if ("national_code" in error.response.data.errors) {
         message = "کاربری با این کد ملی قبلا در سیستم ثبت شده است ";
       } else if ("email" in error.response.data.errors) {
         message = "کاربری با این ایمیل قبلا در سیستم ثبت شده است ";
-      } else {
-        message = "خطایی در سیستم رخ داده است !!! با پشتیبانی ارتباط بگیرید";
-      }
-
-      if (!isValid) {
+      } else if (isValid) {
         errorInput.value = error.message;
       } else {
         showPopup(message, "error");
       }
     } finally {
+      if(message){
+        showPopup(message,'error')
+      }
       setTimeout(() => {
         errorInput.value = "";
       }, 3000);
@@ -75,7 +74,7 @@ export function useUsersApi() {
       showPopup("با موفقیت انجام شد !!!", "success");
       setTimeout(() => {
         window.location.reload();
-      }, 3000);
+      }, 500);
     } catch (error) {
       let message = "";
       if ("username" in error.response.data.errors) {
@@ -96,7 +95,7 @@ export function useUsersApi() {
     } finally {
       setTimeout(() => {
         errorInput.value = "";
-      }, 3000);
+      }, 500);
     }
   }
 
@@ -112,7 +111,7 @@ export function useUsersApi() {
 
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 500);
       } catch (error) {
         showPopup("مشکلی پیش امده با پشتیبانی تماس حاصل نمایید", "error");
       }
@@ -150,7 +149,7 @@ export function useUsersApi() {
     }
   }
 
-  async function filterUserDebounced(filter_field=' ') {
+  async function filterUserDebounced(filter_field = " ") {
     clearTimeout(timerId);
 
     timerId = setTimeout(async () => {

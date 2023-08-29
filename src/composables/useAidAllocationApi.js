@@ -5,10 +5,14 @@ import useComponentStore from "../store/componentStore";
 export function useAidAllocation() {
   const assignedAids = ref([]);
   const aidAllocations = ref([]);
+  const assignAidLoading = ref(false);
+  const allocationLoading = ref(false);
   const componentStore = useComponentStore();
+  let timeID;
 
   async function setAssignedAids() {
     try {
+      assignAidLoading.value = true;
       const response = await axiosInstance.get(
         "/api/aid-allocations/?status=assigned"
       );
@@ -18,11 +22,14 @@ export function useAidAllocation() {
         "مشکل در بازیابی اطلاعات کمک های اهدایی تخصیص یافته پیش امده!!!",
         "error"
       );
+    } finally {
+      assignAidLoading.value = false;
     }
   }
 
-  async function setAllAidAllocations() {
+  async function setAllAllocations() {
     try {
+      allocationLoading.value = true;
       const response = await axiosInstance.get("/api/aid-allocations/?page=1");
       aidAllocations.value = response.data.allocations;
     } catch (error) {
@@ -30,15 +37,136 @@ export function useAidAllocation() {
         "مشکل در بازیابی اطلاعات کمک های اهدایی پیش امده!!!",
         "error"
       );
+    } finally {
+      allocationLoading.value = false;
     }
   }
 
-  async function createAidAllocation(aids) {}
+  async function createAidAllocation(allocations) {
+    let isValid;
+    try {
+      allocationLoading.value = true;
+      isValid = isFieldsValid(allocations);
+      const response = await axiosInstance.post(
+        `/api/aid-allocations`,
+        allocations
+      );
+      showPopup("با موفقیت ساخته شد", "success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      if (isValid) {
+        showPopup("مشکلی پیش امده است !!!");
+      } else {
+        showPopup(error.message);
+      }
+    } finally {
+      allocationLoading.value = false;
+    }
+  }
+
+  async function deleteAllocations(allocaion) {
+    try {
+      allocationLoading.value = true;
+      await axiosInstance.delete(`/api/aid-allocations/${allocaion.id}`);
+      showPopup("با موفقیت حذف شد", "success");
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
+    } catch (error) {
+      showPopup("مشکلی پیش امده است !!!");
+    } finally {
+      allocationLoading.value = false;
+    }
+  }
+
+  async function filterAllocation(key) {
+    try {
+      allocationLoading.value = true;
+      const response = await axiosInstance.get(
+        `/api/aid-allocations/?help_seeker=${key.id}`
+      );
+      aidAllocations.value = response.data.allocations;
+    } catch (error) {
+      componentStore.showPopup("مشکل پیش امده!!!", "error");
+    } finally {
+      allocationLoading.value = false;
+    }
+  }
+
+  function debouncedFiltering(key) {
+    clearTimeout(timeID);
+    setTimeout(async () => {
+      await filterAllocation(key);
+    },1000);
+  }
+
+
+  async function nextPage() {
+    try {
+      if (currentPage.value < lastPage.value) {
+        allocationLoading.value = true;
+        const response = await axiosInstance.get(
+          `/api/aid-allocations?page=${currentPage.value++}`
+        );
+        aidAllocations.value = response.data.count;
+      }
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      allocationLoading.value = false;
+    }
+  }
+
+  async function prevPage() {
+    try {
+      if (currentPage.value > 1) {
+        allocationLoading.value = true;
+        const response = await axiosInstance.get(
+          `/api/aid-allocations?page=${currentPage.value--}`
+        );
+        aidAllocations.value = response.data;
+      }
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      allocationLoading.value = false;
+    }
+  }
+
+  async function gotoPage(number) {
+    try {
+      if (number <= lastPage.value && number > 0) {
+        allocationLoading.value = true;
+        const response = await axiosInstance.get(
+          `/api/aid-allocations?page=${number}`
+        );
+        aidAllocations.value = response.data.count;
+      }
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      allocationLoading.value = false;
+    }
+  }
+
+  function isFieldsValid(obj) {
+    if (obj.quantity == "") {
+      throw Error("تعداد را مشخص کنید!!!");
+    } else if (obj.help_seeker_id == "") {
+      throw Error("مددجوی مورد نظر خود را انتخاب کنید");
+    } else if (obj.people_aid_id == "") {
+      throw Error("کمک مورد نظر را انتخاب کنید");
+    }
+  }
 
   return {
     assignedAids,
     aidAllocations,
+    assignAidLoading,
+    allocationLoading,
     setAssignedAids,
-    setAllAidAllocations,
+    setAllAllocations,
   };
 }

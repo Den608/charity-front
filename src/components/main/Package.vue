@@ -17,7 +17,7 @@ const intialPackValue = {
   package_items: [],
 };
 const packApi = usePacks();
-const { packs, currentPage, lastPage, inputErrors } = packApi;
+const { packs, singlePack, currentPage, lastPage, inputErrors } = packApi;
 const pack = reactive(intialPackValue);
 const packList = ref([]);
 const packSearchInput = ref("");
@@ -29,6 +29,10 @@ const modalMode = ref("create");
 const productSelectShow = ref(false);
 const packProductsList = ref([]);
 const prodductModalOpenerValue = ref("");
+
+// in case of deleting we pass package id to this field
+// inorder to access it item
+const modalPackage = ref("");
 
 // alert
 const alertShow = ref(false);
@@ -42,7 +46,6 @@ async function submitPackage() {
   } else if (modalMode.value == "edit") {
     await packApi.updatePack(pack);
   }
-
   dismissLoading();
 }
 
@@ -58,8 +61,9 @@ async function showEditModal(pack_obj) {
   modalShow.value = true;
   modalTitle.value = "ویرایش پکیج";
   Object.assign(pack, pack_obj);
-  Object.assign(packProductsList, pack_obj.package_items);
   modalMode.value = "edit";
+  await packApi.setSinglePack(pack_obj.id);
+  modalPackage.value = singlePack.value;
 }
 
 function setAllChecked(event) {
@@ -144,9 +148,13 @@ onMounted(async () => {
 
     <productSelectBoxModal
       v-if="productSelectShow"
-      @onClose="productSelectShow = false"
+      @onClose="
+        productSelectShow = false;
+        modalPackage = '';
+      "
       @onSubmit="productSelectedSubmmition"
       :itemList="packProductsList"
+      :pack="modalPackage"
     />
 
     <UpdateCreateModal
