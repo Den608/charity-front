@@ -8,6 +8,8 @@ export function useAidAllocation() {
   const assignAidLoading = ref(false);
   const allocationLoading = ref(false);
   const componentStore = useComponentStore();
+  const { showPopup } = componentStore;
+  const errorInput = ref("");
   let timeID;
 
   async function setAssignedAids() {
@@ -59,9 +61,12 @@ export function useAidAllocation() {
       if (isValid) {
         showPopup("مشکلی پیش امده است !!!");
       } else {
-        showPopup(error.message);
+        errorInput.value = error.message;
       }
     } finally {
+      setTimeout(() => {
+        errorInput.value = "";
+      }, 3000);
       allocationLoading.value = false;
     }
   }
@@ -99,9 +104,8 @@ export function useAidAllocation() {
     clearTimeout(timeID);
     setTimeout(async () => {
       await filterAllocation(key);
-    },1000);
+    }, 1000);
   }
-
 
   async function nextPage() {
     try {
@@ -152,21 +156,26 @@ export function useAidAllocation() {
   }
 
   function isFieldsValid(obj) {
-    if (obj.quantity == "") {
-      throw Error("تعداد را مشخص کنید!!!");
+    if (obj.people_aid_id == "") {
+      throw Error("کمک مورد نظر را انتخاب کنید");
     } else if (obj.help_seeker_id == "") {
       throw Error("مددجوی مورد نظر خود را انتخاب کنید");
-    } else if (obj.people_aid_id == "") {
-      throw Error("کمک مورد نظر را انتخاب کنید");
+    } else if (obj.quantity == "") {
+      throw Error("تعداد را مشخص کنید!!!");
     }
+    return true
   }
 
   return {
+    errorInput,
     assignedAids,
     aidAllocations,
     assignAidLoading,
     allocationLoading,
+
     setAssignedAids,
     setAllAllocations,
+    debouncedFiltering,
+    createAidAllocation,
   };
 }

@@ -3,9 +3,10 @@ import { ref, onMounted, watch } from "vue";
 import Pagination from "./Pagination.vue";
 import SimpleLoading from "./SimpleLoading.vue";
 import { useProduct } from "../composables/userProductApi";
+import { usePacks } from "../composables/usePackApi";
 
 const emit = defineEmits(["onClose", "onSubmit"]);
-const { itemList, pack } = defineProps(["itemList", "pack"]);
+const { itemList, packItems } = defineProps(["itemList", "packItems"]);
 
 const dropDown = ref(false);
 const selectedList = ref([]);
@@ -13,6 +14,7 @@ const selectedListName = ref("");
 const searchInput = ref("");
 const loading = ref(false);
 const errorMessage = ref("");
+
 const productApi = useProduct();
 const { products, currentPage, lastPage, productLoading } = productApi;
 
@@ -27,7 +29,7 @@ function addProductToSelected(product) {
   } else if (index >= 0) {
     let oldQuantity = selectedList.value[index].selectedQuantity;
     let newQuantity = product.inputQuantity;
-    if (oldQuantity + newQuantity < product.quantity) {
+    if (oldQuantity + newQuantity <= product.quantity) {
       selectedList.value[index].selectedQuantity = oldQuantity + newQuantity;
     } else {
       errorMessage.value = `موجودی کافی نیست!!!`;
@@ -44,9 +46,10 @@ function addProductToSelected(product) {
   selectedListName.value = selectedList.value.reduce((accumulator, item) => {
     return accumulator + item.name + `(${item.selectedQuantity})` + "-";
   }, "");
+
   setTimeout(() => {
     errorMessage.value = "";
-  }, 2000);
+  }, 3000);
 }
 
 function onDropDownDelete(product) {
@@ -79,14 +82,26 @@ function settingSelectedProduct() {
   }, "");
 }
 
+function settingEditingProduct() {
+  selectedList.value = packItems
+
+  selectedList.value.map((item) => {
+    item.selectedQuantity = item.quantity;
+  });
+
+  selectedListName.value = selectedList.value.reduce((accumulator, item) => {
+    return accumulator + `(${item.selectedQuantity})` + item.name + "-";
+  }, "");
+}
+
 onMounted(async () => {
   loading.value = true;
   await productApi.setAllProdcuts();
-  loading.value = false;
 
-  if (pack != "") {
-    console.log(pack)
+  if (packItems != "") {
+    settingEditingProduct();
   }
+  loading.value = false;
 
   if (itemList.length > 0) {
     selectedList.value = itemList;
@@ -131,7 +146,7 @@ watch(searchInput, async () => {
               id="opener-span"
               >close</span
             >
-            <span>{{ selectedListName }}</span>
+            <span class="content">{{ selectedListName }}</span>
           </div>
 
           <div class="selected-dropdown" v-if="dropDown">
@@ -339,8 +354,20 @@ input[type="number"] {
   height: inherit;
   border-radius: var(--border-radius-1);
   width: inherit;
+  position: relative;
 }
 
+.selected .selected-box .selected-item .content{
+  display: block;
+  height: 2.6rem;
+  overflow: auto;
+  right: 2rem;
+  top: 0px;
+  text-align: center;
+  padding: .6rem;
+  position: absolute;
+  width: 95%;
+}
 .selected .selected-box .selected-dropdown {
   background-color: var(--color-white);
   border-radius: 0 0 1rem 1rem;

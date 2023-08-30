@@ -1,7 +1,9 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from "vue";
-import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
+import UpdateCreateModal from "../UpdateCreateModal.vue";
+import UserDropDown from "../dropDowns/UserDropDown.vue";
+import HelpsDropDown from "../dropDowns/HelpsDropDown.vue";
 import useComponentStore from "../../store/componentStore";
 import { useAidAllocation } from "../../composables/useAidAllocationApi";
 
@@ -9,15 +11,17 @@ const componentStore = useComponentStore();
 const { showLoading, dismissLoading } = componentStore;
 
 const allocationAPi = useAidAllocation();
-const { aidAllocations } = allocationAPi;
+const { aidAllocations, currentPage, lastPage, allocationLoading } =
+  allocationAPi;
 
-const title = ref("ثبت  محصول");
+const modalTitle = ref("ثبت  محصول");
 const modalShow = ref(false);
 const modalMode = ref("create");
 
 const alertShow = ref(false);
 const alertMessage = ref("");
 
+// allocation
 const initialAllocation = {
   agent_id: "",
   quantity: "",
@@ -25,23 +29,80 @@ const initialAllocation = {
   people_aid_id: "",
 };
 
-const Allocation = reactive(initialAllocation);
+const allocation = reactive(initialAllocation);
 const allocationSearchInput = ref("");
-const createModalShow = ref(false);
 
-function submitAllocation() {}
+// help seeker
+const helpSeeker = ref("نام مددجو");
+
+// Aid
+const peopleAid = ref("عنوان کمک مورد نظر");
+
+async function submitAllocation() {
+  showLoading();
+  await allocationAPi.createAidAllocation(allocation);
+  dismissLoading();
+}
+
+function showCreateModal() {
+  modalShow.value = true;
+  modalTitle.value = "ساخت محصول";
+  helpSeeker.value = "نام مددجو";
+  peopleAid.value = "عنوان کمک مورد نظر";
+}
+
+watch(allocationSearchInput, async () => {
+  await allocationAPi.debouncedFiltering(allocationSearchInput.value);
+});
+
+watch(allocationLoading, () => {
+  if (allocationLoading.value) {
+    showLoading();
+  } else {
+    dismissLoading();
+  }
+});
 
 onMounted(async () => {
   showLoading();
   await allocationAPi.setAllAllocations();
   dismissLoading();
 });
-
-watch(allocationSearchInput, async () => {});
 </script>
 
 <template>
   <main>
+    <Alert
+      v-if="alertShow"
+      @submit="submitDelete"
+      @onSubmit="submitAid"
+      :message="alerMessage"
+    />
+    <UpdateCreateModal
+      v-if="modalShow"
+      @onClose="modalShow = false"
+      @onSubmit="submitAllocation"
+      :title="modalTitle"
+      :errorInput="allocationAPi.errorInput"
+    >
+      <HelpsDropDown
+        :initialValue="peopleAid"
+        @onSelect="
+          (data) => {
+            allocation.people_aid_id = data.id;
+          }
+        "
+      />
+
+      <UserDropDown
+        :dataList="users"
+        :initialValue="helpSeeker"
+        :role="'help_seeker'"
+        @onSelect="(data) => (allocation.help_seeker_id = data.help_seeker_id)"
+      />
+      <input type="number" placeholder="تعداد" v-model="allocation.quantity" />
+    </UpdateCreateModal>
+
     <div class="header">
       <h1>کمک های اهدایی</h1>
 
@@ -51,7 +112,7 @@ watch(allocationSearchInput, async () => {});
           <input
             type="text"
             placeholder="جستجو "
-            v-model="productSearchInput"
+            v-model="allocationSearchInput"
           />
         </div>
         <div class="buttons">
@@ -92,9 +153,7 @@ watch(allocationSearchInput, async () => {});
           <td v-if="allocation.status == 'not_assigned'" id="not-deliver">
             در حال تحویل...
           </td>
-          <td v-else id="deliver">
-            تحویل داده شد
-          </td>
+          <td v-else id="deliver">تحویل داده شد</td>
           <td class="responsive-hidden primary">
             <span
               class="material-symbols-sharp"

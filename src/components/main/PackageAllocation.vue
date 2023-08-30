@@ -1,58 +1,118 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from "vue";
-import UpdateCreateModal from "../UpdateCreateModal.vue";
+import { usePackAllocation } from "../../composables/usePackageAllocation";
+import UserDropDown from "../dropDowns/UserDropDown.vue";
+import packDropDown from "../dropDowns/packDropDown.vue";
 import Alert from "../Alert.vue";
+import UpdateCreateModal from "../UpdateCreateModal.vue";
 import useComponentStore from "../../store/componentStore";
-import { useProduct } from "../../composables/userProductApi";
 
 const componentStore = useComponentStore();
 const { showLoading, dismissLoading } = componentStore;
 
-const title = ref("ثبت  محصول");
+const modalTitle = ref("ثبت  محصول");
 const modalShow = ref(false);
 const modalMode = ref("create");
 
 const alertShow = ref(false);
 const alertMessage = ref("");
 
-const initialProduct = {
-  id: "",
-  name: "",
+//pack allocation
+const initialAllocation = {
   quantity: 0,
-  type: "",
-  category_id: "",
-  description: "",
-  catagory: {
-    id: "",
-    name: "",
-    description: "",
-  },
+  help_seeker_id: 0,
+  package_id: 0,
 };
-const product = reactive(initialProduct);
-const productList = ref([]);
-const productApi = useProduct();
-const { products, productCatagories, productCount, currentPage, inputErrors } =
-  productApi;
-const productSearchInput = ref("");
+const packAllocation = reactive(initialAllocation);
+const packAllocationList = ref([]);
+
+const allocationApi = usePackAllocation();
+const { packAllocations, currentPage, lastPage, allocationLoading } =
+  allocationApi;
+const allocationSearchInput = ref("");
+
+// help seeker
+const helpSeeker = ref("");
+
+// package
+const pack = ref("");
+
+async function submitAllocation() {
+  showLoading();
+  await allocationAPi.createAidAllocation(allocation);
+  dismissLoading();
+}
+
+function showCreateModal() {
+  modalShow.value = true;
+  modalTitle.value = "ساخت محصول";
+  helpSeeker.value = "نام مددجو";
+  pack.value = "عنوان پکیج مورد نظر";
+}
+
+watch(allocationSearchInput, async () => {
+  await allocationAPi.debouncedFiltering(allocationSearchInput.value);
+});
+
+watch(allocationLoading, () => {
+  if (allocationLoading.value) {
+    showLoading();
+  } else {
+    dismissLoading();
+  }
+});
+
+watch(allocationSearchInput, async () => {
+  await allocationApi.filterDebounced(allocationSearchInput.value);
+});
 
 onMounted(async () => {
   showLoading();
-  await productApi.setAllProdcuts();
-  await productApi.setAllCatagories();
+  await allocationApi.setAllPackAllocation();
   dismissLoading();
-});
-
-watch(productSearchInput, async () => {
-  if (productSearchInput.value.length > 2) {
-    await productApi.filterDebounced(productSearchInput.value);
-  } else if (productSearchInput.value.length <= 2) {
-    await productApi.setAllProdcuts();
-  }
 });
 </script>
 
 <template>
   <main>
+    {{ packAllocation }}
+    <Alert
+      v-if="alertShow"
+      @submit="submitDelete"
+      @onSubmit="submitAid"
+      :message="alerMessage"
+    />
+    <UpdateCreateModal
+      v-if="modalShow"
+      @onClose="modalShow = false"
+      @onSubmit="submitAllocation"
+      :title="modalTitle"
+      :errorInput="allocationApi.errorInput"
+    >
+      <packDropDown
+        :initialValue="pack"
+        @onSelect="
+          (data) => {
+            packAllocation.package_id = data.id;
+          }
+        "
+      />
+
+      <UserDropDown
+        :dataList="users"
+        :initialValue="helpSeeker"
+        :role="'help_seeker'"
+        @onSelect="
+          (data) => (packAllocation.help_seeker_id = data.help_seeker_id)
+        "
+      />
+      <input
+        type="number"
+        placeholder="تعداد"
+        v-model="packAllocation.quantity"
+      />
+    </UpdateCreateModal>
+
     <div class="header">
       <h1>کمک های اهدایی</h1>
 
@@ -64,6 +124,11 @@ watch(productSearchInput, async () => {
             placeholder="جستجو "
             v-model="productSearchInput"
           />
+        </div>
+        <div class="buttons">
+          <span class="material-symbols-sharp" @click="showCreateModal">
+            add
+          </span>
         </div>
       </div>
     </div>

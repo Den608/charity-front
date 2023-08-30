@@ -17,7 +17,7 @@ const intialPackValue = {
   package_items: [],
 };
 const packApi = usePacks();
-const { packs, singlePack, currentPage, lastPage, inputErrors } = packApi;
+const { packs, singlePack, currentPage, lastPage, packLoading } = packApi;
 const pack = reactive(intialPackValue);
 const packList = ref([]);
 const packSearchInput = ref("");
@@ -30,9 +30,7 @@ const productSelectShow = ref(false);
 const packProductsList = ref([]);
 const prodductModalOpenerValue = ref("");
 
-// in case of deleting we pass package id to this field
-// inorder to access it item
-const modalPackage = ref("");
+const modalPackageItems = ref("");
 
 // alert
 const alertShow = ref(false);
@@ -42,9 +40,10 @@ async function submitPackage() {
   showLoading();
   if (modalMode.value == "create") {
     await packApi.createPack(pack, packProductsList);
-    for (const key in pack) pack[key] = "";
   } else if (modalMode.value == "edit") {
-    await packApi.updatePack(pack);
+    console.log(pack);
+    console.log(packProductsList.value);
+    await packApi.updatePack(pack, packProductsList);
   }
   dismissLoading();
 }
@@ -62,8 +61,11 @@ async function showEditModal(pack_obj) {
   modalTitle.value = "ویرایش پکیج";
   Object.assign(pack, pack_obj);
   modalMode.value = "edit";
+
   await packApi.setSinglePack(pack_obj.id);
-  modalPackage.value = singlePack.value;
+  productSelectedSubmmition(singlePack.value.package_items);
+
+  modalPackageItems.value = singlePack.value.package_items;
 }
 
 function setAllChecked(event) {
@@ -119,14 +121,18 @@ function productSelectedSubmmition(productList) {
 
 watch(packSearchInput, async () => {
   try {
-    if (packSearchInput.value.length > 1) {
-      await packApi.filterPack(packSearchInput.value);
-    } else if (packSearchInput.value.length <= 1) {
-      await packApi.setAllPacks();
-    }
+    await packApi.filterPack(packSearchInput.value);
   } catch (error) {
     showPopup("مشکلی پیش امده است ", "error");
   } finally {
+  }
+});
+
+watch(packLoading, () => {
+  if (packLoading.value) {
+    showLoading();
+  } else {
+    dismissLoading();
   }
 });
 
@@ -150,16 +156,21 @@ onMounted(async () => {
       v-if="productSelectShow"
       @onClose="
         productSelectShow = false;
-        modalPackage = '';
+        modalPackageItems = '';
       "
       @onSubmit="productSelectedSubmmition"
       :itemList="packProductsList"
-      :pack="modalPackage"
+      :packItems="modalPackageItems"
     />
 
     <UpdateCreateModal
       v-if="modalShow"
-      @onClose="modalShow = false"
+      @onClose="
+        modalShow = false;
+        prodductModalOpenerValue = '';
+        modalPackageItems = '';
+        packProductsList = '';
+      "
       :title="modalTitle"
       :errorInput="packApi.inputErrors"
       @onSubmit="submitPackage"
@@ -225,7 +236,9 @@ onMounted(async () => {
           <td>{{ pack.title }}</td>
           <td>{{ pack.quantity }}</td>
           <td>{{ pack.package_items_count }}</td>
-          <td class="responsive-hidden">{{ pack.description }}</td>
+          <td class="responsive-hidden">
+            {{ pack.description == null ? "......" : pack.description }}
+          </td>
           <td class="responsive-hidden primary">
             <span class="material-symbols-sharp" @click="showEditModal(pack)">
               edit_square

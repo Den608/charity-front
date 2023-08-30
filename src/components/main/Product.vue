@@ -214,7 +214,7 @@ onMounted(async () => {
           <td>{{ product.name }}</td>
 
           <td v-if="product.category != null">{{ product.category.name }}</td>
-          <td class="responsive-hidden">{{ product.description }}</td>
+          <td class="responsive-hidden">{{ product.description==null?"....":product.description }}</td>
           <td class="responsive-hidden primary">
             <span
               class="material-symbols-sharp"

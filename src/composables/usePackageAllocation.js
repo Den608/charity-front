@@ -1,32 +1,36 @@
-import { TrackOpTypes, ref } from "vue";
+import { ref } from "vue";
 import axiosInstance from "../services/axios";
 import useComponentStore from "../store/componentStore";
 
-export function usePeoplesAid() {
+export function usePackAllocation() {
+  const allocationLoading = ref(false);
   const packAllocations = ref([]);
   const packAllocationsCount = ref(0);
   const currentPage = ref(1);
   const lastPage = ref(1);
-  const error = ref("");
+  const errorInput = ref("");
   let timeID;
   const componentStore = useComponentStore();
   const { showPopup, showLoading, dismissLoading } = componentStore;
 
   async function setAllPackAllocation() {
     try {
-      response = await axiosInstance.get(`/api/package-allocations`);
+      allocationLoading.value = true;
+      const response = await axiosInstance.get(`/api/package-allocations`);
       packAllocations.value = response.data.packages;
       packAllocationsCount.value = response.data.count;
       lastPage.value = Math.ceil(packAllocations.value / 10);
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      allocationLoading.value = false;
     }
   }
 
   async function createPackAllocation(packAllocation) {
-    let validation;
+    let isValid;
     try {
-      validation = ValidateFields(packAllocation);
+      isValid = ValidateFields(packAllocation);
       const response = await axiosInstance.post(
         `/api/package-allocations`,
         packAllocation
@@ -37,18 +41,18 @@ export function usePeoplesAid() {
         window.location.reload();
       }, 1000);
     } catch (error) {
-      if (validation) {
+      if (isValid) {
         showPopup("مشکلی پیش امده است", "error");
       } else {
-        error.value = notValid;
+        errorInput.value = notValid;
       }
     }
   }
 
   async function updatePackAllocation(packAllocation) {
-    let validation;
+    let isValid;
     try {
-      validation = ValidateFields(packAllocation);
+      isValid = ValidateFields(packAllocation);
       const response = await axiosInstance.put(
         `/api/package-allocations/${packAllocation.id}`,
         packAllocation
@@ -59,10 +63,10 @@ export function usePeoplesAid() {
         window.location.reload();
       }, 1000);
     } catch (error) {
-      if (validation) {
+      if (isValid) {
         showPopup("مشکلی پیش امده است", "error");
       } else {
-        error.value = notValid;
+        errorInput.value = notValid;
       }
     }
   }
@@ -90,7 +94,7 @@ export function usePeoplesAid() {
 
   async function filterPackAllocation(key) {
     try {
-      showLoading();
+      allocationLoading.value = true;
       const response = await axiosInstance.get(
         `/api/package-allocations?title=${key}`
       );
@@ -98,7 +102,7 @@ export function usePeoplesAid() {
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
     } finally {
-      dismissLoading();
+      allocationLoading.value = false;
     }
   }
 
@@ -112,7 +116,7 @@ export function usePeoplesAid() {
 
   async function nextPage() {
     try {
-      showLoading();
+      allocationLoading.value = true;
       if (currentPage.value < lastPage.value) {
         const response = await axiosInstance.get(
           `/api/package-allocations?page=${++currentPage.value}`
@@ -122,13 +126,13 @@ export function usePeoplesAid() {
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
     } finally {
-      dismissLoading();
+      allocationLoading.value = false;
     }
   }
 
   async function prevPage() {
     try {
-      showLoading();
+      allocationLoading.value = true;
       if (currentPage.value > 1) {
         const response = await axiosInstance.get(
           `/api/package-allocations?page=${--currentPage.value}`
@@ -138,13 +142,13 @@ export function usePeoplesAid() {
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
     } finally {
-      dismissLoading();
+      allocationLoading.value = false;
     }
   }
 
   async function gotoPage(number) {
     try {
-      showLoading();
+      allocationLoading.value = true;
       if (number <= lastPage.value && number > 0) {
         const response = await axiosInstance.get(
           `/api/package-allocations?page=${number}`
@@ -154,7 +158,7 @@ export function usePeoplesAid() {
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
     } finally {
-      dismissLoading();
+      allocationLoading.value = false;
     }
   }
 
@@ -173,7 +177,7 @@ export function usePeoplesAid() {
     packAllocations,
     lastPage,
     currentPage,
-    error,
+    errorInput,
     setAllPackAllocation,
     createPackAllocation,
     updatePackAllocation,

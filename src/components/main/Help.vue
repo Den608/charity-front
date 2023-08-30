@@ -2,14 +2,14 @@
 import { ref, watch, onMounted, reactive, computed } from "vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
-import DropDown from "../DropDown.vue";
-import ProductDropDown from "../ProductDropDown.vue";
-import UserDropDown from "../UserDropDown.vue";
+import ProductDropDown from "../dropDowns/ProductDropDown.vue";
+import UserDropDown from "../dropDowns/UserDropDown.vue";
 import useComponentStore from "../../store/componentStore";
 import Pagination from "../Pagination.vue";
 import { useAids } from "../../composables/useAidsApi";
 import { useProduct } from "../../composables/userProductApi";
 import { useUsersApi } from "../../composables/useUsersApi";
+
 const componentStore = useComponentStore();
 const { showPopup, showLoading, dismissLoading } = componentStore;
 
@@ -78,12 +78,15 @@ function showCreateModal() {
 async function showEditModal(aid_obj) {
   modalShow.value = true;
   modalTitle.value = "ویرایش کمک";
+
   Object.assign(aid, aid_obj);
+
   productIntialValue.value = aid.product.name ? aid.product.name : "نام محصول";
+
   helperModalIntialvalue.value = aid.helper_name.first_name
     ? aid.helper_name.first_name + " " + aid.helper_name.last_name
     : "نام مددیار";
-  console.log(aid);
+
   modalMode.value = "edit";
 }
 

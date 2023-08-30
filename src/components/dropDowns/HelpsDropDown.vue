@@ -1,35 +1,27 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import Pagination from "./Pagination.vue";
-import SimpleLoading from "./SimpleLoading.vue";
-import { useProduct } from "../composables/userProductApi";
+import Pagination from "../Pagination.vue";
+import SimpleLoading from "../SimpleLoading.vue";
+import { useAids } from "../../composables/useAidsApi";
 
 let menuLayout;
 let menuButton;
 let openerSpan;
 
 // porduct data
-const productApi = useProduct();
-const { products, currentPage, lastPage, productLoading: loader } = productApi;
+const helpApi = useAids();
+const { peopleAids, currentPage, lastPage, peopleAidLoading: loader } = helpApi;
 
 const menu = ref(false);
 const input = ref("");
 const emit = defineEmits(["onSelect"]);
-const { dataList, initialValue } = defineProps([
-  "dataList",
-  "initialValue",
-  "loading",
-]);
+const { dataList, initialValue, role } = defineProps(["initialValue"]);
 
 const selectValue = ref(initialValue);
 
 function onSelect(data) {
   menu.value = false;
-  if (data.name) {
-    selectValue.value = data.name;
-  } else if (data.first_name) {
-    selectValue.value = data.first_name + " " + data.last_name;
-  }
+  selectValue.value = data.title;
   emit("onSelect", data);
 }
 
@@ -38,11 +30,11 @@ function onOpenerClick() {
 }
 
 watch(input, async () => {
-  await productApi.filterDebounced(input.value);
+  await helpApi.filterAids(input.value);
 });
 
 onMounted(async () => {
-  await productApi.setAllProdcuts();
+  await helpApi.setAllAids();
 });
 </script>
 
@@ -78,25 +70,20 @@ onMounted(async () => {
 
         <div class="pagination">
           <Pagination
-            v-if="lastPage>1"
+            v-if="lastPage > 1"
             id="pagination"
             :currentPage="currentPage"
             :lastPage="lastPage"
-            @next="productApi.nextPage"
-            @prev="productApi.prevPage"
-            @goTo="productApi.gotoPage"
+            @next="helpApi.nextPage"
+            @prev="helpApi.prevPage"
+            @goTo="helpApi.gotoPage"
           />
         </div>
 
         <div v-if="!loader" class="data-list" i>
           <ul>
-            <li
-              v-for="product in products"
-              @click="onSelect(product)"
-              :key="product.id"
-            >
-              {{ product.name }} {{ product.first_name }}
-              {{ product.last_name }}
+            <li v-for="aid in peopleAids" @click="onSelect(aid)" :key="aid.id">
+              {{ aid.title }}
             </li>
           </ul>
         </div>

@@ -1,25 +1,20 @@
 <script setup>
 import { ref, watch, onMounted } from "vue";
-import Pagination from "./Pagination.vue";
-import SimpleLoading from "./SimpleLoading.vue";
-import { useProduct } from "../composables/userProductApi";
-import { useUsersApi } from "../composables/useUsersApi";
+import Pagination from "../Pagination.vue";
 
 let menuLayout;
 let menuButton;
 let openerSpan;
 
-// porduct data
-const userApi = useUsersApi();
-const { users, currentPage, lastPage, userLoading: loader } = userApi;
-
 const menu = ref(false);
 const input = ref("");
-const emit = defineEmits(["onSelect"]);
-const { dataList, initialValue,role } = defineProps([
+const emit = defineEmits(["onFilter", "onSelect","nextPage","prevPage","gotoPage"]);
+const { dataList, current, lastpage, initialValue, index } = defineProps([
   "dataList",
+  "current",
+  "lastpage",
   "initialValue",
-  "role"
+  "loading"
 ]);
 
 const selectValue = ref(initialValue);
@@ -38,12 +33,28 @@ function onOpenerClick() {
   menu.value = !menu.value;
 }
 
-watch(input, async () => {
-  await userApi.filterUserDebounced(input.value);
+watch(input, () => {
+  emit("onFilter", input.value);
 });
 
-onMounted(async () => {
-  await userApi.setAllUsers(role);
+function closeMenuOnClickOutside(event) {
+  menuLayout = document.getElementById("drop-down-menu");
+  openerSpan = document.getElementById("opener-span");
+  menuButton = document.querySelector(".opener-button");
+
+  if (menuLayout != null) {
+    if (
+      !menuLayout.contains(event.target) &
+      !openerSpan.contains(event.target) &
+      (event.target.className != "opener-button")
+    ) {
+      menu.value = false;
+    }
+  }
+}
+
+onMounted(() => {
+  document.addEventListener("click", closeMenuOnClickOutside);
 });
 </script>
 
@@ -70,40 +81,31 @@ onMounted(async () => {
         @click="onOpenerClick"
       />
     </div>
-    <div v-if="menu" class="menu-container" id="drop-down-menu">
-      <div class="menu">
-        <div class="input">
-          <span class="material-symbols-sharp search">search</span>
-          <input type="text" v-model="input" />
-        </div>
+    <div v-if="menu" class="menu" id="drop-down-menu">
+      <div class="input">
+        <span class="material-symbols-sharp search">search</span>
+        <input type="text" v-model="input" />
+      </div>
 
-        <div class="pagination">
-          <Pagination
-            v-if="currentPage < lastPage"
-            id="pagination"
-            :currentPage="currentPage"
-            :lastPage="lastPage"
-            @next="userApi.nextPage"
-            @prev="userApi.prevPage"
-            @goTo="userApi.gotoPage"
-          />
-        </div>
+      <div class="pagination">
+        <Pagination
+          id="pagination"
+          :currentPage="current"
+          :lastPage="lastpage"
+          @next="emit('nextPage');"
+          @prev="emit('prevPage');"
+          @goTo="emit('gotoPage',number);"
+        />
+      </div>
 
-        <div v-if="!loader" class="data-list" i>
-          <ul>
-            <li
-              v-for="user in users"
-              @click="onSelect(user)"
-              :key="user.id"
-            >
-              {{ user.name }} {{ user.first_name }}
-              {{ user.last_name }}
-            </li>
-          </ul>
-        </div>
-        <div v-else class="loading">
-          <SimpleLoading />
-        </div>
+      <!-- Menu -->
+      <div class="data-list" i>
+        <ul>
+          <li v-for="data in dataList" @click="onSelect(data)" :key="data.id">
+            {{ data.name }} {{ data.first_name }}
+            {{ data.last_name }}
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -135,19 +137,13 @@ onMounted(async () => {
   text-align: right;
 }
 
-.menu-layout .menu-container {
-  width: 100%;
-  height: 100%;
-}
-
-.menu-layout .menu-container .menu {
+.menu-layout .menu {
   align-items: center;
   background-color: var(--color-background);
   border-radius: 0 0 0.4rem 0.4rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  height: 20rem;
   max-height: 20rem;
   overflow: auto;
   padding: 0.6rem;
@@ -161,7 +157,7 @@ onMounted(async () => {
   display: none;
 }
 
-.menu-layout .menu-container .input {
+.menu-layout .menu .input {
   width: inherit;
   display: flex;
   background-color: white;
@@ -169,7 +165,7 @@ onMounted(async () => {
   height: 2.4rem;
 }
 
-.menu-layout .menu-container .input input {
+.menu-layout .menu .input input {
   background-color: var(--color-white);
   border-radius: var(--border-radius-1);
   width: 100%;
@@ -178,43 +174,27 @@ onMounted(async () => {
   margin: 0px !important;
 }
 
-.menu-layout .menu-container .input .search {
+.menu-layout .menu .input .search {
   font-weight: bold;
   position: absolute;
   text-align: center;
 }
-.menu-layout .menu-container .data-list {
+.menu-layout .menu .data-list {
   width: 100%;
 }
-.menu-layout .menu-container .data-list ul {
+.menu-layout .menu .data-list ul {
   width: 100%;
 }
-.menu-layout .menu-container .data-list ul li {
+.menu-layout .menu .data-list ul li {
   color: var(--color-dark);
-  cursor: pointer;
   height: 2rem;
   text-align: center;
   width: inherit;
 }
 
-.menu-layout .menu-container .data-list ul li:hover {
+.menu-layout .menu .data-list ul li:hover {
   background-color: var(--color-light);
   color: var(--color-primary);
   transition: all 300ms ease;
-}
-
-.menu-layout .menu-container .loading {
-  align-items: center;
-  background-color: var(--color-background);
-  border-radius: 0 0 0.4rem 0.4rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 20rem;
-  padding: 0.6rem;
-  position: absolute;
-  top: 2.4rem;
-  width: 100%;
-  z-index: 12;
 }
 </style>

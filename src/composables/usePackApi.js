@@ -73,11 +73,18 @@ export function usePacks() {
   }
 
   async function updatePack(pack, pack_items) {
+    pack.package_items = pack_items.value.map((item) => ({
+      product_id: item.id,
+      quantity: item.quantity,
+    }));
+
+    pack.organization_id = "1";
+
     let isPackValid;
     try {
       isPackValid = ValidateFields(pack);
       const response = await axiosInstance.put(
-        `/api/packages/${pack.id}`,
+        `/api/packages/${pack.id}/update-package-with-items`,
         pack
       );
       showPopup("با موفقیت ویرایش شد!!!", "success");
@@ -197,6 +204,7 @@ export function usePacks() {
 
   return {
     packs,
+    packLoading,
     singlePack,
     currentPage,
     lastPage,
