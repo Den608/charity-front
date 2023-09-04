@@ -71,18 +71,43 @@ export function useAidAllocation() {
     }
   }
 
-  async function deleteAllocations(allocaion) {
+  async function updateAidAllocation(allocations) {
+    let isValid;
+    console.log(allocations)
     try {
       allocationLoading.value = true;
-      await axiosInstance.delete(`/api/aid-allocations/${allocaion.id}`);
-      showPopup("با موفقیت حذف شد", "success");
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      const response = await axiosInstance.put(
+        `/api/aid-allocations/${allocations.id}`,
+        allocations
+      );
+      showPopup("با موفقیت انجام شد", "success");
     } catch (error) {
-      showPopup("مشکلی پیش امده است !!!");
+        showPopup("مشکلی پیش امده است !!!");
+        console.log(error)
     } finally {
+      setTimeout(() => {
+        errorInput.value = "";
+      }, 3000);
       allocationLoading.value = false;
+    }
+  }
+
+  async function deleteAllocations(allocationList = []) {
+    try {
+      if (allocationList.length > 0) {
+        const allocation_id = allocationList.map((obj) => obj.id);
+        const response = await axiosInstance.post(
+          "/api/aid-allocations/delete-multi",
+          { aid_allocation_ids: allocation_id }
+        );
+        showPopup("با موفقیت حذف شد!!!", "success");
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
     }
   }
 
@@ -177,5 +202,7 @@ export function useAidAllocation() {
     setAllAllocations,
     debouncedFiltering,
     createAidAllocation,
+    deleteAllocations,
+    updateAidAllocation
   };
 }

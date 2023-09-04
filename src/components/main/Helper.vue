@@ -21,7 +21,13 @@ const initialUserValue = {
   address: "",
 };
 const userApi = useUsersApi();
-const { users, currentPage, lastPage, usersCount,userLoading:loader } = userApi;
+const {
+  users,
+  currentPage,
+  lastPage,
+  usersCount,
+  userLoading: loader,
+} = userApi;
 const user = reactive(initialUserValue);
 const usersObjectList = ref([]);
 const userSearchInput = ref("");
@@ -108,16 +114,16 @@ async function submitDelete(type) {
 }
 
 watch(userSearchInput, async () => {
-    await userApi.filterUserDebounced(userSearchInput.value);
+  await userApi.filterUserDebounced(userSearchInput.value);
 });
 
-watch(loader,()=>{
-  if(loader.value){
-    showLoading()
-  }else{
-    dismissLoading()
+watch(loader, () => {
+  if (loader.value) {
+    showLoading();
+  } else {
+    dismissLoading();
   }
-})
+});
 
 onMounted(async () => {
   showLoading();
@@ -164,13 +170,14 @@ onMounted(async () => {
           <input type="text" placeholder="جستجو " v-model="userSearchInput" />
         </div>
         <div class="buttons">
-          <span
-            @click="deleteUsers"
-            class="material-symbols-sharp"
-            style="color: red"
-          >
-            delete
+          <span @click="deleteUsers">
+            <font-awesome-icon
+              icon="fa-solid fa-trash-can"
+              size="xl"
+              style="color: #c13e3e"
+            />
           </span>
+
           <span class="material-symbols-sharp" @click="showCreateModal"
             >group_add</span
           >

@@ -30,6 +30,7 @@ const allocationApi = usePackAllocation();
 const { packAllocations, currentPage, lastPage, allocationLoading } =
   allocationApi;
 const allocationSearchInput = ref("");
+const packallocationList = ref([]);
 
 // help seeker
 const helpSeeker = ref("");
@@ -39,7 +40,7 @@ const pack = ref("");
 
 async function submitAllocation() {
   showLoading();
-  await allocationAPi.createAidAllocation(allocation);
+  await allocationApi.createPackAllocation(packAllocation);
   dismissLoading();
 }
 
@@ -50,9 +51,29 @@ function showCreateModal() {
   pack.value = "عنوان پکیج مورد نظر";
 }
 
-watch(allocationSearchInput, async () => {
-  await allocationAPi.debouncedFiltering(allocationSearchInput.value);
-});
+function setAllChecked(event) {
+  const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+  allCheckboxes.forEach((el) => {
+    el.checked = event.target.checked;
+  });
+
+  if (event.target.checked) {
+    packAllocations.value.map((obj) => {
+      packAllocationList.value.push(obj);
+    });
+  } else {
+    packAllocationList.value.length = 0;
+  }
+}
+
+function checked(obj) {
+  if (obj.checked) {
+    packAllocationList.value.push(obj);
+  } else {
+    const index = packAllocationList.value.indexOf(obj);
+    packAllocationList.value.splice(index, 1);
+  }
+}
 
 watch(allocationLoading, () => {
   if (allocationLoading.value) {
@@ -75,7 +96,6 @@ onMounted(async () => {
 
 <template>
   <main>
-    {{ packAllocation }}
     <Alert
       v-if="alertShow"
       @submit="submitDelete"
@@ -126,6 +146,12 @@ onMounted(async () => {
           />
         </div>
         <div class="buttons">
+          <span>
+            <font-awesome-icon icon="fa-solid fa-trash-can" size="xl" style="color: #c13e3e;" />
+          </span>
+          <span>
+            <font-awesome-icon icon="truck" size="xl" />
+          </span>
           <span class="material-symbols-sharp" @click="showCreateModal">
             add
           </span>
@@ -136,34 +162,36 @@ onMounted(async () => {
     <table>
       <thead>
         <tr>
+          <th><input type="checkbox" @change="setAllChecked" /></th>
           <th>عنوان پکیج</th>
-          <th>نام مددیار</th>
           <th>نام مددجو</th>
           <th>تعداد</th>
           <th>وضعیت</th>
-          <th class="responsive-hidden"></th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>پکیچ ماه مبارک رمضان</td>
+        <tr v-for="pack in packAllocations" :key="pack.id">
+          <td>
+            <input
+              type="checkbox"
+              v-model="pack.checked"
+              @change="checked(pack)"
+            />
+          </td>
+          <td>{{ pack.package.title }}</td>
 
-          <td>علی رضایی</td>
-          <td>عرفان باقری</td>
-          <td class="responsive-hidden">1</td>
-          <!-- <td  :id="aid.status == 'assigned' ? 'deliver' : 'not-deliver'">
+          <td>
             {{
-              aid.status == "assigned" ? "تحویل داده شده" : "در حال تحویل..."
+              pack.help_seeker_name.first_name +
+              " " +
+              pack.help_seeker_name.last_name
             }}
-          </td> -->
-          <td id="not-deliver">در حال تحویل...</td>
-          <td class="responsive-hidden primary">
-            <span
-              class="material-symbols-sharp"
-              @click="showEditModal(product)"
-            >
-              explore
-            </span>
+          </td>
+          <td class="responsive-hidden">{{ pack.quantity }}</td>
+          <td :id="pack.status == 'assigned' ? 'deliver' : 'not-deliver'">
+            {{
+              pack.status == "assigned" ? "تحویل داده شده" : "در حال تحویل..."
+            }}
           </td>
         </tr>
       </tbody>

@@ -189,12 +189,12 @@ onMounted(async () => {
           <input type="text" placeholder="جستجو " v-model="aidsSearchInput" />
         </div>
         <div class="buttons">
-          <span
-            class="material-symbols-sharp"
-            style="color: red"
-            @click="deleteAids"
-          >
-            delete
+          <span @click="deleteAids">
+            <font-awesome-icon
+              icon="fa-solid fa-trash-can"
+              size="xl"
+              style="color: #c13e3e"
+            />
           </span>
 
           <span class="material-symbols-sharp" @click="showCreateModal">

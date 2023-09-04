@@ -10,8 +10,11 @@ import { faUser } from '@fortawesome/free-solid-svg-icons';
 import { faHandHoldingHand } from '@fortawesome/free-solid-svg-icons';
 import { faChartLine } from '@fortawesome/free-solid-svg-icons';
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons';
+import { faTruck } from '@fortawesome/free-solid-svg-icons';
+import { faTrashCan } from '@fortawesome/free-solid-svg-icons';
 
 library.add(faRightFromBracket)
+library.add(faTruck)
 library.add(faChartLine)
 library.add(faHandHoldingHand)
 library.add(faUser)
@@ -21,6 +24,7 @@ library.add(faBoxesPacking)
 library.add(faHandsHoldingChild)
 library.add(faPersonShelter)
 library.add(faWarehouse)
+library.add(faTrashCan)
  
 
 export  {FontAwesomeIcon};

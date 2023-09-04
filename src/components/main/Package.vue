@@ -196,12 +196,12 @@ onMounted(async () => {
           <input type="text" placeholder="جستجو " v-model="packSearchInput" />
         </div>
         <div class="buttons">
-          <span
-            class="material-symbols-sharp"
-            style="color: red"
-            @click="deletePacks"
-          >
-            delete
+          <span @click="deletePacks">
+            <font-awesome-icon
+              icon="fa-solid fa-trash-can"
+              size="xl"
+              style="color: #c13e3e"
+            />
           </span>
 
           <span class="material-symbols-sharp" @click="showCreateModal">

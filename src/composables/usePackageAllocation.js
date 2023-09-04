@@ -17,7 +17,7 @@ export function usePackAllocation() {
     try {
       allocationLoading.value = true;
       const response = await axiosInstance.get(`/api/package-allocations`);
-      packAllocations.value = response.data.packages;
+      packAllocations.value = response.data.allocations;
       packAllocationsCount.value = response.data.count;
       lastPage.value = Math.ceil(packAllocations.value / 10);
     } catch (error) {

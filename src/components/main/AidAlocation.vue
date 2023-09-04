@@ -8,7 +8,7 @@ import useComponentStore from "../../store/componentStore";
 import { useAidAllocation } from "../../composables/useAidAllocationApi";
 
 const componentStore = useComponentStore();
-const { showLoading, dismissLoading } = componentStore;
+const { showLoading, dismissLoading,showPopup } = componentStore;
 
 const allocationAPi = useAidAllocation();
 const { aidAllocations, currentPage, lastPage, allocationLoading } =
@@ -23,7 +23,6 @@ const alertMessage = ref("");
 
 // allocation
 const initialAllocation = {
-  agent_id: "",
   quantity: "",
   help_seeker_id: "",
   people_aid_id: "",
@@ -31,6 +30,7 @@ const initialAllocation = {
 
 const allocation = reactive(initialAllocation);
 const allocationSearchInput = ref("");
+const allocationList = ref([]);
 
 // help seeker
 const helpSeeker = ref("نام مددجو");
@@ -49,6 +49,55 @@ function showCreateModal() {
   modalTitle.value = "ساخت محصول";
   helpSeeker.value = "نام مددجو";
   peopleAid.value = "عنوان کمک مورد نظر";
+}
+
+function setAllChecked(event) {
+  const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');
+  allCheckboxes.forEach((el) => {
+    el.checked = event.target.checked;
+  });
+
+  if (event.target.checked) {
+    aidAllocations.value.map((obj) => {
+      allocationList.value.push(obj);
+    });
+  } else {
+    allocationList.value.length = 0;
+  }
+}
+
+function checked(obj) {
+  if (obj.checked) {
+    allocationList.value.push(obj);
+  } else {
+    const index = allocationList.value.indexOf(obj);
+    allocationList.value.splice(index, 1);
+  }
+}
+
+function deleteAidAllocation() {
+  if (allocationList.value.length > 0) {
+    alertShow.value = true;
+    alertMessage.value = "ایا از حذف ایتم های انتخابی اطمینان دارید ؟";
+  } else {
+    showPopup("هیچ کمکی برای حذف انتخاب نشده است!!!", "error", 3);
+  }
+}
+
+async function submitDelete(type) {
+  showLoading();
+  alertShow.value = false;
+  if (type == "yes") {
+    await allocationAPi.deleteAllocations(allocationList.value);
+  }
+  dismissLoading();
+}
+
+async function statusChange(item, allocation) {
+  await allocationAPi.updateAidAllocation({
+    id: allocation.id,
+    status: item.target.value,
+  });
 }
 
 watch(allocationSearchInput, async () => {
@@ -75,8 +124,7 @@ onMounted(async () => {
     <Alert
       v-if="alertShow"
       @submit="submitDelete"
-      @onSubmit="submitAid"
-      :message="alerMessage"
+      :message="alertMessage"
     />
     <UpdateCreateModal
       v-if="modalShow"
@@ -116,6 +164,16 @@ onMounted(async () => {
           />
         </div>
         <div class="buttons">
+          <span @click="deleteAidAllocation">
+            <font-awesome-icon
+              icon="fa-solid fa-trash-can"
+              size="xl"
+              style="color: #c13e3e"
+            />
+          </span>
+          <span>
+            <font-awesome-icon icon="truck" size="xl" />
+          </span>
           <span class="material-symbols-sharp" @click="showCreateModal">
             add
           </span>
@@ -126,41 +184,52 @@ onMounted(async () => {
     <table>
       <thead>
         <tr>
+          <th><input type="checkbox" @change="setAllChecked" /></th>
           <th>عنوان کمک</th>
-          <th>نام مددیار</th>
-          <th>نام مددجو</th>
+          <th class="responsive-hidden">نام مددیار</th>
+          <th class="responsive-hidden">نام مددجو</th>
           <th>وضعیت</th>
-          <th class="responsive-hidden"></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="allocation in aidAllocations" :key="allocation.id">
-          <td>{{ allocation.people_aid.title }}</td>
           <td>
+            <input
+              type="checkbox"
+              v-model="allocation.checked"
+              @change="checked(allocation)"
+            />
+          </td>
+          <td>{{ allocation.people_aid.title }}</td>
+          <td class="responsive-hidden">
             {{
               allocation.helper_name.first_name +
               " " +
               allocation.helper_name.last_name
             }}
           </td>
-          <td>
+          <td class="responsive-hidden">
             {{
               allocation.help_seeker_name.first_name +
               " " +
               allocation.help_seeker_name.last_name
             }}
           </td>
-          <td v-if="allocation.status == 'not_assigned'" id="not-deliver">
-            در حال تحویل...
-          </td>
-          <td v-else id="deliver">تحویل داده شد</td>
-          <td class="responsive-hidden primary">
-            <span
-              class="material-symbols-sharp"
-              @click="showEditModal(product)"
+          <td>
+            <select
+              name="allocation-status"
+              @change="statusChange($event, allocation)"
             >
-              explore
-            </span>
+              <option :value="allocation.status" disabled selected>
+                {{
+                  allocation.status == "assigned"
+                    ? "تحویل داده شده"
+                    : "در حال تحویل"
+                }}
+              </option>
+              <option value="assigned">تحویل داده شده</option>
+              <option value="not_assigned">در حال تحویل</option>
+            </select>
           </td>
         </tr>
       </tbody>
@@ -169,14 +238,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-#deliver {
-  color: var(--color-info-dark);
-}
-
-#not-deliver {
-  color: var(--color-warning);
-}
-
 main .header {
   display: flex;
   flex-direction: column;
@@ -279,6 +340,11 @@ main table tbody tr td {
   flex-basis: 20%;
 }
 
+main table tbody tr td select {
+  background-color: var(--color-light);
+  color: var(--color-primary);
+}
+
 main table tbody tr td:first-child {
   display: flex;
   align-items: center;
@@ -311,11 +377,15 @@ main table tbody tr td:first-child {
   }
 
   main table thead tr th {
-    flex-basis: 33%;
+    flex-basis: 50%;
   }
 
   main table tbody tr td {
-    flex-basis: 33%;
+    flex-basis: 50%;
+  }
+
+  main table tbody tr td select {
+    font-size: 1.1rem !important;
   }
 
   table .responsive-hidden {

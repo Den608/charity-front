@@ -173,12 +173,12 @@ onMounted(async () => {
           />
         </div>
         <div class="buttons">
-          <span
-            class="material-symbols-sharp"
-            style="color: red"
-            @click="deletProduct"
-          >
-            delete
+          <span @click="deletProduct">
+            <font-awesome-icon
+              icon="fa-solid fa-trash-can"
+              size="xl"
+              style="color: #c13e3e"
+            />
           </span>
 
           <span class="material-symbols-sharp" @click="showCreateModal">
@@ -214,7 +214,9 @@ onMounted(async () => {
           <td>{{ product.name }}</td>
 
           <td v-if="product.category != null">{{ product.category.name }}</td>
-          <td class="responsive-hidden">{{ product.description==null?"....":product.description }}</td>
+          <td class="responsive-hidden">
+            {{ product.description == null ? "...." : product.description }}
+          </td>
           <td class="responsive-hidden primary">
             <span
               class="material-symbols-sharp"

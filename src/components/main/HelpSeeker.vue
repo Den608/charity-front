@@ -172,12 +172,12 @@ watch(loader, () => {
           <input type="text" placeholder="جستجو " v-model="userSearchInput" />
         </div>
         <div class="buttons">
-          <span
-            @click="deleteUsers"
-            class="material-symbols-sharp"
-            style="color: red"
-          >
-            delete
+          <span @click="deleteUsers">
+            <font-awesome-icon
+              icon="fa-solid fa-trash-can"
+              size="xl"
+              style="color: #c13e3e"
+            />
           </span>
           <span class="material-symbols-sharp" @click="showCreateModal"
             >group_add</span
