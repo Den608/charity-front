@@ -224,6 +224,7 @@ onMounted(async () => {
           <th class="responsive-hidden"></th>
         </tr>
       </thead>
+
       <tbody>
         <tr v-for="pack in packs" :key="pack.id">
           <td>

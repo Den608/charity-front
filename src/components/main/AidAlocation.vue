@@ -8,7 +8,7 @@ import useComponentStore from "../../store/componentStore";
 import { useAidAllocation } from "../../composables/useAidAllocationApi";
 
 const componentStore = useComponentStore();
-const { showLoading, dismissLoading,showPopup } = componentStore;
+const { showLoading, dismissLoading, showPopup } = componentStore;
 
 const allocationAPi = useAidAllocation();
 const { aidAllocations, currentPage, lastPage, allocationLoading } =
@@ -29,7 +29,7 @@ const initialAllocation = {
 };
 
 const allocation = reactive(initialAllocation);
-const allocationSearchInput = ref("");
+const allocationSearchInput = ref(" ");
 const allocationList = ref([]);
 
 // help seeker
@@ -100,6 +100,14 @@ async function statusChange(item, allocation) {
   });
 }
 
+async function submitMultiAssign() {
+  if (allocationList.value.length != 0) {
+    await allocationAPi.assignAllocations(allocationList.value);
+  } else {
+    showPopup("هیچ بسته انتخاب نشده است!!!!", "error");
+  }
+}
+
 watch(allocationSearchInput, async () => {
   await allocationAPi.debouncedFiltering(allocationSearchInput.value);
 });
@@ -121,11 +129,7 @@ onMounted(async () => {
 
 <template>
   <main>
-    <Alert
-      v-if="alertShow"
-      @submit="submitDelete"
-      :message="alertMessage"
-    />
+    <Alert v-if="alertShow" @submit="submitDelete" :message="alertMessage" />
     <UpdateCreateModal
       v-if="modalShow"
       @onClose="modalShow = false"
@@ -171,7 +175,7 @@ onMounted(async () => {
               style="color: #c13e3e"
             />
           </span>
-          <span>
+          <span @click="submitMultiAssign">
             <font-awesome-icon icon="truck" size="xl" />
           </span>
           <span class="material-symbols-sharp" @click="showCreateModal">
@@ -180,6 +184,16 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+
+    <Pagination
+      v-if="lastPage > 1"
+      id="pagination"
+      :currentPage="currentPage"
+      :lastPage="lastPage"
+      @next="allocationAPi.nextPage"
+      @prev="allocationAPi.prevPage"
+      @goTo="allocationAPi.gotoPage"
+    />
 
     <table>
       <thead>

@@ -5,7 +5,7 @@ import { useAids } from "../../composables/useAidsApi";
 import { useAidAllocation } from "../../composables/useAidAllocationApi";
 import useComponentStore from "../../store/componentStore";
 import EmptyContent from "../EmptyContent.vue";
-import SmallLoader from "../SmallLoader.vue"
+import SmallLoader from "../SmallLoader.vue";
 const componentStore = useComponentStore();
 
 //aid
@@ -33,12 +33,12 @@ onMounted(async () => {
 
   componentStore.dismissLoading();
 });
-
+ 
 function getTimeDetail(time) {
   let timeInfo = "";
   const currentTime = new Date();
-  const createdAtTime = new Date(time);
-  const timeDifference = currentTime - createdAtTime;
+  const createdTime = new Date(time);
+  const timeDifference = currentTime - createdTime;
 
   const days = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
   const hours = Math.floor(
@@ -176,7 +176,11 @@ function getTimeDetail(time) {
         <Transition name="update" appear>
           <div v-if="assignedAids.length > 0" class="recent-update">
             <div class="updates">
-              <div class="update" v-for="aid in assignedAids" :key="aid.id">
+              <div
+                class="update"
+                v-for="aid in assignedAids.slice(0, 3)"
+                :key="aid.id"
+              >
                 <div class="update-content">
                   <span class="material-symbols-sharp">info</span>
                   <p>
@@ -396,16 +400,16 @@ main .left .top .recent-update .update span {
   margin: 0px auto;
 }
 
-.update-enter-from{
-    transform: translateX(-100vw);
+.update-enter-from {
+  transform: translateX(-100vw);
 }
 
-.update-enter-to{
-    transform: translateX(0);
+.update-enter-to {
+  transform: translateX(0);
 }
 
-.update-enter-active{
-    transition: all 1000 ease;
+.update-enter-active {
+  transition: all 1000 ease;
 }
 /* -------------- Media Query 1----------------- */
 @media screen and (max-width: 1200px) {

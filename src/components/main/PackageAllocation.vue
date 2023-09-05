@@ -8,7 +8,7 @@ import UpdateCreateModal from "../UpdateCreateModal.vue";
 import useComponentStore from "../../store/componentStore";
 
 const componentStore = useComponentStore();
-const { showLoading, dismissLoading } = componentStore;
+const { showLoading, dismissLoading, showPopup } = componentStore;
 
 const modalTitle = ref("ثبت  محصول");
 const modalShow = ref(false);
@@ -75,6 +75,37 @@ function checked(obj) {
   }
 }
 
+function deletePacks() {
+  if (packAllocationList.value.length > 0) {
+    alertMessage.value = "ایا از حذف محصولات اطمینان دارید؟";
+    alertShow.value = true;
+  } else {
+    componentStore.showPopup("هیچ محصولی انتخاب نشده است!!! ", "error", 2);
+  }
+}
+
+async function submitDelete(type) {
+  alertShow.value = false;
+  if (type == "yes") {
+    await allocationApi.deletePackAllocations(packAllocationList.value);
+  }
+}
+
+async function submitMultiAssign() {
+  if (packAllocationList.value.length != 0) {
+    await allocationApi.assignPackAllocations(packAllocationList.value);
+  } else {
+    showPopup("هیچ بسته انتخاب نشده است!!!!", "error");
+  }
+}
+
+async function statusChange(item, pack) {
+  await allocationApi.updatePackAllocation({
+    id: pack.id,
+    status: item.target.value,
+  });
+}
+
 watch(allocationLoading, () => {
   if (allocationLoading.value) {
     showLoading();
@@ -96,12 +127,7 @@ onMounted(async () => {
 
 <template>
   <main>
-    <Alert
-      v-if="alertShow"
-      @submit="submitDelete"
-      @onSubmit="submitAid"
-      :message="alerMessage"
-    />
+    <Alert v-if="alertShow" @submit="submitDelete" :message="alertMessage" />
     <UpdateCreateModal
       v-if="modalShow"
       @onClose="modalShow = false"
@@ -142,14 +168,18 @@ onMounted(async () => {
           <input
             type="text"
             placeholder="جستجو "
-            v-model="productSearchInput"
+            v-model="allocationSearchInput"
           />
         </div>
         <div class="buttons">
-          <span>
-            <font-awesome-icon icon="fa-solid fa-trash-can" size="xl" style="color: #c13e3e;" />
+          <span @click="deletePacks">
+            <font-awesome-icon
+              icon="fa-solid fa-trash-can"
+              size="xl"
+              style="color: #c13e3e"
+            />
           </span>
-          <span>
+          <span @click="submitMultiAssign">
             <font-awesome-icon icon="truck" size="xl" />
           </span>
           <span class="material-symbols-sharp" @click="showCreateModal">
@@ -158,6 +188,18 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+
+
+    <Pagination
+      v-if="lastPage > 1"
+      id="pagination"
+      :currentPage="currentPage"
+      :lastPage="lastPage"
+      @next="allocationApi.nextPage"
+      @prev="allocationAPi.prevPage"
+      @goTo="allocationAPi.gotoPage"
+    />
+
 
     <table>
       <thead>
@@ -188,10 +230,19 @@ onMounted(async () => {
             }}
           </td>
           <td class="responsive-hidden">{{ pack.quantity }}</td>
-          <td :id="pack.status == 'assigned' ? 'deliver' : 'not-deliver'">
-            {{
-              pack.status == "assigned" ? "تحویل داده شده" : "در حال تحویل..."
-            }}
+          <td>
+            <select
+              name="allocation-status"
+              @change="statusChange($event, pack)"
+            >
+              <option :value="pack.status" disabled selected>
+                {{
+                  pack.status == "assigned" ? "تحویل داده شده" : "در حال تحویل"
+                }}
+              </option>
+              <option value="assigned">تحویل داده شده</option>
+              <option value="not_assigned">در حال تحویل</option>
+            </select>
           </td>
         </tr>
       </tbody>
@@ -308,6 +359,11 @@ main table tbody tr:hover {
 
 main table tbody tr td {
   flex-basis: 20%;
+}
+
+main table tbody tr td select {
+  background-color: var(--color-light);
+  color: var(--color-primary);
 }
 
 main table tbody tr td:first-child {

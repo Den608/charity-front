@@ -52,33 +52,33 @@ export function usePackAllocation() {
   async function updatePackAllocation(packAllocation) {
     let isValid;
     try {
+      allocationLoading.value = true;
       isValid = ValidateFields(packAllocation);
       const response = await axiosInstance.put(
         `/api/package-allocations/${packAllocation.id}`,
         packAllocation
       );
-      showPopup("با موفقیت ویرایش شد!!!", "success");
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 1000);
+      showPopup("با موفقیت انجام شد!!!", "success");
     } catch (error) {
       if (isValid) {
         showPopup("مشکلی پیش امده است", "error");
       } else {
         errorInput.value = notValid;
       }
+    } finally {
+      allocationLoading.value = false;
     }
   }
 
   async function deletePackAllocations(packAllocationList = []) {
     try {
       if (packAllocationList.length > 0) {
-        const packAllocation_id = packAllocationList.map((obj) => obj.id);
+        allocationLoading.value = true;
+        const package_allocation_ids = packAllocationList.map((obj) => obj.id);
         const response = await axiosInstance.post(
           "/api/package-allocations/delete-multi",
           {
-            packAllocation_ids: packAllocation_id,
+            package_allocation_ids: package_allocation_ids,
           }
         );
         showPopup("با موفقیت حذف شد!!!", "success");
@@ -89,6 +89,32 @@ export function usePackAllocation() {
       }
     } catch {
       showPopup("مشکلی پیش امده است", "error");
+    }finally {
+      allocationLoading.value = false;
+    }
+  }
+
+  async function assignPackAllocations(packAllocationList = []) {
+    try {
+      if (packAllocationList.length > 0) {
+        allocationLoading.value=true
+        const package_allocation_ids = packAllocationList.map((obj) => obj.id);
+        const response = await axiosInstance.post(
+          "/api/package-allocations/assign-multi",
+          {
+            package_allocation_ids: package_allocation_ids,
+          }
+        );
+        showPopup("با موفقیت اعمال شد!!!", "success");
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
+    } catch {
+      showPopup("مشکلی پیش امده است", "error");
+    }finally {
+      allocationLoading.value = false;
     }
   }
 
@@ -98,7 +124,7 @@ export function usePackAllocation() {
       const response = await axiosInstance.get(
         `/api/package-allocations?title=${key}`
       );
-      packAllocations.value = response.data.packages;
+      packAllocations.value = response.data.allocations;
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
     } finally {
@@ -111,7 +137,7 @@ export function usePackAllocation() {
 
     timeID = setTimeout(async () => {
       await filterPackAllocation(key);
-    });
+    }, 1000);
   }
 
   async function nextPage() {
@@ -174,6 +200,7 @@ export function usePackAllocation() {
   }
 
   return {
+    allocationLoading,
     packAllocations,
     lastPage,
     currentPage,
@@ -186,5 +213,6 @@ export function usePackAllocation() {
     nextPage,
     prevPage,
     gotoPage,
+    assignPackAllocations,
   };
 }

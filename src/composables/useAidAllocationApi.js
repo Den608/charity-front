@@ -72,8 +72,6 @@ export function useAidAllocation() {
   }
 
   async function updateAidAllocation(allocations) {
-    let isValid;
-    console.log(allocations)
     try {
       allocationLoading.value = true;
       const response = await axiosInstance.put(
@@ -82,12 +80,8 @@ export function useAidAllocation() {
       );
       showPopup("با موفقیت انجام شد", "success");
     } catch (error) {
-        showPopup("مشکلی پیش امده است !!!");
-        console.log(error)
+      showPopup("مشکلی پیش امده است !!!");
     } finally {
-      setTimeout(() => {
-        errorInput.value = "";
-      }, 3000);
       allocationLoading.value = false;
     }
   }
@@ -95,10 +89,11 @@ export function useAidAllocation() {
   async function deleteAllocations(allocationList = []) {
     try {
       if (allocationList.length > 0) {
-        const allocation_id = allocationList.map((obj) => obj.id);
+        allocationLoading.value = true;
+        const aid_allocation_ids = allocationList.map((obj) => obj.id);
         const response = await axiosInstance.post(
           "/api/aid-allocations/delete-multi",
-          { aid_allocation_ids: allocation_id }
+          { aid_allocation_ids: aid_allocation_ids }
         );
         showPopup("با موفقیت حذف شد!!!", "success");
 
@@ -108,14 +103,38 @@ export function useAidAllocation() {
       }
     } catch (error) {
       showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      allocationLoading.value = false;
     }
   }
 
-  async function filterAllocation(key) {
+  async function assignAllocations(allocationList = []) {
+    try {
+      if (allocationList.length > 0) {
+        allocationLoading.value = true;
+        const aid_allocation_ids = allocationList.map((obj) => obj.id);
+        const response = await axiosInstance.post(
+          "/api/aid-allocations/assign-multi",
+          { aid_allocation_ids: aid_allocation_ids }
+        );
+        showPopup("با موفقیت اعمال شد!!!", "success");
+
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
+    } catch (error) {
+      showPopup("مشکلی پیش امده است", "error");
+    } finally {
+      allocationLoading.value = false;
+    }
+  }
+
+  async function filterAllocation(key = "") {
     try {
       allocationLoading.value = true;
       const response = await axiosInstance.get(
-        `/api/aid-allocations/?help_seeker=${key.id}`
+        `/api/aid-allocations/?title=${key}`
       );
       aidAllocations.value = response.data.allocations;
     } catch (error) {
@@ -127,7 +146,7 @@ export function useAidAllocation() {
 
   function debouncedFiltering(key) {
     clearTimeout(timeID);
-    setTimeout(async () => {
+    timeID = setTimeout(async () => {
       await filterAllocation(key);
     }, 1000);
   }
@@ -188,7 +207,7 @@ export function useAidAllocation() {
     } else if (obj.quantity == "") {
       throw Error("تعداد را مشخص کنید!!!");
     }
-    return true
+    return true;
   }
 
   return {
@@ -203,6 +222,7 @@ export function useAidAllocation() {
     debouncedFiltering,
     createAidAllocation,
     deleteAllocations,
-    updateAidAllocation
+    updateAidAllocation,
+    assignAllocations,
   };
 }
