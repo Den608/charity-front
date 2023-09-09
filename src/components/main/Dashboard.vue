@@ -6,6 +6,8 @@ import { useAidAllocation } from "../../composables/useAidAllocationApi";
 import useComponentStore from "../../store/componentStore";
 import EmptyContent from "../EmptyContent.vue";
 import SmallLoader from "../SmallLoader.vue";
+// import LineChart from "../LineChart.vue";
+
 const componentStore = useComponentStore();
 
 //aid
@@ -202,6 +204,10 @@ function getTimeDetail(time) {
     </div>
 
     <!-- ---------------End Of Left Container--------------------->
+
+    <div class="charts">
+      <!-- <LineChart/> -->
+    </div>
   </main>
 </template>
 
@@ -209,11 +215,12 @@ function getTimeDetail(time) {
 main {
   display: grid;
   grid-template-columns: 2.5fr 1fr;
-  grid-template-rows: 5rem 1fr 2fr;
+  grid-template-rows: 5rem 1fr 2fr 2fr;
   grid-template-areas:
-    "haeder header"
+    "header header"
     "right left"
-    "table left";
+    "table left"
+    "charts charts";
   margin: 0 1rem;
 }
 
@@ -411,6 +418,11 @@ main .left .top .recent-update .update span {
 .update-enter-active {
   transition: all 1000 ease;
 }
+
+main .charts{
+  grid-area: charts;
+}
+
 /* -------------- Media Query 1----------------- */
 @media screen and (max-width: 1200px) {
   main {

@@ -4,8 +4,7 @@ import { useRouter } from "vue-router";
 import axiosInstance from "../services/axios";
 
 const useUserStore = defineStore('user', () => {
-    const router = useRouter()
-    const user = ref({})
+    const user = ref('')
 
     async function setUser() {
         await axiosInstance.post('api/users/me',null, {

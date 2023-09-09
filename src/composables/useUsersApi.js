@@ -57,8 +57,8 @@ export function useUsersApi() {
         showPopup(message, "error");
       }
     } finally {
-      if(message){
-        showPopup(message,'error')
+      if (message) {
+        showPopup(message, "error");
       }
       setTimeout(() => {
         errorInput.value = "";
@@ -91,6 +91,27 @@ export function useUsersApi() {
         errorInput.value = error.message;
       } else {
         showPopup(message, "error");
+      }
+    } finally {
+      setTimeout(() => {
+        errorInput.value = "";
+      }, 500);
+    }
+  }
+
+  async function chanePassword(password) {
+    let isValid;
+    try {
+      const response = await axiosInstance.post(
+        `/api/user/change-password`,
+        password
+      );
+      showPopup("با موفقیت انجام شد !!!", "success");
+    } catch (error) {
+      if (error.code == 'ERR_BAD_REQUEST') {
+        showPopup("رمز عبور فعلی اشتباه میباشد!!!", "error");
+      } else {
+        showPopup(error.message, "error");
       }
     } finally {
       setTimeout(() => {
@@ -264,5 +285,6 @@ export function useUsersApi() {
     nextPage,
     prevPage,
     gotoPage,
+    chanePassword,
   };
 }
