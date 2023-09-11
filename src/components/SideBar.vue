@@ -18,14 +18,15 @@ const activeTab = ref([
 ]);
 
 const tabs = [
-  { name: "داشبورد", icon: "dashboard" },
-  { name: "افراد خیر", icon: "group" },
-  { name: "افراد نیازمند", icon: "settings_accessibility" },
-  { name: "انبار", icon: "category" },
-  { name: "کمک های اهدایی", icon: "inventory_2" },
-  { name: "پکیج ها", icon: "deployed_code" },
-  { name: "کمک های اهدا شده", icon: "category" },
-  { name: "پکیج های اهدا شده", icon: "category" },
+  { name: "داشبورد", icon: ["fas", "chart-line"] },
+  { name: "افراد خیر", icon: ["fass", "person-shelter"] },
+  { name: "افراد نیازمند", icon: ["fas", "hands-holding-child"] },
+  { name: "محصولات", icon: ["fas", "warehouse"] },
+  { name: "کمک های مردمی", icon: ["fas", "hand-holding-hand"] },
+  { name: "پکیج ها", icon: ["fas", "cubes"] },
+  { name: "کمک های اهدایی", icon: ["fas", "hand-holding-heart"] },
+  { name: "پکیج های اهدایی", icon: ["fas", "boxes-packing"] },
+  { name: "پروفایل", icon: ["fas", "user"] },
 ];
 
 const onTabClicked = (index) => {
@@ -120,7 +121,7 @@ onMounted(() => {
       >
         <div class="tab">
           <font-awesome-icon :icon="['fas', 'cubes']" />
-          <h3> پکیج ها </h3>
+          <h3>پکیج ها</h3>
         </div>
       </div>
 

@@ -6,7 +6,8 @@ import { useAidAllocation } from "../../composables/useAidAllocationApi";
 import useComponentStore from "../../store/componentStore";
 import EmptyContent from "../EmptyContent.vue";
 import SmallLoader from "../SmallLoader.vue";
-// import LineChart from "../LineChart.vue";
+import LineChart from "../LineChart.vue";
+import PieChart from "../PieChart.vue";
 
 const componentStore = useComponentStore();
 
@@ -35,7 +36,7 @@ onMounted(async () => {
 
   componentStore.dismissLoading();
 });
- 
+
 function getTimeDetail(time) {
   let timeInfo = "";
   const currentTime = new Date();
@@ -74,12 +75,23 @@ function getTimeDetail(time) {
       <h1>داشبورد</h1>
     </div>
 
+    <div class="charts">
+        <div class="pie-card">
+          <PieChart />
+        </div>
+
+        <div class="line-card">
+          <LineChart />
+        </div>
+    </div>
+
     <div class="right">
       <h2>درخواست های 24 ساعت گذشته</h2>
       <div class="insight">
         <div class="cash-donation">
           <span class="material-symbols-sharp">account_balance</span>
           <div class="middle">
+            
             <div class="left">
               <h3>مجموع کمک های نقدی</h3>
               <h1>{{ cashDonations }}IR</h1>
@@ -204,10 +216,6 @@ function getTimeDetail(time) {
     </div>
 
     <!-- ---------------End Of Left Container--------------------->
-
-    <div class="charts">
-      <!-- <LineChart/> -->
-    </div>
   </main>
 </template>
 
@@ -215,12 +223,12 @@ function getTimeDetail(time) {
 main {
   display: grid;
   grid-template-columns: 2.5fr 1fr;
-  grid-template-rows: 5rem 1fr 2fr 2fr;
+  grid-template-rows: 5rem 1fr 1fr 1fr;
   grid-template-areas:
     "header header"
+    "charts charts"
     "right left"
-    "table left"
-    "charts charts";
+    "table left";
   margin: 0 1rem;
 }
 
@@ -242,6 +250,30 @@ table {
 
 main .dashboard-header {
   grid-area: header;
+}
+
+main .charts {
+  background-color: var(--color-white);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--box-shadow);
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  grid-area: charts;
+  margin-bottom: 2rem;
+  padding: var(--card-padding);
+}
+
+main .charts:hover{
+  box-shadow: none;
+  transition: all 300ms ease;
+}
+main .charts .line-card {
+  flex: 2;
+}
+
+main .charts .pie-card {
+  flex: 1;
 }
 
 main .right {
@@ -360,7 +392,7 @@ main .recent-help .show-all {
 main .left {
   margin: 0 1rem;
   display: grid;
-  grid-template-rows: 0.8fr;
+  grid-template-rows: 0.8fr auto;
   grid-area: left;
 }
 
@@ -371,9 +403,10 @@ main .left h2 {
 main .left .top .recent-update {
   background-color: var(--color-white);
   border-radius: var(--card-border-radius);
+  box-shadow: var(--box-shadow);
   display: flex;
   flex-direction: column;
-  box-shadow: var(--box-shadow);
+  height: 100%;
   padding: 1.2rem;
   transition: all 300ms ease;
 }
@@ -417,10 +450,6 @@ main .left .top .recent-update .update span {
 
 .update-enter-active {
   transition: all 1000 ease;
-}
-
-main .charts{
-  grid-area: charts;
 }
 
 /* -------------- Media Query 1----------------- */

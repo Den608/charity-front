@@ -99,7 +99,7 @@ watchEffect(() => {
 
 .components {
     grid-area: components;
-    max-height:50rem;
+    max-height:45rem;
     overflow-y: auto;
     overflow-x: hidden;
 }
