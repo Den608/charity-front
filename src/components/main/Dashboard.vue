@@ -76,13 +76,13 @@ function getTimeDetail(time) {
     </div>
 
     <div class="charts">
-        <div class="pie-card">
-          <PieChart />
-        </div>
+      <div class="pie-card">
+        <PieChart />
+      </div>
 
-        <div class="line-card">
-          <LineChart />
-        </div>
+      <div class="line-card">
+        <LineChart />
+      </div>
     </div>
 
     <div class="right">
@@ -91,7 +91,6 @@ function getTimeDetail(time) {
         <div class="cash-donation">
           <span class="material-symbols-sharp">account_balance</span>
           <div class="middle">
-            
             <div class="left">
               <h3>مجموع کمک های نقدی</h3>
               <h1>{{ cashDonations }}IR</h1>
@@ -185,33 +184,30 @@ function getTimeDetail(time) {
     <!-- ----------- End Of Recent Help ---------------->
 
     <div class="left" v-if="assignedAids.length > 0">
-      <div class="top">
-        <h2>بروز رسانی های اخیر</h2>
-        <Transition name="update" appear>
-          <div v-if="assignedAids.length > 0" class="recent-update">
-            <div class="updates">
-              <div
-                class="update"
-                v-for="aid in assignedAids.slice(0, 3)"
-                :key="aid.id"
-              >
-                <div class="update-content">
-                  <span class="material-symbols-sharp">info</span>
-                  <p>
-                    کمک های اهدایی از طرف مرکز خیریه به
-                    {{ aid.help_seeker_name.first_name }}
-                    {{ aid.help_seeker_name.last_name }} تحویل داده شد
-                  </p>
-                </div>
-                <small class="text-muted"
-                  >{{ getTimeDetail(aid.created_at) }}
-                </small>
+      <h2>بروز رسانی های اخیر</h2>
+      <Transition name="update" appear>
+        <div v-if="assignedAids.length > 0" class="recent-update">
+          <div class="updates">
+            <div
+              class="update"
+              v-for="aid in assignedAids.slice(0, 3)"
+              :key="aid.id"
+            >
+              <div class="update-content">
+                <span class="material-symbols-sharp">info</span>
+                <p>
+                  کمک های اهدایی از طرف مرکز خیریه به
+                  {{ aid.help_seeker_name.first_name }}
+                  {{ aid.help_seeker_name.last_name }} تحویل داده شد
+                </p>
               </div>
+              <small class="text-muted"
+                >{{ getTimeDetail(aid.created_at) }}
+              </small>
             </div>
           </div>
-        </Transition>
-        <!-- <EmptyContent v-else/> -->
-      </div>
+        </div>
+      </Transition>
       <!----------- End of Recent Update ----------------->
     </div>
 
@@ -260,11 +256,12 @@ main .charts {
   display: flex;
   flex-direction: row;
   grid-area: charts;
+  margin-left: 1rem;
   margin-bottom: 2rem;
   padding: var(--card-padding);
 }
 
-main .charts:hover{
+main .charts:hover {
   box-shadow: none;
   transition: all 300ms ease;
 }
@@ -288,16 +285,15 @@ main .right .insight {
 
 main .right .insight > div {
   background: var(--color-white);
+  cursor: pointer;
   padding: var(--card-padding);
   border-radius: var(--card-border-radius);
   margin-top: 1rem;
-  box-shadow: var(--box-shadow);
   transition: all 300ms ease;
-  cursor: pointer;
 }
 
 main .right .insight > div:hover {
-  box-shadow: none;
+  box-shadow: var(--box-shadow);
 }
 
 main .right .insight .cash-donation span {
@@ -349,16 +345,16 @@ main .recent-help h2 {
 
 main .recent-help table {
   background: var(--color-white);
+  cursor: pointer;
   text-align: center;
   width: 100%;
   border-radius: var(--card-border-radius);
-  box-shadow: var(--box-shadow);
   padding: var(--card-padding);
   transition: all 300ms ease;
 }
 
 main .recent-help table:hover {
-  box-shadow: none;
+  box-shadow: var(--box-shadow);
 }
 
 main .recent-help table tbody tr td {
@@ -391,8 +387,6 @@ main .recent-help .show-all {
 /* -----------------left Container -------------- */
 main .left {
   margin: 0 1rem;
-  display: grid;
-  grid-template-rows: 0.8fr auto;
   grid-area: left;
 }
 
@@ -400,22 +394,21 @@ main .left h2 {
   margin-bottom: 1rem;
 }
 
-main .left .top .recent-update {
+main .left .recent-update {
   background-color: var(--color-white);
   border-radius: var(--card-border-radius);
-  box-shadow: var(--box-shadow);
   display: flex;
   flex-direction: column;
-  height: 100%;
+  height: 86%;
   padding: 1.2rem;
   transition: all 300ms ease;
 }
 
-main .left .top .recent-update:hover {
-  box-shadow: none;
+main .left .recent-update:hover {
+  box-shadow: var(--box-shadow);
 }
 
-main .left .top .recent-update .update {
+main .left .recent-update .update {
   display: flex;
   height: 10rem;
   flex-direction: column;
@@ -426,13 +419,13 @@ main .left .top .recent-update .update {
   border-radius: var(--card-border-radius);
 }
 
-main .left .top .recent-update .update .update-content {
+main .left .recent-update .update .update-content {
   display: flex;
   gap: 0.2rem;
   margin: 0.8rem 0;
 }
 
-main .left .top .recent-update .update span {
+main .left .recent-update .update span {
   color: white;
   background-color: var(--color-primary);
   border-radius: 100%;
@@ -456,18 +449,28 @@ main .left .top .recent-update .update span {
 @media screen and (max-width: 1200px) {
   main {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    grid-template-rows: 5rem 1fr;
+    grid-template-columns: 1.5fr 1fr;
+    grid-template-rows: 5rem 1fr 1fr 1fr;
     grid-template-areas:
-      "haeder header"
+      "header header"
+      "charts charts"
       "right left"
       "table table";
+    margin: 0 1rem;
   }
 
   main .right .insight {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1rem;
+  }
+
+  main .recent-help {
+    margin-left: 1rem;
+  }
+
+  main .left .recent-update {
+    height: 94%;
   }
 }
 

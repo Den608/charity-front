@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import useAuthStore from "../store/authStore";
+import { Colors } from "chart.js";
 
 const authStore = useAuthStore();
 
@@ -18,15 +19,35 @@ const activeTab = ref([
 ]);
 
 const tabs = [
-  { name: "داشبورد", icon: ["fas", "chart-line"] },
-  { name: "افراد خیر", icon: ["fass", "person-shelter"] },
-  { name: "افراد نیازمند", icon: ["fas", "hands-holding-child"] },
-  { name: "محصولات", icon: ["fas", "warehouse"] },
-  { name: "کمک های مردمی", icon: ["fas", "hand-holding-hand"] },
-  { name: "پکیج ها", icon: ["fas", "cubes"] },
-  { name: "کمک های اهدایی", icon: ["fas", "hand-holding-heart"] },
-  { name: "پکیج های اهدایی", icon: ["fas", "boxes-packing"] },
-  { name: "پروفایل", icon: ["fas", "user"] },
+  { name: "داشبورد", icon: ["fas", "chart-line"], color: "#7380ec" },
+  {
+    name: "افراد خیر",
+    icon: ["fas", "person-shelter"],
+    color: " "
+  },
+  {
+    name: "افراد نیازمند",
+    icon: ["fas", "hands-holding-child"],
+    color: "#008489" 
+  },
+  { name: "محصولات", icon: ["fas", "warehouse"], style: "#41f1b6" },
+  {
+    name: "کمک های مردمی",
+    icon: ["fas", "hand-holding-hand"],
+    color: "#ff7782" 
+  },
+  { name: "پکیج ها", icon: ["fas", "cubes"], color: "#7380ec" },
+  {
+    name: "کمک های اهدایی",
+    icon: ["fas", "hand-holding-heart"],
+    color: "#008489" 
+  },
+  {
+    name: "پکیج های اهدایی",
+    icon: ["fas", "boxes-packing"],
+    color: "" 
+  },
+  { name: "پروفایل", icon: ["fas", "user"], color: "#008489"  },
 ];
 
 const onTabClicked = (index) => {
@@ -60,101 +81,14 @@ onMounted(() => {
     </div>
     <div class="sidebar">
       <div
+        v-for="(tab, index) in tabs"
         class="tab-container"
-        :class="{ active: activeTab[0] }"
-        @click="onTabClicked(0)"
+        :class="{ active: activeTab[index] }"
+        @click="onTabClicked(index)"
       >
         <div class="tab">
-          <font-awesome-icon :icon="['fas', 'chart-line']" />
-          <h3>داشبورد</h3>
-        </div>
-      </div>
-
-      <div
-        class="tab-container"
-        :class="{ active: activeTab[1] }"
-        @click="onTabClicked(1)"
-      >
-        <div class="tab">
-          <font-awesome-icon :icon="['fass', 'person-shelter']" />
-          <h3>افراد خیر</h3>
-        </div>
-      </div>
-
-      <div
-        class="tab-container"
-        :class="{ active: activeTab[2] }"
-        @click="onTabClicked(2)"
-      >
-        <div class="tab">
-          <font-awesome-icon :icon="['fas', 'hands-holding-child']" />
-          <h3>افراد نیازمند</h3>
-        </div>
-      </div>
-
-      <div
-        class="tab-container"
-        :class="{ active: activeTab[3] }"
-        @click="onTabClicked(3)"
-      >
-        <div class="tab">
-          <font-awesome-icon :icon="['fas', 'warehouse']" />
-          <h3>انبار</h3>
-        </div>
-      </div>
-
-      <div
-        class="tab-container"
-        :class="{ active: activeTab[4] }"
-        @click="onTabClicked(4)"
-      >
-        <div class="tab">
-          <font-awesome-icon :icon="['fas', 'hand-holding-hand']" />
-          <h3>کمک های مردمی</h3>
-        </div>
-      </div>
-
-      <div
-        class="tab-container"
-        :class="{ active: activeTab[5] }"
-        @click="onTabClicked(5)"
-      >
-        <div class="tab">
-          <font-awesome-icon :icon="['fas', 'cubes']" />
-          <h3>پکیج ها</h3>
-        </div>
-      </div>
-
-      <div
-        class="tab-container"
-        :class="{ active: activeTab[7] }"
-        @click="onTabClicked(7)"
-      >
-        <div class="tab">
-          <font-awesome-icon :icon="['fas', 'hand-holding-heart']" />
-          <h3>کمک های اهدایی</h3>
-        </div>
-      </div>
-
-      <div
-        class="tab-container"
-        :class="{ active: activeTab[8] }"
-        @click="onTabClicked(8)"
-      >
-        <div class="tab">
-          <font-awesome-icon :icon="['fas', 'boxes-packing']" />
-          <h3>پیکیج های اهدایی</h3>
-        </div>
-      </div>
-
-      <div
-        class="tab-container"
-        :class="{ active: activeTab[9] }"
-        @click="onTabClicked(9)"
-      >
-        <div class="tab">
-          <font-awesome-icon :icon="['fas', 'user']" />
-          <h3>پروفایل</h3>
+          <font-awesome-icon :icon="tab.icon" :style="{ color: tab.color }" />
+          <h3>{{ tab.name }}</h3>
         </div>
       </div>
 

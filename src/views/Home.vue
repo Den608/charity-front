@@ -31,7 +31,6 @@ const tabs = [
     Product,
     Help,
     Package,
-    Student,
     AidAlocation,
     PackageAllocation,
     Profile

@@ -5,6 +5,7 @@ import useComponentStore from "../../store/componentStore";
 import Pagination from "../Pagination.vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
+import UserHistory from "../UserHistory.vue";
 
 const componentStore = useComponentStore();
 const { showLoading, dismissLoading } = componentStore;
@@ -35,6 +36,7 @@ const userSearchInput = ref("");
 const modalTitle = ref("ثبت مددجو");
 const modalShow = ref(false);
 const modalMode = ref("create");
+const history = ref(false);
 
 // alert
 const alertShow = ref(false);
@@ -121,6 +123,13 @@ async function submitDelete(type) {
   dismissLoading();
 }
 
+function showUserHistory(event, id) {
+  const tagName = event.target.tagName;
+  if ((tagName == "TD") | (tagName == "TR")) {
+    history.value = true;
+  }
+}
+
 watch(userSearchInput, async () => {
   await userApi.filterUserDebounced(userSearchInput.value);
 });
@@ -134,8 +143,9 @@ watch(loader, () => {
 });
 </script>
 
-<template> 
+<template>
   <main>
+    <UserHistory v-if="history" @close="history = !history" />
     <Alert v-if="alertShow" @submit="submitDelete" :message="alerMessage" />
     <UpdateCreateModal
       v-if="modalShow"
@@ -209,7 +219,7 @@ watch(loader, () => {
         </tr>
       </thead>
       <tbody v-for="user in users" :key="user.id">
-        <tr>
+        <tr @click="showUserHistory($event, user.id)">
           <td>
             <input
               type="checkbox"

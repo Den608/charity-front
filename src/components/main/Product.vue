@@ -5,6 +5,8 @@ import Alert from "../Alert.vue";
 import useComponentStore from "../../store/componentStore";
 import Pagination from "../Pagination.vue";
 import { useProduct } from "../../composables/userProductApi";
+import ProductHistory from "../ProductHistory.vue";
+import History from "../History.vue"
 
 const componentStore = useComponentStore();
 const { showLoading, dismissLoading } = componentStore;
@@ -12,7 +14,7 @@ const { showLoading, dismissLoading } = componentStore;
 const title = ref("ثبت  محصول");
 const modalShow = ref(false);
 const modalMode = ref("create");
-
+const history = ref(false);
 const alertShow = ref(false);
 const alertMessage = ref("");
 
@@ -99,6 +101,13 @@ async function submitDelete(type) {
   }
 }
 
+function showProductHistory(event, id) {
+  const tagName = event.target.tagName;
+  if ((tagName == "TD") | (tagName == "TR")) {
+    history.value = true;
+  }
+}
+
 watch(productSearchInput, async () => {
   await productApi.filterDebounced(productSearchInput.value);
 });
@@ -121,6 +130,8 @@ onMounted(async () => {
 
 <template>
   <main>
+    <!-- <History/> -->
+    <ProductHistory v-if="history" @close="history = !history" />
     <Alert v-if="alertShow" @submit="submitDelete" :message="alertMessage" />
     <UpdateCreateModal
       v-if="modalShow"
@@ -209,7 +220,11 @@ onMounted(async () => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="product in products" :key="product.id">
+        <tr
+          v-for="product in products"
+          :key="product.id"
+          @click="showProductHistory($event, product.id)"
+        >
           <td><input type="checkbox" @change="checked($event, product)" /></td>
           <td>{{ product.name }}</td>
 

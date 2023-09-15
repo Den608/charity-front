@@ -41,15 +41,15 @@ const data = {
       label: "کمک های تخصیص داده شده",
       backgroundColor: "#f87979",
       borderColor: "#FF5733",
-      borderWidth: 2, 
-      data: [40, 39, 10, 40, 39, 80, 40,10,5,22,56,89],
+      borderWidth: 2,
+      data: [40, 39, 10, 40, 39, 80, 40, 10, 5, 22, 56, 89],
     },
     {
       label: "کمک های اهدایی به سازمان",
       backgroundColor: "#7380ec",
       borderColor: "#7380ec",
-      borderWidth: 2, 
-      data: [20, 22, 25, 27, 31, 10, 12,2,89,10,11,12],
+      borderWidth: 2,
+      data: [20, 22, 25, 27, 31, 10, 12, 2, 89, 10, 11, 12],
     },
   ],
 };
@@ -61,16 +61,16 @@ const options = {
     x: {
       ticks: {
         font: {
-          family: 'Vazirmatn',
-          size: 14, 
+          family: "Vazirmatn",
+          size: 14,
         },
       },
     },
     y: {
       ticks: {
         font: {
-          family: 'Vazirmatn',
-          size: 14, 
+          family: "Vazirmatn",
+          size: 14,
         },
       },
     },
@@ -81,24 +81,32 @@ const options = {
       display: true,
       text: "کمک های موجود و تخصیصی",
       font: {
-        family: 'Vazirmatn',
+        family: "Vazirmatn",
         size: 18, // Font size in pixels
-        weight: 'bold', // Font weight (e.g., 'normal', 'bold')
+        weight: "bold", // Font weight (e.g., 'normal', 'bold')
       },
     },
     legend: {
       labels: {
         font: {
-          family: 'Vazirmatn',
+          family: "Vazirmatn",
           size: 14, // Font size in pixels
         },
       },
     },
   },
 };
-
 </script>
 
 <template>
-  <Line :data="data" :options="options" />
+  <div class="line">
+    <Line :data="data" :options="options" />
+  </div>
 </template>
+
+<style>
+.line {
+  width: 98%;
+  height: 100%;
+}
+</style>

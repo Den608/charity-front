@@ -6,6 +6,7 @@ import Pagination from "../Pagination.vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
 import { Mutex } from "async-mutex";
+import UserHistory from "../UserHistory.vue";
 
 const componentStore = useComponentStore();
 const { showLoading, dismissLoading } = componentStore;
@@ -35,6 +36,7 @@ const userSearchInput = ref("");
 const modalTitle = ref("ثبت مددیار");
 const modalShow = ref(false);
 const modalMode = ref("create");
+const history = ref(false);
 
 // alert
 const alertShow = ref(false);
@@ -113,6 +115,13 @@ async function submitDelete(type) {
   dismissLoading();
 }
 
+function showUserHistory(event, id) {
+  const tagName=event.target.tagName
+  if (tagName=="TD"| tagName=="TR") {
+    history.value = true;
+  }
+}
+
 watch(userSearchInput, async () => {
   await userApi.filterUserDebounced(userSearchInput.value);
 });
@@ -134,6 +143,7 @@ onMounted(async () => {
 
 <template>
   <main>
+    <UserHistory v-if="history" @close="history = !history" />
     <Alert v-if="alertShow" @submit="submitDelete" :message="alerMessage" />
     <UpdateCreateModal
       v-if="modalShow"
@@ -207,7 +217,7 @@ onMounted(async () => {
         </tr>
       </thead>
       <tbody v-for="user in users" :key="user.id">
-        <tr>
+        <tr @click="showUserHistory($event, user.id)">
           <td>
             <input
               type="checkbox"
@@ -314,6 +324,7 @@ main table thead tr {
 
 main table tbody tr {
   display: flex;
+  cursor: pointer;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
