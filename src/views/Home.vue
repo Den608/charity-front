@@ -7,7 +7,6 @@ import Helper from '../components/main/Helper.vue';
 import HelpSeeker from '../components/main/HelpSeeker.vue';
 import Help from '../components/main/Help.vue';
 import Package from '../components/main/Package.vue';
-import Student from '../components/main/Student.vue';
 import Product from '../components/main/Product.vue';
 import AidAlocation from '../components/main/AidAlocation.vue';
 import PackageAllocation from '../components/main/PackageAllocation.vue';
@@ -79,7 +78,7 @@ watchEffect(() => {
     display: grid;
     grid-template-columns: 15rem auto;
     grid-template-rows: 3rem auto;
-    width: 96%;
+    width: 100%;
     margin: 0 auto;
     gap: 2rem;
     grid-template-areas:

@@ -1,5 +1,6 @@
 <script setup>
 const emit=defineEmits(['exit'])
+const {title}=defineProps(['title'])
 
 </script>
 
@@ -7,7 +8,7 @@ const emit=defineEmits(['exit'])
   <div class="user-history-overlay">
     <div class="history">
       <span class="material-symbols-sharp" id="exit" @click="emit('close')"> close </span>
-      <h2>کالاهای دریافتی </h2>
+      <h2>{{ title }}</h2>
       <table>
         <thead>
           <tr>

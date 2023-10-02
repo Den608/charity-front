@@ -60,6 +60,7 @@ export function usePacks() {
         window.location.reload();
       }, 1000);
     } catch (error) {
+      console.log(error)
       if (isPackValid) {
         showPopup("مشکلی پیش امده است", "error");
       } else {
@@ -193,7 +194,7 @@ export function usePacks() {
   }
 
   function ValidateFields(obj) {
-    console.log(obj);
+    console.log(obj.title);
     if (obj.title == "") {
       throw Error("عنوان نمیتواند خالی باشد");
     } else if (obj.quantity <= 0) {

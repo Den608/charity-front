@@ -1,6 +1,5 @@
 <script setup>
 const emit=defineEmits(['exit'])
-
 </script>
 
 <template>
@@ -8,70 +7,23 @@ const emit=defineEmits(['exit'])
     <div class="history">
       <span class="material-symbols-sharp" id="exit" @click="emit('close')"> close </span>
       <h2>تاریخچه محصول</h2>
-      <h3> کالاهای اهدایی به سازمان  </h3>
       <table>
         <thead>
           <tr>
-            <th>عنوان</th>
             <th class="responsive-hidden">تعدا کالا</th>
+            <th class="responsive-hidden">نام مددیار</th>
             <th>تاریخ</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>دفتر</td>
             <td>10</td>
+            <td>عرفان باقری</td>
             <td>1400/2/3</td>
           </tr>
           <tr>
-            <td>کاپشن</td>
             <td>10</td>
-            <td>1400/2/3</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3> کالاهای های مربوط به بسته ها  </h3>
-      <table>
-        <thead>
-          <tr>
-            <th>عنوان</th>
-            <th class="responsive-hidden">تعدا کالا</th>
-            <th>تاریخ</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>دفتر</td>
-            <td>10</td>
-            <td>1400/2/3</td>
-          </tr>
-          <tr>
-            <td>کاپشن</td>
-            <td>10</td>
-            <td>1400/2/3</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h3> کالاهای اهدا شده   </h3>
-      <table>
-        <thead>
-          <tr>
-            <th>عنوان</th>
-            <th class="responsive-hidden">تعدا کالا</th>
-            <th>تاریخ</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>دفتر</td>
-            <td>10</td>
-            <td>1400/2/3</td>
-          </tr>
-          <tr>
-            <td>کاپشن</td>
-            <td>10</td>
+            <td>عرفان قربانی</td>
             <td>1400/2/3</td>
           </tr>
         </tbody>
@@ -113,7 +65,8 @@ h3{
   padding: var(--card-padding);
   position: relative;
   width: 40rem;
-  max-height:40rem;
+  height:30rem;
+  max-height:30rem;
 }
 
 #exit {

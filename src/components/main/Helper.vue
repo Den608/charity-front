@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <script setup>
 import { onMounted, ref, reactive, watch } from "vue";
 import { useUsersApi } from "../../composables/useUsersApi";
@@ -5,7 +7,6 @@ import useComponentStore from "../../store/componentStore";
 import Pagination from "../Pagination.vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
-import { Mutex } from "async-mutex";
 import UserHistory from "../UserHistory.vue";
 
 const componentStore = useComponentStore();
@@ -116,8 +117,8 @@ async function submitDelete(type) {
 }
 
 function showUserHistory(event, id) {
-  const tagName=event.target.tagName
-  if (tagName=="TD"| tagName=="TR") {
+  const tagName = event.target.tagName;
+  if ((tagName == "TD") | (tagName == "TR")) {
     history.value = true;
   }
 }
@@ -143,8 +144,16 @@ onMounted(async () => {
 
 <template>
   <main>
-    <UserHistory v-if="history" @close="history = !history" />
-    <Alert v-if="alertShow" @submit="submitDelete" :message="alerMessage" />
+    <UserHistory
+      v-if="history"
+      @close="history = !history"
+      :title="'کالاهای اهدا شده '"
+    />
+    <Alert
+      v-if="alertShow"
+      @submit="submitDelete"
+      :message="alerMessage"
+    />
     <UpdateCreateModal
       v-if="modalShow"
       @onClose="modalShow = false"
@@ -152,18 +161,42 @@ onMounted(async () => {
       :title="modalTitle"
       :errorInput="userApi.errorInput"
     >
-      <input type="text" placeholder="نام کاربری" v-model="user.username" />
-      <input type="text" placeholder="شماره ملی" v-model="user.national_code" />
+      <input
+        type="text"
+        placeholder="نام کاربری"
+        v-model="user.username"
+      />
+      <input
+        type="text"
+        placeholder="شماره ملی"
+        v-model="user.national_code"
+      />
       <input
         v-if="modalMode == 'create'"
         type="password"
         placeholder="رمز عبور"
         v-model="user.password"
       />
-      <input type="text" placeholder="نام " v-model="user.first_name" />
-      <input type="text" placeholder="نام خانوادگی" v-model="user.last_name" />
-      <input type="text" placeholder="ایمیل" v-model="user.email" />
-      <input type="text" placeholder="شماره تلفن" v-model="user.phone_number" />
+      <input
+        type="text"
+        placeholder="نام "
+        v-model="user.first_name"
+      />
+      <input
+        type="text"
+        placeholder="نام خانوادگی"
+        v-model="user.last_name"
+      />
+      <input
+        type="text"
+        placeholder="ایمیل"
+        v-model="user.email"
+      />
+      <input
+        type="text"
+        placeholder="شماره تلفن"
+        v-model="user.phone_number"
+      />
       <textarea
         type="text"
         placeholder="آدرس"
@@ -177,18 +210,28 @@ onMounted(async () => {
       <div class="input-fields">
         <div class="search-bar">
           <span class="material-symbols-sharp">travel_explore</span>
-          <input type="text" placeholder="جستجو " v-model="userSearchInput" />
+          <input
+            type="text"
+            placeholder="جستجو "
+            v-model="userSearchInput"
+          />
         </div>
         <div class="buttons">
-          <span @click="deleteUsers">
+          <span
+            @click="deleteUsers"
+            id="trash"
+          >
             <font-awesome-icon
+            class="icon"
               icon="fa-solid fa-trash-can"
               size="xl"
-              style="color: #c13e3e"
+              style="color: #c13e3e; margin: 0px;"
             />
           </span>
 
-          <span class="material-symbols-sharp" @click="showCreateModal"
+          <span
+            class="material-symbols-sharp"
+            @click="showCreateModal"
             >group_add</span
           >
         </div>
@@ -207,7 +250,12 @@ onMounted(async () => {
     <table>
       <thead>
         <tr>
-          <th><input type="checkbox" @change="setAllChecked" /></th>
+          <th>
+            <input
+              type="checkbox"
+              @change="setAllChecked"
+            />
+          </th>
           <th>نام مددیار</th>
           <th class="responsive-hidden">شماره ملی</th>
           <th class="responsive-hidden">شماره تلفن</th>
@@ -216,7 +264,10 @@ onMounted(async () => {
           <th class="responsive-hidden"></th>
         </tr>
       </thead>
-      <tbody v-for="user in users" :key="user.id">
+      <tbody
+        v-for="user in users"
+        :key="user.id"
+      >
         <tr @click="showUserHistory($event, user.id)">
           <td>
             <input
@@ -231,7 +282,10 @@ onMounted(async () => {
           <td>{{ user.total_cash }}</td>
           <td>{{ user.total_product }}</td>
           <td class="responsive-hidden primary">
-            <span class="material-symbols-sharp" @click="showEditModal(user)">
+            <span
+              class="material-symbols-sharp"
+              @click="showEditModal(user)"
+            >
               edit_square
             </span>
           </td>
@@ -288,17 +342,17 @@ main .header .buttons {
 }
 
 main .header .buttons span {
-  height: 3rem;
-  width: 3rem;
+  background-color: var(--color-white);
+  box-shadow: var(--box-shadow);
+  border-radius: 50%;
+  cursor: pointer;
   color: rgb(0, 155, 0);
+  height: 3rem;
+  transition: all 300ms ease;
+  width: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  background-color: var(--color-white);
-  cursor: pointer;
-  box-shadow: var(--box-shadow);
-  transition: all 300ms ease;
 }
 
 main .header .buttons span:hover {
@@ -332,13 +386,11 @@ main table tbody tr {
   height: 6rem;
   background-color: var(--color-white);
   border-radius: var(--card-border-radius);
-  box-shadow: var(--box-shadow);
   transition: all 300ms ease;
 }
 
 main table tbody tr:hover {
-  box-shadow: none;
-  transition: all 300ms ease;
+  box-shadow: var(--box-shadow);
 }
 
 main table tbody tr td {
@@ -355,6 +407,14 @@ main table thead tr th {
   flex-basis: 20%;
 }
 
+main table thead tr th:first-child {
+  flex-basis: 8%;
+}
+
+main table tbody tr td:first-child {
+  flex-basis: 8%;
+}
+
 @media screen and (max-width: 768px) {
   main {
     width: 100vw;
@@ -362,12 +422,37 @@ main table thead tr th {
 
   main .header {
     margin-top: 2rem;
+    position: relative;
   }
 
   main .header * {
     margin: 0 1rem 0 0;
   }
 
+  main .header .input-fields {
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  main .header .input-fields .search-bar {
+    width: 98%;
+    margin: 0px;
+    padding: 0px;
+    align-items: center;
+    justify-content: flex-end;
+    order: 2;
+  }
+
+  main .header .input-fields .buttons {
+    gap: 0px;
+    left: 5px;
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    top: 0px;
+  }
   main table thead tr th {
     flex-basis: 33%;
   }

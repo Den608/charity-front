@@ -191,9 +191,10 @@ onMounted(async () => {
         <div class="buttons">
           <span @click="deleteAids">
             <font-awesome-icon
+            class="icon"
               icon="fa-solid fa-trash-can"
               size="xl"
-              style="color: #c13e3e"
+              style="color: #c13e3e; margin: 0px;"
             />
           </span>
 
@@ -386,12 +387,37 @@ main table tbody tr td:first-child {
 
   main .header {
     margin-top: 2rem;
+    position: relative;
   }
 
   main .header * {
     margin: 0 1rem 0 0;
   }
 
+  main .header .input-fields {
+    display: flex;
+    flex-direction: column;
+    margin: 0px;
+    padding: 0px;
+  }
+
+  main .header .input-fields .search-bar{
+    width: 98%;
+    margin: 0px;
+    padding: 0px;
+    align-items: center;
+    justify-content: flex-end;
+    order: 2;
+  }
+
+  main .header .input-fields .buttons{
+    gap:0px;
+    left: 5px;
+    margin: 0px;
+    padding: 0px;
+    position: absolute;
+    top: 0px;
+  }
   main table thead tr th {
     flex-basis: 33%;
   }

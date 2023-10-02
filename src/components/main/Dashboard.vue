@@ -1,3 +1,5 @@
+<!-- @format -->
+
 <script setup>
 import { onMounted } from "vue";
 import { useUsersApi } from "../../composables/useUsersApi";
@@ -5,7 +7,6 @@ import { useAids } from "../../composables/useAidsApi";
 import { useAidAllocation } from "../../composables/useAidAllocationApi";
 import useComponentStore from "../../store/componentStore";
 import EmptyContent from "../EmptyContent.vue";
-import SmallLoader from "../SmallLoader.vue";
 import LineChart from "../LineChart.vue";
 import PieChart from "../PieChart.vue";
 
@@ -132,8 +133,14 @@ function getTimeDetail(time) {
 
     <div class="recent-help">
       <h2>کمک های اخیر</h2>
-      <div class="recent-help-container" v-if="aidAllocations.length > 0">
-        <Transition name="recent" appear="">
+      <div
+        class="recent-help-container"
+        v-if="aidAllocations.length > 0"
+      >
+        <Transition
+          name="recent"
+          appear=""
+        >
           <table>
             <thead>
               <tr>
@@ -144,7 +151,10 @@ function getTimeDetail(time) {
                 <th>وضعیت</th>
               </tr>
             </thead>
-            <tbody v-for="aid in aidAllocations.slice(0, 5)" :key="aid.id">
+            <tbody
+              v-for="aid in aidAllocations.slice(0, 5)"
+              :key="aid.id"
+            >
               <tr>
                 <td>{{ aid.people_aid.title }}</td>
                 <td class="responsive-hidden">
@@ -167,7 +177,6 @@ function getTimeDetail(time) {
                       : "در حال تحویل..."
                   }}
                 </td>
-                <td><a class="primary" href="#">جزئیات</a></td>
               </tr>
             </tbody>
           </table>
@@ -175,18 +184,25 @@ function getTimeDetail(time) {
       </div>
       <EmptyContent v-else />
 
-      <a v-if="aidAllocations.length > 0" href="#" class="primary show-all"
-        >نمایش همه</a
-      >
+
 
       <!-- -------------- END OF Table ------------------ -->
     </div>
     <!-- ----------- End Of Recent Help ---------------->
 
-    <div class="left" v-if="assignedAids.length > 0">
+    <div
+      class="left"
+      v-if="assignedAids.length > 0"
+    >
       <h2>بروز رسانی های اخیر</h2>
-      <Transition name="update" appear>
-        <div v-if="assignedAids.length > 0" class="recent-update">
+      <Transition
+        name="update"
+        appear
+      >
+        <div
+          v-if="assignedAids.length > 0"
+          class="recent-update"
+        >
           <div class="updates">
             <div
               class="update"
@@ -397,6 +413,7 @@ main .left h2 {
 main .left .recent-update {
   background-color: var(--color-white);
   border-radius: var(--card-border-radius);
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   height: 86%;
@@ -483,11 +500,44 @@ main .left .recent-update .update span {
     grid-template-rows: 5rem 1fr 1fr 1fr;
     grid-template-areas:
       "header"
+      "charts"
       "right"
       "left"
       "table";
     margin: 0px auto;
     gap: 1rem;
+  }
+
+  main .charts {
+    background-color: inherit;
+    box-shadow: none;
+    border-radius: none;
+    display: flex;
+    flex-direction: column;
+    width: inherit;
+    gap: 2rem;
+    margin: 0px !important;
+    padding: 0;
+  }
+
+  main .charts .line-card {
+    order: 1;
+    background-color: var(--color-white);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+    flex: 2;
+    padding: var(--card-padding);
+    width: inherit;
+  }
+
+  main .charts .pie-card {
+    order: 2;
+    background-color: var(--color-white);
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--box-shadow);
+    flex: 1;
+    padding: var(--card-padding);
+    width: inherit;
   }
 
   main .dash-header {
