@@ -31,6 +31,7 @@ const {
 const user = reactive(initialUserValue);
 const usersObjectList = ref([]);
 const userSearchInput = ref("");
+const selectedUserId=ref([])
 
 // modal
 const modalTitle = ref("ثبت مددجو");
@@ -123,9 +124,10 @@ async function submitDelete(type) {
   dismissLoading();
 }
 
-function showUserHistory(event, id) {
+function showUserHistory(event, user) {
   const tagName = event.target.tagName;
   if ((tagName == "TD") | (tagName == "TR")) {
+    selectedUserId.value=user
     history.value = true;
   }
 }
@@ -145,7 +147,13 @@ watch(loader, () => {
 
 <template>
   <main>
-    <UserHistory v-if="history" @close="history = !history"  :title="'کالاهای دریافتی'"/>
+    <UserHistory
+      v-if="history"
+      @close="history = !history"
+      :title="'کالاهای اهدا شده '"
+      :role="'help_seeker'"
+      :user="selectedUserId"
+    />
     <Alert v-if="alertShow" @submit="submitDelete" :message="alerMessage" />
     <UpdateCreateModal
       v-if="modalShow"
@@ -220,7 +228,7 @@ watch(loader, () => {
         </tr>
       </thead>
       <tbody v-for="user in users" :key="user.id">
-        <tr @click="showUserHistory($event, user.id)">
+        <tr @click="showUserHistory($event, user)">
           <td>
             <input
               type="checkbox"

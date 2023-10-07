@@ -11,7 +11,7 @@ export function usePacks() {
   const lastPage = ref(1);
   const inputErrors = ref("");
   const componentStore = useComponentStore();
-  const { showPopup, showLoading, dismissLoading } = componentStore;
+  const { showPopup} = componentStore;
   let timeID;
 
   async function setAllPacks() {

@@ -33,6 +33,8 @@ const {
 const user = reactive(initialUserValue);
 const usersObjectList = ref([]);
 const userSearchInput = ref("");
+const selectedUserId=ref([])
+
 // modal
 const modalTitle = ref("ثبت مددیار");
 const modalShow = ref(false);
@@ -116,9 +118,10 @@ async function submitDelete(type) {
   dismissLoading();
 }
 
-function showUserHistory(event, id) {
+function showUserHistory(event, user) {
   const tagName = event.target.tagName;
   if ((tagName == "TD") | (tagName == "TR")) {
+    selectedUserId.value=user
     history.value = true;
   }
 }
@@ -148,6 +151,8 @@ onMounted(async () => {
       v-if="history"
       @close="history = !history"
       :title="'کالاهای اهدا شده '"
+      :role="'helper'"
+      :user="selectedUserId"
     />
     <Alert
       v-if="alertShow"
@@ -268,7 +273,7 @@ onMounted(async () => {
         v-for="user in users"
         :key="user.id"
       >
-        <tr @click="showUserHistory($event, user.id)">
+        <tr @click="showUserHistory($event, user)">
           <td>
             <input
               type="checkbox"

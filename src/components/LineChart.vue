@@ -35,9 +35,7 @@ const aid_allocations = ref([]);
 const people_aid = ref([]);
 
 onMounted(async () => {
-  showLoading();
   await chartApi.getLineData();
-  dismissLoading();
   aid_allocations.value = lineChartData.value.aid_allocation_data;
   people_aid.value = lineChartData.value.aid_allocation_data;
 });

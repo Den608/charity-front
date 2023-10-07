@@ -6,7 +6,6 @@ import useComponentStore from "../store/componentStore";
 
 export function useChartApi() {
   const componentStore = useComponentStore();
-  const { showPopup, showLoading, dismissLoading } = componentStore;
   const lineChartData = ref([]);
   const pieChartData = ref([]);
 

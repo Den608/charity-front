@@ -1,9 +1,12 @@
+/** @format */
+
 import { isVNode, ref, withScopeId } from "vue";
 import axiosInstance from "../services/axios";
 import useComponentStore from "../store/componentStore";
 
 export function useUsersApi() {
   const users = ref([]);
+  const userHistory = ref([]);
   const lastPage = ref(1);
   const currentPage = ref(1);
   const usersCount = ref(0);
@@ -11,7 +14,7 @@ export function useUsersApi() {
   const errorInput = ref("");
   const userLoading = ref(false);
   const componentStore = useComponentStore();
-  const { showLoading, dismissLoading, showPopup } = componentStore;
+  const { showPopup } = componentStore;
   let timerId;
 
   async function setAllUsers(role) {
@@ -23,6 +26,26 @@ export function useUsersApi() {
       lastPage.value = Math.ceil(usersCount.value / 10);
       user_role.value = role;
     } catch (error) {
+      showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error");
+    } finally {
+      userLoading.value = false;
+    }
+  }
+
+  async function getUserAidHistoty(user, role) {
+    try {
+      let data;
+
+      if (role == "helper") {
+        data = { helper_id: user.helper.id };
+      } else if (role == "help_seeker") {
+        data = { help_seeker_id: user.help_seeker_id };
+      }
+      userLoading.value = true;
+      const response = await axiosInstance.post(`/api/aids/history`, data);
+      userHistory.value = response.data;
+    } catch (error) {
+      console.log(error)
       showPopup("مشکلی رخ داده است لطفا با پشتیبانی تماس حاصل نمایید", "error");
     } finally {
       userLoading.value = false;
@@ -108,7 +131,7 @@ export function useUsersApi() {
       );
       showPopup("با موفقیت انجام شد !!!", "success");
     } catch (error) {
-      if (error.code == 'ERR_BAD_REQUEST') {
+      if (error.code == "ERR_BAD_REQUEST") {
         showPopup("رمز عبور فعلی اشتباه میباشد!!!", "error");
       } else {
         showPopup(error.message, "error");
@@ -272,6 +295,7 @@ export function useUsersApi() {
 
   return {
     users,
+    userHistory,
     userLoading,
     usersCount,
     currentPage,
@@ -286,5 +310,6 @@ export function useUsersApi() {
     prevPage,
     gotoPage,
     chanePassword,
+    getUserAidHistoty,
   };
 }

@@ -11,7 +11,7 @@ export function usePackAllocation() {
   const errorInput = ref("");
   let timeID;
   const componentStore = useComponentStore();
-  const { showPopup, showLoading, dismissLoading } = componentStore;
+  const { showPopup } = componentStore;
 
   async function setAllPackAllocation() {
     try {

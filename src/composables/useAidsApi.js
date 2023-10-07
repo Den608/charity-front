@@ -16,7 +16,7 @@ export function useAids() {
   const inputError = ref("");
   let timeID;
   const componentStore = useComponentStore();
-  const { showPopup, showLoading, dismissLoading } = componentStore;
+  const { showPopup} = componentStore;
 
   async function setCashDonation() {
     try {

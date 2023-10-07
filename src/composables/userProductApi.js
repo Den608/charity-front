@@ -12,7 +12,7 @@ export function useProduct() {
   const lastPage = ref(1);
   const inputErrors = ref("");
   const componentStore = useComponentStore();
-  const { withLoadingIndicator, showPopup, showLoading, dismissLoading } =
+  const {showPopup} =
     componentStore;
   let timeID;
 

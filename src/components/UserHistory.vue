@@ -1,15 +1,47 @@
+<!-- @format -->
+
 <script setup>
+import {onMounted} from 'vue'
+import { useUsersApi } from '../composables/useUsersApi';
 const emit=defineEmits(['exit'])
-const {title}=defineProps(['title'])
+const {title,user,role}=defineProps(['title','user','role'])
+
+const userApi=useUsersApi()
+const {userHistory}=userApi
+
+onMounted(async ()=>{
+  await userApi.getUserAidHistoty(user,role)
+})
+
+function close(){
+  emit('close')
+  userHistory.value=[]
+}
+
+function convertToPersianDate(isoTimestamp) {
+  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+  const persianLocale = 'fa-IR-u-ca-persian';
+  
+  const date = new Date(isoTimestamp);
+  const persianDate = new Intl.DateTimeFormat(persianLocale, options).format(date);
+  
+  return persianDate;
+}
 
 </script>
 
 <template>
   <div class="user-history-overlay">
     <div class="history">
-      <span class="material-symbols-sharp" id="exit" @click="emit('close')"> close </span>
+      <span
+        class="material-symbols-sharp"
+        id="exit"
+        @click="close"
+      >
+        close
+      </span>
       <h2>{{ title }}</h2>
-      <table>
+      <table v-if="userHistory.length > 0">
         <thead>
           <tr>
             <th>عنوان</th>
@@ -18,20 +50,10 @@ const {title}=defineProps(['title'])
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>دفتر</td>
-            <td>10</td>
-            <td>1400/2/3</td>
-          </tr>
-          <tr>
-            <td>کاپشن</td>
-            <td>10</td>
-            <td>1400/2/3</td>
-          </tr>
-          <tr>
-            <td>جوراب</td>
-            <td>10</td>
-            <td>1400/2/3</td>
+          <tr v-for="history in userHistory">
+            <td>{{ history.title }}</td>
+            <td>{{ history.quantity }}</td>
+            <td>{{ convertToPersianDate(history.created_at) }}</td>
           </tr>
         </tbody>
       </table>

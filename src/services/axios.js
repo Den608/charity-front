@@ -3,8 +3,9 @@ import baseUrl from './baseUrl';
 import dayjs from 'dayjs';
 import jwt_decode from 'jwt-decode';
 import { useRouter } from 'vue-router';
+  
 
-let token = window.localStorage.getItem('token')
+let token=window.localStorage.getItem('token')
 
 const axiosInstance = axios.create({
   baseURL: baseUrl,

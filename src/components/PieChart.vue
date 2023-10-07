@@ -17,9 +17,7 @@ const chartApi = useChartApi();
 const { pieChartData } = chartApi;
 
 onMounted(async () => {
-  showLoading();
   await chartApi.getPieData();
-  dismissLoading();
 });
 
 const data = computed(() => {
