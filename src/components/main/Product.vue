@@ -18,6 +18,7 @@ const history = ref(false);
 const alertShow = ref(false);
 const alertMessage = ref("");
 
+//product
 const initialProduct = {
   id: "",
   name: "",
@@ -37,6 +38,7 @@ const productApi = useProduct();
 const { products, productCatagories, lastPage, currentPage, productLoading } =
   productApi;
 const productSearchInput = ref("");
+const productHistory=ref('')
 
 function setAllChecked(event) {
   const allCheckboxes = document.querySelectorAll('input[type="checkbox"]');

@@ -122,7 +122,7 @@ export function useUsersApi() {
     }
   }
 
-  async function chanePassword(password) {
+  async function changePassword(password) {
     let isValid;
     try {
       const response = await axiosInstance.post(
@@ -133,7 +133,7 @@ export function useUsersApi() {
     } catch (error) {
       if (error.code == "ERR_BAD_REQUEST") {
         showPopup("رمز عبور فعلی اشتباه میباشد!!!", "error");
-      } else {
+      } else {ض
         showPopup(error.message, "error");
       }
     } finally {
@@ -259,6 +259,7 @@ export function useUsersApi() {
     }
   }
 
+  
   function validate_fields(obj) {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const phonePattern = /^\d{4,12}$/;
@@ -309,7 +310,7 @@ export function useUsersApi() {
     nextPage,
     prevPage,
     gotoPage,
-    chanePassword,
+    chanePassword: changePassword,
     getUserAidHistoty,
   };
 }

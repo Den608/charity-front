@@ -13,10 +13,6 @@ const useAuthStore = defineStore("auth", () => {
   const componentStore = useComponentStore();
 
   async function handleLogin(credentials) {
-    if (!isValidNationalCode(credentials.national_code)) {
-      componentStore.showPopup("فرمت کد ملی اشتباه است !!!", "error");
-      return;
-    }
     try {
       const response = await axios.post(`${baseUrl}/api/login`, credentials);
       token.value = response.data.authorization.token;

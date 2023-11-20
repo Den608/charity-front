@@ -2,16 +2,26 @@
 
 <script setup>
 import { onMounted, ref, reactive, watch } from "vue";
-import { useUsersApi } from "../../composables/useUsersApi";
 import useComponentStore from "../../store/componentStore";
 import Pagination from "../Pagination.vue";
 import UpdateCreateModal from "../UpdateCreateModal.vue";
 import Alert from "../Alert.vue";
 import UserHistory from "../UserHistory.vue";
+import { useUsersApi } from "../../composables/useUsersApi";
 
 const componentStore = useComponentStore();
 const { showLoading, dismissLoading } = componentStore;
 // user
+
+const userApi = useUsersApi();
+const {
+  users,
+  currentPage,
+  lastPage,
+  usersCount,
+  userLoading: loader,
+} = userApi;
+
 const initialUserValue = {
   username: "",
   national_code: "",
@@ -22,18 +32,10 @@ const initialUserValue = {
   phone_number: "",
   address: "",
 };
-const userApi = useUsersApi();
-const {
-  users,
-  currentPage,
-  lastPage,
-  usersCount,
-  userLoading: loader,
-} = userApi;
 const user = reactive(initialUserValue);
 const usersObjectList = ref([]);
 const userSearchInput = ref("");
-const selectedUserId=ref([])
+const selectedUserId = ref([]);
 
 // modal
 const modalTitle = ref("ثبت مددیار");
@@ -49,8 +51,7 @@ async function submitUser() {
   showLoading();
   if (modalMode.value == "create") {
     await userApi.createUser(user);
-    // for (const key in user) user[key] = "";
-  } else if (modalMode.value == "edit") {
+d  } else if (modalMode.value == "edit") {
     await userApi.updateUser(user);
   }
   dismissLoading();
@@ -121,7 +122,7 @@ async function submitDelete(type) {
 function showUserHistory(event, user) {
   const tagName = event.target.tagName;
   if ((tagName == "TD") | (tagName == "TR")) {
-    selectedUserId.value=user
+    selectedUserId.value = user;
     history.value = true;
   }
 }
@@ -227,10 +228,10 @@ onMounted(async () => {
             id="trash"
           >
             <font-awesome-icon
-            class="icon"
+              class="icon"
               icon="fa-solid fa-trash-can"
               size="xl"
-              style="color: #c13e3e; margin: 0px;"
+              style="color: #c13e3e; margin: 0px"
             />
           </span>
 

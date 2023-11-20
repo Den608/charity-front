@@ -5,7 +5,8 @@ import axios from "axios";
 
 export function useProduct() {
   const productLoading = ref(false);
-  const products = ref([{}]);
+  const products = ref([]);
+  const productHistory=ref([])
   const productCatagories = ref([]);
   const productCount = ref(0);
   const currentPage = ref(1);
@@ -23,6 +24,18 @@ export function useProduct() {
       products.value = response.data.products;
       productCount.value = response.data.count;
       lastPage.value = Math.ceil(productCount.value / 10);
+    } catch (error) {
+      showPopup("مشکلی رخ داده ", "error");
+    } finally {
+      productLoading.value = false;
+    }
+  }
+
+  async function setProductHistory() {
+    try {
+      productLoading.value = true;
+      const response = await axiosInstance.get(`/api/products?page=1`);
+      productHistory.value = response.data;
     } catch (error) {
       showPopup("مشکلی رخ داده ", "error");
     } finally {
